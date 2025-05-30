@@ -9,7 +9,7 @@ interface ListColumnProps extends ListColumnData {
 
 /** Столбец одной строки таблицы */
 function CustomListRowColumn(props: ListColumnProps) {
-	const { fr, data, isLink, onClick, listRef, isRollable } = props;
+	const { fr, data, fixedWidth, contentPadding, isLink, onClick, listRef, isRollable } = props;
 
 	const onClickColumn = isLink && onClick ? () => { onClick(data) } : () => { };
 
@@ -70,7 +70,13 @@ function CustomListRowColumn(props: ListColumnProps) {
 			isLink
 				? "custom-list-row-column custom-list-row-column__link"
 				: "custom-list-row-column"
-		} style={{ flex: fr }} ref={wrapperRef}>
+		} style={{ 
+        	overflow: "visible",
+        	whiteSpace: "normal",
+        	wordBreak: "break-word",
+        	...(fixedWidth ? { width: fixedWidth } : { flex: fr }),
+        	...(contentPadding && {padding: contentPadding})
+		 }} ref={wrapperRef}>
 			{props.getCustomColumComponent && props.getCustomColumComponent(data)}
 			{!props.getCustomColumComponent &&
 					<span onMouseEnter={showMore} onMouseOut={hideMore} ref={spanRef} title={isRollable ? "" : data.value} onClick={onClickColumn} className={isShowMore ? 'custom-list-row-column__more' : 'custom-list-row-column__less'}>

@@ -163,7 +163,7 @@ function CustomList<SearchDataType = any, ItemType = any>(props: ListProps<Searc
 	/** Стили шапки */
 	const headerStyles: React.CSSProperties = {};
 	if (listWidth) headerStyles.width = `${listWidth - getScrollbarWidth(headerRef)}px`;
-	if (!isSelectable) headerStyles.paddingLeft = `20px`;
+	// if (!isSelectable) headerStyles.paddingLeft = `20px`;
 
 	const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 

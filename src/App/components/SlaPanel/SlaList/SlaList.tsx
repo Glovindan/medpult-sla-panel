@@ -57,6 +57,7 @@ export default function SlaList() {
 			code: "isBasic",
 			name: "",
 			fr: 1,
+			fixedWidth: "52px",
 			getCustomColumComponent: getComponent
 		}),
 		// Показатель (Тип SLA)

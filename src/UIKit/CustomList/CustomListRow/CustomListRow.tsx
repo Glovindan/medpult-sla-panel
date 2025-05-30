@@ -53,8 +53,10 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
 		return "custom-list-row"
 	}
 
-	const rowStyles: React.CSSProperties = {};
-	if (!isSelectable) rowStyles.paddingLeft = `20px`;
+	const rowStyles: React.CSSProperties = {
+		overflow: "visible",
+	};
+	// if (!isSelectable) rowStyles.paddingLeft = `20px`;
 
 	return (
 		<>
@@ -68,7 +70,7 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
 							return;
 						}
 						const columnData: ItemData<any> = data[settings.code];
-						
+
 						return (
 							<CustomListRowColumn listRef={listRef} data={columnData} {...settings} />
 						)
