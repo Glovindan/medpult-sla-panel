@@ -1,0 +1,56 @@
+.sla-status-column {
+	/* Auto layout */
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+
+	/* Inside auto layout */
+	flex: none;
+	order: 4;
+	flex-grow: 0;
+
+	&__value {
+		/* Новое */
+		height: 20px;
+
+		/* Body_14 */
+		font-family: 'Inter';
+		font-style: normal;
+		font-weight: 400;
+		font-size: 14px;
+		line-height: 20px;
+		/* identical to box height, or 143% */
+		display: flex;
+		align-items: center;
+
+		/* Grey/Grey_1100 */
+		color: #2D2E2F;
+
+
+		/* Inside auto layout */
+		flex: none;
+		order: 0;
+		flex-grow: 0;
+
+		/* Badge_статус обращения */
+
+		/* Auto layout */
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		padding: 3px 16px;
+		gap: 10px;
+
+		height: 26px;
+
+		/* Red/Red_200 */
+		border-radius: 12px;
+
+		/* Inside auto layout */
+		flex: none;
+		order: 0;
+		flex-grow: 0;
+	}
+}

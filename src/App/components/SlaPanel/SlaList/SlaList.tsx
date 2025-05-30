@@ -1,54 +1,16 @@
 import React, { useEffect } from 'react'
-import { slaContext } from '../../../stores/SlaContext.ts'
-import Panel from '../../../../UIKit/Panel/Panel.tsx'
-import TabsWrapper from '../../../../UIKit/Tabs/TabsWrapper/TabsWrapper.tsx'
-import TabItem from '../../../../UIKit/CustomList/CustomList.tsx'
 import CustomList from '../../../../UIKit/CustomList/CustomList.tsx'
 import { SortData, FetchData, ListColumnData, ItemDataString, ItemData } from '../../../../UIKit/CustomList/CustomListTypes.ts'
-import icons from '../../../shared/icons.tsx'
-/** Статус SLA */
-enum SlaStatus {
-	/** Действует */
-	valid = "valid",
-	/** Действует и есть запланированное */
-	validPlanned = "validPlanned",
-	/** Планируется */
-	planned = "planned",
-	/** Истекло */
-	expired = "expired"
-}
-
-/** Значение строки Sla */
-interface SlaRowData {
-	/** Идентификатор */
-	id: ItemDataString;
-	/** Является базовым */
-	isBasic: ItemData<boolean>;
-	/** Показатель (Тип SLA) */
-	type: ItemDataString;
-	/** Значение показателя */
-	value: ItemDataString;
-	/** Статус */
-	status: ItemData<SlaStatus>;
-	/** Дата начала  */
-	startDate: ItemDataString;
-	/** Дата окончания */
-	endDate: ItemDataString;
-	/** Тип задачи */
-	taskType: ItemDataString;
-	/** Вид задачи */
-	taskSort: ItemDataString;
-	/** Тематика */
-	topic: ItemDataString;
-	/** Срочность */
-	urgency: ItemDataString;
-}
+import SlaBasicColumn from './SlaBasicColumn/SlaBasicColumn.tsx'
+import { SlaRowData, SlaStatus } from './slaListTypes.ts'
+import SlaStatusColumn from './SlaStatusColumn/SlaStatusColumn.tsx'
 
 /** Список SLA */
 export default function SlaList() {
-	const getComponent = (props: ItemData<boolean>) => { 
-		return <div>{props.info && icons.Star}</div>
-	}
+	// Функция для отрисовки колонки с индикатором базового SLA
+	const getSlaBasicColumn = (props: ItemData<boolean>) => <SlaBasicColumn data={props} />
+	// Функция для отрисовки колонки статуса
+	const getSlaStatusColumn = (props: ItemData<SlaStatus>) => <SlaStatusColumn data={props} />
 
 	// Настройка колонок
 	const columnsSettings: ListColumnData[] = [
@@ -58,7 +20,7 @@ export default function SlaList() {
 			name: "",
 			fr: 1,
 			fixedWidth: "52px",
-			getCustomColumComponent: getComponent
+			getCustomColumComponent: getSlaBasicColumn
 		}),
 		// Показатель (Тип SLA)
 		new ListColumnData({
@@ -76,7 +38,8 @@ export default function SlaList() {
 		new ListColumnData({
 			code: "status",
 			name: "Статус",
-			fr: 1
+			fr: 1,
+			getCustomColumComponent: getSlaStatusColumn
 		}),
 		// Дата начала 
 		new ListColumnData({
@@ -148,7 +111,7 @@ export default function SlaList() {
 			isBasic: new ItemData({ value: Math.random() > 0.5 ? "true" : "false", info: Math.random() > 0.5 }),
 			type: new ItemDataString(getRandomElement(["Response Time", "Resolution Time", "Availability"])),
 			value: new ItemDataString(`${Math.floor(Math.random() * 72)}h`),
-			status: new ItemData<SlaStatus>({ value: getRandomElement(Object.values(SlaStatus)), info: undefined }),
+			status: new ItemData<SlaStatus>({ value: getRandomElement(Object.values(SlaStatus)), info: getRandomElement(Object.values(SlaStatus)) }),
 			startDate: new ItemDataString(getRandomDate()),
 			endDate: new ItemDataString(getRandomDate()),
 			taskType: new ItemDataString(getRandomElement(["Incident", "Service Request", "Change"])),
