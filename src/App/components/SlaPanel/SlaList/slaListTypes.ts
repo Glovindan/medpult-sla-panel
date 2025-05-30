@@ -6,7 +6,9 @@ export enum SlaStatusNames {
 	/** Планируется */
 	planned = "Планируется",
 	/** Истекло */
-	expired = "Истекло"
+	expired = "Истекло",
+	/** Аннулировано */
+	canceled = "Аннулировано"
 }
 
 /** Статус SLA */
@@ -18,7 +20,9 @@ export enum SlaStatus {
 	/** Планируется */
 	planned = "planned",
 	/** Истекло */
-	expired = "expired"
+	expired = "expired",
+	/** Аннулировано */
+	canceled = "canceled"
 }
 
 /** Значение строки Sla */

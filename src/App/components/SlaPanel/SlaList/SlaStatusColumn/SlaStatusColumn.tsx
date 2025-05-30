@@ -15,6 +15,7 @@ export default function SlaStatusColumn({data} : SlaStatusColumnProps) {
 			case(SlaStatus.validPlanned): return SlaStatusNames.valid
 			case(SlaStatus.planned): return SlaStatusNames.planned
 			case(SlaStatus.expired): return SlaStatusNames.expired
+			case(SlaStatus.canceled): return SlaStatusNames.canceled
 		}
 	}
 	
@@ -25,6 +26,7 @@ export default function SlaStatusColumn({data} : SlaStatusColumnProps) {
 			case(SlaStatus.validPlanned): return "#81E592"
 			case(SlaStatus.planned): return "#E7F5B6"
 			case(SlaStatus.expired): return "#FFB5B5"
+			case(SlaStatus.canceled): return "#D1D8DC"
 		}
 	}
 

@@ -34,11 +34,12 @@ export default function SlaList() {
 			name: "Значение показателя",
 			fr: 1
 		}),
-		// Статус TODO: Добавить обработку кастомного компонента
+		// Статус
 		new ListColumnData({
 			code: "status",
 			name: "Статус",
 			fr: 1,
+			fixedWidth: "200px",
 			getCustomColumComponent: getSlaStatusColumn
 		}),
 		// Дата начала 
@@ -127,7 +128,7 @@ export default function SlaList() {
 
 	// Получение данных
 	const getDataHandler = async (page: number, sortData?: SortData, searchData?: any): Promise<FetchData<SlaRowData>> => {
-		const items = Array.from({ length: 10 }).map(item => {
+		const items = Array.from({ length: 20 }).map(item => {
 			const rowData = generateRandomSlaRowData();
 			return {
 				id: rowData.id.value,
