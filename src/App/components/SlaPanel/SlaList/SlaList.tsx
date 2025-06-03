@@ -1,17 +1,75 @@
 import React, { useEffect } from 'react'
 import CustomList from '../../../../UIKit/CustomList/CustomList.tsx'
-import { SortData, FetchData, ListColumnData, ItemDataString, ItemData } from '../../../../UIKit/CustomList/CustomListTypes.ts'
+import { SortData, FetchData, ListColumnData, ItemDataString, ItemData, getDetailsLayoutAttributes } from '../../../../UIKit/CustomList/CustomListTypes.ts'
 import SlaBasicColumn from './SlaBasicColumn/SlaBasicColumn.tsx'
-import { SlaRowData, SlaStatus } from './slaListTypes.ts'
+import { CreatorEditorData, SlaRowData, SlaRowDataGroup, SlaStatus } from './slaListTypes.ts'
 import SlaStatusColumn from './SlaStatusColumn/SlaStatusColumn.tsx'
+import SlaEditColumn from './SlaEditColumn/SlaEditColumn.tsx'
+import SlaOpenColumn from './SlaOpenColumn/SlaOpenColumn.tsx'
+import CreatorEditorDataColumn from './CreatorEditorDataColumn/CreateEditDataColumn.tsx'
+import { generateRandomSlaRowData } from '../../../shared/utils/slaGenerator.ts'
+import Loader from '../../../../UIKit/Loader/Loader.tsx'
+
+/** Пропсы списка SLA */
+type SlaListProps = {
+	/** Получение данных SLA */
+	getSlaHandler(): Promise<FetchData<SlaRowDataGroup>>
+	/** Флаг загрузки */
+	isLoading: boolean
+}
+
+interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
+  rowData: SlaRowDataGroup;
+}
 
 /** Список SLA */
-export default function SlaList() {
+export default function SlaList({getSlaHandler, isLoading}: SlaListProps) {
 	// Функция для отрисовки колонки с индикатором базового SLA
 	const getSlaBasicColumn = (props: ItemData<boolean>) => <SlaBasicColumn data={props} />
 	// Функция для отрисовки колонки статуса
 	const getSlaStatusColumn = (props: ItemData<SlaStatus>) => <SlaStatusColumn data={props} />
+	// Функция для отрисовки колонки с кнопкой редактирования
+	const getEditColumn = (props: ItemDataString) => <SlaEditColumn data={props} />
+	// Функция для отрисовки колонки с кнопкой треугольником
+	const getOpenColumn = (props: ItemDataString) => <SlaOpenColumn data={props} />
+	// Функция для отрисовки колонки с данными автора и редактора
+	const getCreatorEditorDataColumn = (props: ItemData<CreatorEditorData>) => <CreatorEditorDataColumn data={props} />
 
+
+	async function getSubSla(id: string): Promise<FetchData<SlaRowDataGroup>> {
+		// Все SLA
+		const sla = await getSlaHandler();
+		// Искомый SLA
+		const findSla = sla.items.find(item => item.id == id);
+		return {
+			hasMore: false,
+			items: findSla?.data.groupData.map(item => {
+				return {
+					id: item.id.value,
+					data: {
+						...item,
+						groupData: []
+					}
+				}
+			}) ?? []
+		}
+	}
+
+	/** Получение формы детальной информации по строке списка ДС */
+	const getCustomListDetailsLayout = ({
+		rowData,
+		reloadData,
+		onClickRowHandler,
+	}: getSlaListDetailsLayoutAttributes) => {
+		// TODO: Реализовать
+		// return (
+		// 	<SlaList
+		// 		getSlaHandler={() => getSubSla(rowData.id.value)}
+		// 		isLoading={false}
+		// 	/>
+		// )
+	}
+	
 	// Настройка колонок
 	const columnsSettings: ListColumnData[] = [
 		// Индикатор базового
@@ -45,13 +103,13 @@ export default function SlaList() {
 		// Дата начала 
 		new ListColumnData({
 			code: "startDate",
-			name: "Дата начала",
+			name: "Дата начала действия",
 			fr: 1
 		}),
 		// Дата окончания
 		new ListColumnData({
 			code: "endDate",
-			name: "Дата окончания",
+			name: "Дата окончания действия",
 			fr: 1
 		}),
 		// TODO: Признак ВИП
@@ -81,68 +139,35 @@ export default function SlaList() {
 		}),
 		// TODO: Продукт
 		// TODO: Страхователь
+		// Автор/редактор
+		new ListColumnData({
+			code: "creatorEditorData",
+			name: "Автор/редактор",
+			fr: 1,
+			getCustomColumComponent: getCreatorEditorDataColumn
+		}),
 		// Кнопка изменения
 		new ListColumnData({
 			code: "id",
 			name: "",
-			fr: 1
+			fr: 1,
+			fixedWidth: "56px",
+			getCustomColumComponent: getEditColumn
 		}),
 		// Кнопка разворачивания
 		new ListColumnData({
 			code: "id",
 			name: "",
-			fr: 1
+			fr: 1,
+			fixedWidth: "56px",
+			getCustomColumComponent: getOpenColumn
 		})
 	]
 
-	function getRandomElement<T>(arr: T[]): T {
-		return arr[Math.floor(Math.random() * arr.length)];
-	}
-
-	function getRandomDate(): string {
-		const start = new Date(2023, 0, 1).getTime();
-		const end = new Date(2025, 11, 31).getTime();
-		const date = new Date(start + Math.random() * (end - start));
-		return date.toISOString().split('T')[0];
-	}
-
-	function generateRandomSlaRowData(): SlaRowData {
-		return {
-			id: new ItemDataString(`sla-${Math.floor(Math.random() * 10000)}`),
-			isBasic: new ItemData({ value: Math.random() > 0.5 ? "true" : "false", info: Math.random() > 0.5 }),
-			type: new ItemDataString(getRandomElement(["Response Time", "Resolution Time", "Availability"])),
-			value: new ItemDataString(`${Math.floor(Math.random() * 72)}h`),
-			status: new ItemData<SlaStatus>({ value: getRandomElement(Object.values(SlaStatus)), info: getRandomElement(Object.values(SlaStatus)) }),
-			startDate: new ItemDataString(getRandomDate()),
-			endDate: new ItemDataString(getRandomDate()),
-			taskType: new ItemDataString(getRandomElement(["Incident", "Service Request", "Change"])),
-			taskSort: new ItemDataString(getRandomElement(["Standard", "Emergency", "Normal"])),
-			topic: new ItemDataString(getRandomElement(["Network", "Hardware", "Software", "Security"])),
-			urgency: new ItemDataString(getRandomElement(["Low", "Medium", "High", "Critical"]))
-		};
-	}
-
-	// Пример использования:
-	const randomSla = generateRandomSlaRowData();
-	console.log(randomSla);
-
-	// Получение данных
-	const getDataHandler = async (page: number, sortData?: SortData, searchData?: any): Promise<FetchData<SlaRowData>> => {
-		const items = Array.from({ length: 20 }).map(item => {
-			const rowData = generateRandomSlaRowData();
-			return {
-				id: rowData.id.value,
-				data: rowData
-			}
-		});
-
-		return {
-			hasMore: false,
-			items: items
-		}
-	}
-
 	return (
-		<CustomList columnsSettings={columnsSettings} getDataHandler={getDataHandler} isScrollable={false}/>
+		<>
+			{!isLoading && <CustomList columnsSettings={columnsSettings} getDataHandler={getSlaHandler} isScrollable={false} /* getDetailsLayout={getCustomListDetailsLayout} *//>}
+			{isLoading && <Loader />}
+		</>
 	)
 }

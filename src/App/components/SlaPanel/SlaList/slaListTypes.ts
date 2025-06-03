@@ -32,7 +32,7 @@ export interface SlaRowData {
 	/** Является базовым */
 	isBasic: ItemData<boolean>;
 	/** Показатель (Тип SLA) */
-	type: ItemDataString;
+	type: ItemData<string>;
 	/** Значение показателя */
 	value: ItemDataString;
 	/** Статус */
@@ -49,4 +49,24 @@ export interface SlaRowData {
 	topic: ItemDataString;
 	/** Срочность */
 	urgency: ItemDataString;
+	/** Данные автора и редактора */
+	creatorEditorData: ItemData<CreatorEditorData>;
+}
+
+/** Сгруппированное значение строки Sla */
+export interface SlaRowDataGroup extends SlaRowData {
+	/** Данные остальных SLA в группе */
+	groupData: SlaRowData[]
+}
+
+/** Данные создания и изменения элемента */
+export type CreatorEditorData = {
+	/** Дата создания в формате DD.MM.YYYY */
+	createdAt: string,
+	/** Автор */
+	createdBy: string,
+	/** Дата изменения в формате DD.MM.YYYY */
+	updatedAt: string,
+	/** Редактор */
+	updatedBy: string,
 }
