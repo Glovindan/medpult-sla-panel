@@ -1,1 +1,18 @@
 @import url("./SlaList/slaList.scss");
+@import url("./AdditionalPanel/additionalPanel.scss");
+.medpult-sla-panel {
+  margin: 10px;
+  border-radius: 10px !important;
+  font-family: Inter;
+  overflow: hidden;
+
+  &__title {
+    background-color: #f9f9fa;
+    padding: 18px 16px;
+    border-bottom: 1px solid #d2d3d6;
+
+    font-size: 20px;
+    color: #45b0e5;
+    font-weight: 500;
+  }
+}

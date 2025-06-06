@@ -1,57 +1,88 @@
-import React, { useEffect, useState } from 'react'
-import { slaContext } from '../../stores/SlaContext'
-import Panel from '../../../UIKit/Panel/Panel.tsx'
-import TabsWrapper from '../../../UIKit/Tabs/TabsWrapper/TabsWrapper.tsx'
-import TabItem from '../../../UIKit/Tabs/TabItem/TabItem.tsx'
-import SlaList from './SlaList/SlaList.tsx'
-import { FetchData } from '../../../UIKit/CustomList/CustomListTypes.ts'
-import { SlaRowDataGroup } from './SlaList/slaListTypes.ts'
+import React, { useEffect, useState } from "react";
+import { slaContext } from "../../stores/SlaContext";
+import TabsWrapper from "../../../UIKit/Tabs/TabsWrapper/TabsWrapper.tsx";
+import TabItem from "../../../UIKit/Tabs/TabItem/TabItem.tsx";
+import SlaListTask from "./SlaList/SlaListTask.tsx";
+import SlaListRequest from "./SlaList/SlaListRequest.tsx";
+import { FetchData } from "../../../UIKit/CustomList/CustomListTypes.ts";
+import {
+  SlaRowDataGroupTask,
+  SlaRowDataGroupRequest,
+} from "./SlaList/slaListTypes.ts";
+import AdditionalPanel from "./AdditionalPanel/AdditionalPanel.tsx";
+import Scripts from "../../shared/utils/clientScripts.ts";
 
-import Scripts from '../../shared/utils/clientScripts.ts'
 /** Панель администрирования SLA */
 export default function SlaPanel() {
-	const [data, setValue] = slaContext.useState()
+  const [data, setValue] = slaContext.useState();
 
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [slaData, setSlaData] = useState<FetchData<SlaRowDataGroup> | undefined>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [slaDataTask, setSlaDataTask] = useState<
+    FetchData<SlaRowDataGroupTask> | undefined
+  >();
+  const [slaDataRequest, setSlaDataRequest] = useState<
+    FetchData<SlaRowDataGroupRequest> | undefined
+  >();
 
-	// Загрузка всех SLA
-	useEffect(() => {
-		setIsLoading(true);
+  // Загрузка всех SLA
+  useEffect(() => {
+    setIsLoading(true);
 
-		Scripts.getSla().then(slaData => {
-			setSlaData(slaData);
-			setIsLoading(false)
-		})
-	}, [])
+    Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()])
+      .then(([slaDataTask, slaDataRequest]) => {
+        setSlaDataTask(slaDataTask); // Сохраняем данные для задач
+        setSlaDataRequest(slaDataRequest); // Сохраняем данные для обращений
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
-	/** Получение всех SLA */
-	async function getSlaHandler(): Promise<FetchData<SlaRowDataGroup>> {
-		if(!slaData) {
-			return {
-				hasMore: false,
-				items: []
-			}
-		}
+  /** Получение всех SLA задачи*/
+  async function getSlaTaskHandler(): Promise<FetchData<SlaRowDataGroupTask>> {
+    if (!slaDataTask) {
+      return {
+        hasMore: false,
+        items: [],
+      };
+    }
+    return slaDataTask;
+  }
+  /** Получение всех SLA обращений*/
+  async function getSlaRequestHandler(): Promise<
+    FetchData<SlaRowDataGroupRequest>
+  > {
+    if (!slaDataRequest) {
+      return {
+        hasMore: false,
+        items: [],
+      };
+    }
+    return slaDataRequest;
+  }
 
-		return slaData;
-	}
-
-	// Получение SLA для Задач
-	// Получение SLA для Обращений
-
-	return (
-		<slaContext.Provider value={{ data, setValue }}>
-			<Panel label='SLA' isRollable={false}>
-				<TabsWrapper>
-					<TabItem code={'requests'} name={'Обращения'}>
-						<SlaList getSlaHandler={getSlaHandler} isLoading={isLoading}/>
-					</TabItem>
-					<TabItem code={'tasks'} name={'Задачи'}>
-						test1
-					</TabItem>
-				</TabsWrapper>
-			</Panel>
-		</slaContext.Provider>
-	)
+  return (
+    <slaContext.Provider value={{ data, setValue }}>
+      <div className="medpult-sla-panel">
+        <div className="medpult-sla-panel__title">SLA</div>
+        <TabsWrapper>
+          <TabItem code={"requests"} name={"Обращения"}>
+            <AdditionalPanel />
+            <SlaListRequest
+              getSlaHandler={getSlaRequestHandler}
+              isLoading={isLoading}
+            />
+          </TabItem>
+          <TabItem code={"tasks"} name={"Задачи"}>
+            <AdditionalPanel />
+            <SlaListTask
+              getSlaHandler={getSlaTaskHandler}
+              isLoading={isLoading}
+            />
+          </TabItem>
+        </TabsWrapper>
+      </div>
+    </slaContext.Provider>
+  );
 }

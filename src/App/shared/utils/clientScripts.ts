@@ -1,6 +1,9 @@
 import { FetchData } from "../../../UIKit/CustomList/CustomListTypes";
-import { SlaRowDataGroup } from "../../components/SlaPanel/SlaList/slaListTypes";
-import { generateRandomSlaRowData, getRandomSlaList } from "./slaGenerator";
+import {
+  SlaRowDataGroupTask,
+  SlaRowDataGroupRequest,
+} from "../../components/SlaPanel/SlaList/slaListTypes";
+import { getRandomSlaListTask, getRandomSlaListRequest } from "./slaGenerator";
 
 /** Ожидание */
 function sleep(ms: number) {
@@ -8,25 +11,44 @@ function sleep(ms: number) {
 }
 
 /** Получение списка SLA */
-async function getSla(): Promise<FetchData<SlaRowDataGroup>> {
-    await sleep(1000)
-    const items = getRandomSlaList(20).map(rowData => {
-      const subData = getRandomSlaList(4);
-      return {
-        id: rowData.id.value,
-        data: {
-          ...rowData,
-          groupData: subData
-        }
-      }
-    });
-
+async function getSlaTask(): Promise<FetchData<SlaRowDataGroupTask>> {
+  await sleep(1000);
+  const items = getRandomSlaListTask(20).map((rowData) => {
+    const subData = getRandomSlaListTask(4);
     return {
-      hasMore: false,
-      items: items
-    }
+      id: rowData.id.value,
+      data: {
+        ...rowData,
+        groupData: subData,
+      },
+    };
+  });
+
+  return {
+    hasMore: false,
+    items: items,
+  };
+}
+async function getSlaRequest(): Promise<FetchData<SlaRowDataGroupRequest>> {
+  await sleep(1000);
+  const items = getRandomSlaListRequest(20).map((rowData) => {
+    const subData = getRandomSlaListRequest(4);
+    return {
+      id: rowData.id.value,
+      data: {
+        ...rowData,
+        groupData: subData,
+      },
+    };
+  });
+
+  return {
+    hasMore: false,
+    items: items,
+  };
 }
 
 export default {
-  getSla
-}
+  getSlaTask,
+  getSlaRequest,
+};
