@@ -11,6 +11,8 @@ import {
 } from "./SlaList/slaListTypes.ts";
 import AdditionalPanel from "./AdditionalPanel/AdditionalPanel.tsx";
 import Scripts from "../../shared/utils/clientScripts.ts";
+import TaskSlaModal from "../ModalSla/TaskSlaModal/TaskSlaModal.tsx";
+import RequestSlaModal from "../ModalSla/RequestSlaModal/RequestSlaModal.tsx";
 
 /** Панель администрирования SLA */
 export default function SlaPanel() {
@@ -23,6 +25,10 @@ export default function SlaPanel() {
   const [slaDataRequest, setSlaDataRequest] = useState<
     FetchData<SlaRowDataGroupRequest> | undefined
   >();
+
+  // Состояния для модальных окон
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
   // Загрузка всех SLA
   useEffect(() => {
@@ -68,18 +74,24 @@ export default function SlaPanel() {
         <div className="medpult-sla-panel__title">SLA</div>
         <TabsWrapper>
           <TabItem code={"requests"} name={"Обращения"}>
-            <AdditionalPanel />
+            <AdditionalPanel onAddClick={() => setIsRequestModalOpen(true)} />
             <SlaListRequest
               getSlaHandler={getSlaRequestHandler}
               isLoading={isLoading}
             />
+            {isRequestModalOpen && (
+              <RequestSlaModal onClose={() => setIsRequestModalOpen(false)} />
+            )}
           </TabItem>
           <TabItem code={"tasks"} name={"Задачи"}>
-            <AdditionalPanel />
+            <AdditionalPanel onAddClick={() => setIsTaskModalOpen(true)} />
             <SlaListTask
               getSlaHandler={getSlaTaskHandler}
               isLoading={isLoading}
             />
+            {isTaskModalOpen && (
+              <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} />
+            )}
           </TabItem>
         </TabsWrapper>
       </div>

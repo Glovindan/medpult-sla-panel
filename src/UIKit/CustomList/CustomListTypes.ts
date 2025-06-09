@@ -25,10 +25,10 @@ export class SortData {
 export class ListColumnData {
   /** Коэффициент соотношения ширины столбца */
   fr: number;
-	/** Фиксированная ширина столбца */
-	fixedWidth: string
-	/** Кастомные настройки отступа вокруг содержания ячейки таблицы */
-  contentPadding: string
+  /** Фиксированная ширина столбца */
+  fixedWidth: string;
+  /** Кастомные настройки отступа вокруг содержания ячейки таблицы */
+  contentPadding: string;
   /** Можно ли по этому столбцу сортировать */
   isSortable: boolean;
   /** Хранит ли по столбец ссылки */
@@ -42,7 +42,7 @@ export class ListColumnData {
   /** Разворачиваемый ли столбец */
   isRollable: boolean;
   /** Кастомный компонент колонки */
-  getCustomColumComponent?: (props: any) => JSX.Element
+  getCustomColumComponent?: (props: any) => JSX.Element;
 
   constructor({
     name,
@@ -53,7 +53,7 @@ export class ListColumnData {
     onClick,
     isRollable,
     getCustomColumComponent,
-		fixedWidth,
+    fixedWidth,
     contentPadding,
   }: {
     name: string;
@@ -63,22 +63,23 @@ export class ListColumnData {
     isLink?: boolean;
     onClick?: (props: any) => any;
     isRollable?: boolean;
-    getCustomColumComponent?: (props: any) => JSX.Element
-		fixedWidth?: string
-    contentPadding?: string
+    getCustomColumComponent?: (props: any) => JSX.Element;
+    fixedWidth?: string;
+    contentPadding?: string;
   }) {
     this.fr = fr ?? 1;
     this.isSortable = isSortable ?? false;
     this.isLink = isLink ?? false;
 
     if (onClick) this.onClick = onClick;
-    if (getCustomColumComponent) this.getCustomColumComponent = getCustomColumComponent;
+    if (getCustomColumComponent)
+      this.getCustomColumComponent = getCustomColumComponent;
 
     this.name = name;
     this.code = code;
     this.isRollable = isRollable ?? false;
-		if(fixedWidth) this.fixedWidth = fixedWidth;
-		if(contentPadding) this.contentPadding = contentPadding;
+    if (fixedWidth) this.fixedWidth = fixedWidth;
+    if (contentPadding) this.contentPadding = contentPadding;
   }
 }
 
@@ -116,4 +117,9 @@ export interface FetchData<DataType> {
   items: FetchItem<DataType>[];
   /** Доступны ли еще данные для подгрузки? */
   hasMore: boolean;
+}
+
+export interface CustomColumnProps<T> {
+  value: ItemData<T>;
+  rowData: Record<string, ItemData>;
 }

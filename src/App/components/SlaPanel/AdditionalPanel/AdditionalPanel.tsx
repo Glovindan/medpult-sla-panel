@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import Button from "../../../../UIKit/Button/Button";
 
+interface AdditionalPanelProps {
+  onAddClick?: () => void;
+}
 /**Панель */
-function AdditionalPanel({}) {
+function AdditionalPanel({ onAddClick }: AdditionalPanelProps) {
   const [isSlaExpiredVisible, setIsSlaExpiredVisible] = useState(false);
 
   const toggleSlaExpired = () => {
     setIsSlaExpiredVisible(!isSlaExpiredVisible);
   };
-  /** Добавить SLA */
-  const onClickAdd = async () => {};
 
   return (
     <div className="medpult-additional-panel">
@@ -26,7 +27,7 @@ function AdditionalPanel({}) {
           <span className="medpult-slider medpult-round"></span>
         </label>
       </div>
-      <Button clickHandler={onClickAdd} title="+  Добавить" />
+      <Button clickHandler={onAddClick} title="+  Добавить" />
     </div>
   );
 }

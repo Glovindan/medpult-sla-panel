@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CustomList from "../../../../UIKit/CustomList/CustomList.tsx";
 import {
   SortData,
@@ -7,6 +7,7 @@ import {
   ItemDataString,
   ItemData,
   getDetailsLayoutAttributes,
+  CustomColumnProps,
 } from "../../../../UIKit/CustomList/CustomListTypes.ts";
 import SlaBasicColumn from "./SlaListColumn/SlaBasicColumn/SlaBasicColumn.tsx";
 import {
@@ -19,6 +20,7 @@ import SlaEditColumn from "./SlaListColumn/SlaEditColumn/SlaEditColumn.tsx";
 import SlaOpenColumn from "./SlaListColumn/SlaOpenColumn/SlaOpenColumn.tsx";
 import CreatorEditorDataColumn from "./SlaListColumn/CreatorEditorDataColumn/CreateEditDataColumn.tsx";
 import Loader from "../../../../UIKit/Loader/Loader.tsx";
+import EditBaseModal from "../../ModalSla/TaskSlaModal/EditBaseModal.tsx";
 
 /** Пропсы списка SLA */
 type SlaListProps = {
@@ -37,25 +39,49 @@ export default function SlaListTask({
   getSlaHandler,
   isLoading,
 }: SlaListProps) {
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [editRowData, setEditRowData] = useState<ItemDataString | null>(null);
+
   // Функция для отрисовки колонки с индикатором базового SLA
-  const getSlaBasicColumn = (props: ItemData<boolean>) => (
-    <SlaBasicColumn data={props} />
+  const getSlaBasicColumn = ({ value }: CustomColumnProps<boolean>) => (
+    <SlaBasicColumn data={value} />
   );
   // Функция для отрисовки колонки статуса
-  const getSlaStatusColumn = (props: ItemData<SlaStatus>) => (
-    <SlaStatusColumn data={props} />
+  const getSlaStatusColumn = ({ value }: CustomColumnProps<SlaStatus>) => (
+    <SlaStatusColumn data={value} />
   );
   // Функция для отрисовки колонки с кнопкой редактирования
-  const getEditColumn = (props: ItemDataString) => (
-    <SlaEditColumn data={props} />
+  const getEditColumn = ({
+    value,
+    rowData,
+  }: {
+    value: ItemDataString;
+    rowData: Record<string, ItemData>;
+  }) => (
+    <SlaEditColumn
+      data={value}
+      onEditClick={() => {
+        if (
+          typeof rowData.isBasic?.info === "boolean" &&
+          rowData.isBasic.info === true
+        ) {
+          setEditRowData(value);
+          setEditModalOpen(true);
+        } else {
+          console.log("Не базовый SLA — модалка не откроется");
+        }
+      }}
+    />
   );
   // Функция для отрисовки колонки с кнопкой треугольником
   const getOpenColumn = (props: ItemDataString) => (
     <SlaOpenColumn data={props} />
   );
   // Функция для отрисовки колонки с данными автора и редактора
-  const getCreatorEditorDataColumn = (props: ItemData<CreatorEditorData>) => (
-    <CreatorEditorDataColumn data={props} />
+  const getCreatorEditorDataColumn = ({
+    value,
+  }: CustomColumnProps<CreatorEditorData>) => (
+    <CreatorEditorDataColumn data={value} />
   );
 
   async function getSubSla(
@@ -223,6 +249,9 @@ export default function SlaListTask({
         />
       )}
       {isLoading && <Loader />}
+      {isEditModalOpen && editRowData && (
+        <EditBaseModal onClose={() => setEditModalOpen(false)} />
+      )}
     </>
   );
 }
