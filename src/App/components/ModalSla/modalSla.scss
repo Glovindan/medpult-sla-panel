@@ -1,8 +1,8 @@
 @import url("./ModalWrapper/modalWrapper.scss");
-@import url("./ModalInputSearch/modalInputSearch.scss");
-@import url("./ModalTime/modalTime.scss");
-@import url("./ModalLineSelect/modalLineSelect.scss");
-@import url("./ModalInputDate/modalInputDate.scss");
+@import url("./ModalType/ModalInputSearch/modalInputSearch.scss");
+@import url("./ModalType/ModalTime/modalTime.scss");
+@import url("./ModalType/ModalLineSelect/modalLineSelect.scss");
+@import url("./ModalType/ModalInputDate/modalInputDate.scss");
 
 .sla-modal {
   height: fit-content;
@@ -84,6 +84,19 @@
     font-size: 14px;
     font-weight: 400;
     color: rgb(0, 0, 0);
+  }
+
+  &__status {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    &__span {
+      font-family: Inter;
+      font-size: 14px;
+      padding: 3px 16px;
+      border-radius: 12px;
+      color: #2d2e2f;
+    }
   }
 
   &__fields {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { slaContext } from "../../stores/SlaContext";
 import TabsWrapper from "../../../UIKit/Tabs/TabsWrapper/TabsWrapper.tsx";
 import TabItem from "../../../UIKit/Tabs/TabItem/TabItem.tsx";
@@ -11,13 +11,12 @@ import {
 } from "./SlaList/slaListTypes.ts";
 import AdditionalPanel from "./AdditionalPanel/AdditionalPanel.tsx";
 import Scripts from "../../shared/utils/clientScripts.ts";
-import TaskSlaModal from "../ModalSla/TaskSlaModal/TaskSlaModal.tsx";
-import RequestSlaModal from "../ModalSla/RequestSlaModal/RequestSlaModal.tsx";
+import TaskSlaModal from "../ModalSla/TaskSlaModal.tsx";
+import RequestSlaModal from "../ModalSla/RequestSlaModal.tsx";
 
 /** Панель администрирования SLA */
 export default function SlaPanel() {
   const [data, setValue] = slaContext.useState();
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [slaDataTask, setSlaDataTask] = useState<
     FetchData<SlaRowDataGroupTask> | undefined
@@ -25,6 +24,7 @@ export default function SlaPanel() {
   const [slaDataRequest, setSlaDataRequest] = useState<
     FetchData<SlaRowDataGroupRequest> | undefined
   >();
+  const [showExpiredSla, setShowExpiredSla] = useState(false);
 
   // Состояния для модальных окон
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -45,28 +45,66 @@ export default function SlaPanel() {
       });
   }, []);
 
+  /** Сортировка списка*/
+  const sortSlaItems = <T extends { data: any }>(items: T[]): T[] => {
+    const statusOrder = [
+      "valid",
+      "validPlanned",
+      "planned",
+      "expired",
+      "canceled",
+    ];
+
+    return [...items].sort((a, b) => {
+      //Сначала сортируем по isBasic
+      const aIsBasic = a.data?.isBasic?.info === true ? 0 : 1;
+      const bIsBasic = b.data?.isBasic?.info === true ? 0 : 1;
+      if (aIsBasic !== bIsBasic) return aIsBasic - bIsBasic;
+
+      //Потом по статусу
+      const aStatus = a.data?.status?.info;
+      const bStatus = b.data?.status?.info;
+      const aIndex = statusOrder.indexOf(aStatus);
+      const bIndex = statusOrder.indexOf(bStatus);
+
+      return aIndex - bIndex;
+    });
+  };
+
   /** Получение всех SLA задачи*/
-  async function getSlaTaskHandler(): Promise<FetchData<SlaRowDataGroupTask>> {
-    if (!slaDataTask) {
-      return {
-        hasMore: false,
-        items: [],
-      };
-    }
-    return slaDataTask;
-  }
+  const getSlaTaskHandler = useCallback(async (): Promise<
+    FetchData<SlaRowDataGroupTask>
+  > => {
+    if (!slaDataTask) return { hasMore: false, items: [] };
+
+    const filteredItems = showExpiredSla
+      ? slaDataTask.items
+      : slaDataTask.items.filter(
+          (item) => item.data.status?.info !== "expired"
+        );
+
+    return {
+      hasMore: slaDataTask.hasMore,
+      items: sortSlaItems(filteredItems),
+    };
+  }, [slaDataTask, showExpiredSla]);
   /** Получение всех SLA обращений*/
-  async function getSlaRequestHandler(): Promise<
+  const getSlaRequestHandler = useCallback(async (): Promise<
     FetchData<SlaRowDataGroupRequest>
-  > {
-    if (!slaDataRequest) {
-      return {
-        hasMore: false,
-        items: [],
-      };
-    }
-    return slaDataRequest;
-  }
+  > => {
+    if (!slaDataRequest) return { hasMore: false, items: [] };
+
+    const filteredItems = showExpiredSla
+      ? slaDataRequest.items
+      : slaDataRequest.items.filter(
+          (item) => item.data.status?.info !== "expired"
+        );
+
+    return {
+      hasMore: slaDataRequest.hasMore,
+      items: sortSlaItems(filteredItems),
+    };
+  }, [slaDataTask, showExpiredSla]);
 
   return (
     <slaContext.Provider value={{ data, setValue }}>
@@ -74,8 +112,13 @@ export default function SlaPanel() {
         <div className="medpult-sla-panel__title">SLA</div>
         <TabsWrapper>
           <TabItem code={"requests"} name={"Обращения"}>
-            <AdditionalPanel onAddClick={() => setIsRequestModalOpen(true)} />
+            <AdditionalPanel
+              onAddClick={() => setIsRequestModalOpen(true)}
+              isSlaExpiredVisible={showExpiredSla}
+              setIsSlaExpiredVisible={setShowExpiredSla}
+            />
             <SlaListRequest
+              key={`request-${showExpiredSla}`}
               getSlaHandler={getSlaRequestHandler}
               isLoading={isLoading}
             />
@@ -84,8 +127,13 @@ export default function SlaPanel() {
             )}
           </TabItem>
           <TabItem code={"tasks"} name={"Задачи"}>
-            <AdditionalPanel onAddClick={() => setIsTaskModalOpen(true)} />
+            <AdditionalPanel
+              onAddClick={() => setIsTaskModalOpen(true)}
+              isSlaExpiredVisible={showExpiredSla}
+              setIsSlaExpiredVisible={setShowExpiredSla}
+            />
             <SlaListTask
+              key={`task-${showExpiredSla}`}
               getSlaHandler={getSlaTaskHandler}
               isLoading={isLoading}
             />

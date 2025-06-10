@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FieldConfig } from "../../../shared/types";
-import CustomInput from "../../../../UIKit/CustomInput/CustomInput";
+import { FieldConfig } from "../../../../shared/types";
+import CustomInput from "../../../../../UIKit/CustomInput/CustomInput";
 
 /** Поле ввода в модальном окне */
 export default function ModalTime({

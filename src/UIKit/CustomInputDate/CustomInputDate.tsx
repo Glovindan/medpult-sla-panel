@@ -9,28 +9,54 @@ import { CustomInputProps } from "../shared/types/types";
 interface CustomInputDateProps extends CustomInputProps {
   /** Тип даты */
   type: InputDateType;
+  startDate?: string;
+  onStartDateNotSet?: () => void;
+  label?: string;
 }
 
 /** Поле ввода даты */
 function CustomInputDate(props: CustomInputDateProps) {
   const { type = InputDateType.date, setValue, disabled } = props;
   const pickerRef = useRef<HTMLInputElement>(null);
-
-  // Получить сегодняшнюю дату в формате YYYY-MM-DD
-  const today = new Date();
-  today.setDate(today.getDate() + 1); // прибавляем 1 день
-
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const dd = String(today.getDate()).padStart(2, "0");
-  const minDate = `${yyyy}-${mm}-${dd}`;
   const buttonSvg = icons.Calendar;
+
+  const getMinDate = () => {
+    if (props.label === "Дата окончания" && props.startDate) {
+      // Парсим дату начала из формата ДД.ММ.ГГГГ
+      const [day, month, year] = props.startDate.split(".");
+      const startDateObj = new Date(`${year}-${month}-${day}`);
+      startDateObj.setDate(startDateObj.getDate() + 1); // Добавляем 1 день
+
+      const yyyy = startDateObj.getFullYear();
+      const mm = String(startDateObj.getMonth() + 1).padStart(2, "0");
+      const dd = String(startDateObj.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    // Для остальных случаев используем сегодняшнюю дату + 1 день
+    const today = new Date();
+    today.setDate(today.getDate() + 1);
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const minDate = getMinDate();
 
   // Открыть календарь
   const openPicker = () => {
     const picker = pickerRef.current;
     if (!picker) return;
     if (disabled) return;
+    // Если не установлена дата начала
+    if (props.label === "Дата окончания" && !props.startDate) {
+      if (props.onStartDateNotSet) {
+        props.onStartDateNotSet();
+      }
+      return;
+    }
+
     picker.showPicker();
   };
 

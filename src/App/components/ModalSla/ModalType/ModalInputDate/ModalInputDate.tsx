@@ -1,18 +1,20 @@
 import React, { useState } from "react";
-import { FieldConfig } from "../../../shared/types";
-import CustomInputDate from "../../../../UIKit/CustomInputDate/CustomInputDate";
-import { InputDateType } from "../../../../UIKit/CustomInputDate/CustomInputDateTypes";
-import masks from "../../../shared/utils/masks";
+import { FieldConfig } from "../../../../shared/types";
+import CustomInputDate from "../../../../../UIKit/CustomInputDate/CustomInputDate";
+import { InputDateType } from "../../../../../UIKit/CustomInputDate/CustomInputDateTypes";
+import masks from "../../../../shared/utils/masks";
 
 /** Поле ввода в модальном окне */
 export default function ModalInputDate({
   label,
   value,
-  setValue,
+  setValue = () => {},
   style,
   isRequired,
   isInvalid,
   disabled,
+  startDate,
+  onStartDateNotSet,
 }: FieldConfig) {
   return (
     <div className="modal-input__left">
@@ -30,6 +32,9 @@ export default function ModalInputDate({
         style={style}
         isInvalid={isInvalid}
         disabled={disabled}
+        startDate={startDate}
+        onStartDateNotSet={onStartDateNotSet}
+        label={label}
       />
     </div>
   );

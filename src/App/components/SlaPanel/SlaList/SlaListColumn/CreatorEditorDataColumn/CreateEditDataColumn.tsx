@@ -19,8 +19,9 @@ export default function CreatorEditorDataColumn({
 }: CreateEditDataColumnProps) {
   // TODO: Реализовать
   return (
-    <div className="creator-editor-data">{`${data.info?.createdBy ?? "-"} / ${
-      data.info?.updatedBy ?? "-"
-    }`}</div>
+    <div
+      className="creator-editor-data"
+      title={`${data.info?.createdAt ?? "-"} / ${data.info?.updatedAt ?? "-"}`}
+    >{`${data.info?.createdBy ?? "-"} / ${data.info?.updatedBy ?? "-"}`}</div>
   );
 }

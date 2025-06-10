@@ -127,6 +127,66 @@ async function getSortChannel(): Promise<CustomSelectOption[]> {
   ];
 }
 
+/** Добавить sla Задачи */
+async function addSlaTask(
+  days: string,
+  hours: string,
+  minutes: string,
+  startDate: string,
+  type?: string,
+  endDate?: string,
+  signVip?: string | string[],
+  taskType?: string | string[],
+  taskSort?: string | string[],
+  topic?: string | string[],
+  urgency?: string | string[],
+  product?: string,
+  executer?: string
+): Promise<void> {
+  // TODO
+  await sleep(1000);
+}
+
+/** Добавить sla Обращения */
+async function addSlaRequest(
+  days: string,
+  hours: string,
+  minutes: string,
+  startDate: string,
+  type?: string,
+  endDate?: string,
+  signVip?: string | string[],
+  channelType?: string | string[],
+  channelSort?: string | string[]
+): Promise<void> {
+  // TODO
+  await sleep(1000);
+}
+
+/** завершить sla Задачи */
+async function competeSlaTask(endDate: string): Promise<void> {
+  // TODO
+  await sleep(1000);
+}
+
+/** завершить sla Обращения */
+async function competeSlaRequest(endDate: string): Promise<void> {
+  // TODO
+  await sleep(1000);
+}
+
+/** аннулировать sla Задачи */
+async function cancelSlaTask(): Promise<void> {
+  // TODO
+  await sleep(1000);
+}
+
+/** аннулировать sla Обращения */
+async function cancelSlaRequest(): Promise<void> {
+  // TODO
+  await sleep(1000);
+}
+
 export default {
   getSlaTask,
   getSlaRequest,
@@ -139,4 +199,11 @@ export default {
   getUrgency,
   getTypeChannel,
   getSortChannel,
+
+  addSlaTask,
+  addSlaRequest,
+  competeSlaTask,
+  competeSlaRequest,
+  cancelSlaTask,
+  cancelSlaRequest,
 };

@@ -13,7 +13,7 @@ export interface FieldConfig {
   type: FieldType;
   label: string;
   value: string | string[];
-  setValue: (value: string | string[]) => void;
+  setValue?: (value: string | string[]) => void;
   placeholder?: string;
   style?: React.CSSProperties;
   maskFunction?: (value: string) => string;
@@ -30,4 +30,6 @@ export interface FieldConfig {
   isMulti?: boolean;
   isInvalid?: boolean;
   disabled?: boolean;
+  startDate?: string;
+  onStartDateNotSet?: () => void;
 }

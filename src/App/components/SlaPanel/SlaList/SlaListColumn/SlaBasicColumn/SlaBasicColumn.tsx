@@ -14,5 +14,5 @@ type SlaBasicColumnProps = {
 };
 /** Колонка с индикатором базового SLA */
 export default function SlaBasicColumn({ data }: SlaBasicColumnProps) {
-  return <div>{data.info && icons.Star}</div>;
+  return <div title="Базовый">{data.info && icons.Star}</div>;
 }

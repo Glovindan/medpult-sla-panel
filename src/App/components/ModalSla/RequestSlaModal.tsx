@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { FieldConfig, FieldType } from "../../../shared/types";
-import ModalSla from "../ModalSla";
-import Scripts from "../../../shared/utils/clientScripts";
-import ModalInput from "../ModalInputSearch/ModalInputSearch";
-import ModalTime from "../ModalTime/ModalTime";
-import ModalInputDate from "../ModalInputDate/ModalInputDate";
-import ModalLineSelect from "../ModalLineSelect/ModalLineSelect";
-import ModalWrapper from "../ModalWrapper/ModalWrapper";
+import { FieldConfig, FieldType } from "../../shared/types";
+import ModalSla from "./ModalSla";
+import Scripts from "../../shared/utils/clientScripts";
+import ModalTime from "./ModalType/ModalTime/ModalTime";
+import ModalInputDate from "./ModalType/ModalInputDate/ModalInputDate";
+import ModalLineSelect from "./ModalType/ModalLineSelect/ModalLineSelect";
+import ModalWrapper from "./ModalWrapper/ModalWrapper";
 
-interface TaskSlaModalProps {
+interface RequestSlaModalProps {
   onClose: () => void;
 }
 
 /** Модальное окно звонка */
-export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
+export default function RequestSlaModal({ onClose }: RequestSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
@@ -21,27 +20,18 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
   const [isStartDateInvalid, setIsStartDateInvalid] = useState(false);
 
   const [isSignVipInvalid, setIsSignVipInvalid] = useState(false);
-  const [isTaskTypeInvalid, setIsTaskTypeInvalid] = useState(false);
-  const [isTaskSortInvalid, setIsTaskSortInvalid] = useState(false);
-  const [isTopicInvalid, setIsTopicInvalid] = useState(false);
-  const [isUrgencyInvalid, setIsSUrgencyInvalid] = useState(false);
+  const [isChannelTypeInvalid, setIsChannelTypeInvalid] = useState(false);
+  const [isChannelSortInvalid, setIsChannelSortInvalid] = useState(false);
 
-  const [type, setType] = useState<string>("Скорость решения");
+  const [type, setType] = useState<string>("Скорость обработки");
   const [days, setDays] = useState<string>("");
   const [hours, setHours] = useState<string>("");
   const [minutes, setMinutes] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [signVip, setSignVip] = useState<string[]>([]);
-  const [taskType, setTaskType] = useState<string[]>([]);
-  const [taskSort, setTaskSort] = useState<string[]>([]);
-  const [topic, setTopic] = useState<string[]>([]);
-  const [urgency, setUrgency] = useState<string[]>([]);
-  const [product, setProduct] = useState<string>("");
-  const [executer, setExecuter] = useState<string>("");
-
-  /** Сохранение состояния формы */
-  const saveStateHandler = () => {};
+  const [channelType, setChannelType] = useState<string[]>([]);
+  const [channelSort, setChannelSort] = useState<string[]>([]);
 
   const fields: FieldConfig[] = [
     {
@@ -97,61 +87,25 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
     },
     {
       type: FieldType.input,
-      label: "Тип задачи",
-      value: taskType,
-      setValue: (value) => setTaskType(Array.isArray(value) ? value : [value]),
+      label: "Тип канала",
+      value: channelType,
+      setValue: (value) =>
+        setChannelType(Array.isArray(value) ? value : [value]),
       style: { width: "236px" },
-      getDataHandler: Scripts.getTaskTypes,
+      getDataHandler: Scripts.getTypeChannel,
       isMulti: true,
-      isInvalid: isTaskTypeInvalid,
+      isInvalid: isChannelTypeInvalid,
     },
     {
       type: FieldType.input,
-      label: "Вид задачи",
-      value: taskSort,
-      setValue: (value) => setTaskSort(Array.isArray(value) ? value : [value]),
+      label: "Вид канала",
+      value: channelSort,
+      setValue: (value) =>
+        setChannelSort(Array.isArray(value) ? value : [value]),
       style: { width: "236px" },
-      getDataHandler: Scripts.getTaskSort,
+      getDataHandler: Scripts.getSortChannel,
       isMulti: true,
-      isInvalid: isTaskSortInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Тематика",
-      value: topic,
-      setValue: (value) => setTopic(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getTopic,
-      isMulti: true,
-      isInvalid: isTopicInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Срочность",
-      value: urgency,
-      setValue: (value) => setUrgency(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getUrgency,
-      isMulti: true,
-      isInvalid: isUrgencyInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Продукт",
-      value: product,
-      setValue: (value) => setProduct(value as string),
-      style: { width: "202px" },
-      href: "",
-      saveStateHandler: saveStateHandler,
-    },
-    {
-      type: FieldType.input,
-      label: "Страхователь",
-      value: executer,
-      setValue: (value) => setExecuter(value as string),
-      style: { width: "202px" },
-      href: "",
-      saveStateHandler: saveStateHandler,
+      isInvalid: isChannelSortInvalid,
     },
   ];
 
@@ -199,23 +153,17 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
     let isValid = true;
     if (
       signVip.length === 0 &&
-      taskType.length === 0 &&
-      taskSort.length === 0 &&
-      topic.length === 0 &&
-      urgency.length === 0
+      channelType.length === 0 &&
+      channelSort.length === 0
     ) {
       setIsSignVipInvalid(true);
-      setIsTaskTypeInvalid(true);
-      setIsTaskSortInvalid(true);
-      setIsTopicInvalid(true);
-      setIsSUrgencyInvalid(true);
+      setIsChannelTypeInvalid(true);
+      setIsChannelSortInvalid(true);
       isValid = false;
     } else {
       setIsSignVipInvalid(false);
-      setIsTaskTypeInvalid(false);
-      setIsTaskSortInvalid(false);
-      setIsTopicInvalid(false);
-      setIsSUrgencyInvalid(false);
+      setIsChannelTypeInvalid(false);
+      setIsChannelSortInvalid(false);
     }
     return isValid;
   };
@@ -233,14 +181,24 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
       return false;
     }
     setErrorMessage("");
-    // ... логика сохранения
+    await Scripts.addSlaRequest(
+      days,
+      hours,
+      minutes,
+      startDate,
+      endDate,
+      type,
+      signVip,
+      channelType,
+      channelSort
+    );
     return true;
   };
 
   return (
     <ModalWrapper>
       <ModalSla
-        title="SLA на задачу"
+        title="SLA на обращение"
         saveHandler={savelSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
@@ -248,14 +206,17 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
         <ModalLineSelect {...fields[0]} />
         <ModalTime {...fields[1]} />
         <ModalInputDate {...fields[2]} />
-        <ModalInputDate {...fields[3]} />
+        <ModalInputDate
+          {...fields[3]}
+          startDate={startDate}
+          onStartDateNotSet={() => {
+            setIsStartDateInvalid(true);
+            setErrorMessage("Установите дату начала");
+          }}
+        />
         <ModalLineSelect {...fields[4]} />
         <ModalLineSelect {...fields[5]} />
         <ModalLineSelect {...fields[6]} />
-        <ModalLineSelect {...fields[7]} />
-        <ModalLineSelect {...fields[8]} />
-        <ModalInput {...fields[9]} />
-        <ModalInput {...fields[10]} />
       </ModalSla>
     </ModalWrapper>
   );

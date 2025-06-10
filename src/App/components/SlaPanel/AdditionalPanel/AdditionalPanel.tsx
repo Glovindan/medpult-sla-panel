@@ -3,11 +3,15 @@ import Button from "../../../../UIKit/Button/Button";
 
 interface AdditionalPanelProps {
   onAddClick?: () => void;
+  isSlaExpiredVisible: boolean;
+  setIsSlaExpiredVisible: (value: boolean) => void;
 }
 /**Панель */
-function AdditionalPanel({ onAddClick }: AdditionalPanelProps) {
-  const [isSlaExpiredVisible, setIsSlaExpiredVisible] = useState(false);
-
+function AdditionalPanel({
+  onAddClick,
+  isSlaExpiredVisible,
+  setIsSlaExpiredVisible,
+}: AdditionalPanelProps) {
   const toggleSlaExpired = () => {
     setIsSlaExpiredVisible(!isSlaExpiredVisible);
   };

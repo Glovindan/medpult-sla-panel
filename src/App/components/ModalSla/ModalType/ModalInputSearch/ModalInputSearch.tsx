@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { FieldConfig } from "../../../shared/types";
-import CustomInput from "../../../../UIKit/CustomInput/CustomInput";
-import CustomInputAppItem from "../../../../UIKit/CustomInputAppItem/CustomInputAppItem";
+import { FieldConfig } from "../../../../shared/types";
+import CustomInput from "../../../../../UIKit/CustomInput/CustomInput";
+import CustomInputAppItem from "../../../../../UIKit/CustomInputAppItem/CustomInputAppItem";
 
 /** Поле ввода в модальном окне */
 export default function ModalInputSearch({
   label,
   value,
-  setValue,
+  setValue = () => {},
   style,
   href,
   saveStateHandler = () => {},

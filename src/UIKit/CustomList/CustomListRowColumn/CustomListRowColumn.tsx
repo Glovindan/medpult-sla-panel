@@ -100,7 +100,7 @@ function CustomListRowColumn(props: ListColumnProps) {
         ...(contentPadding && { padding: contentPadding }),
       }}
       ref={wrapperRef}
-      title={data.value}
+      // title={data.value}
     >
       {/* {props.getCustomColumComponent && props.getCustomColumComponent(data)} */}
       {props.getCustomColumComponent &&

@@ -20,6 +20,7 @@ export default function SlaEditColumn({
 }: SlaEditColumnProps) {
   return (
     <button
+      title="Редактировать"
       className="sla-edit-button"
       onClick={() => {
         onEditClick(data);

@@ -43,6 +43,18 @@ function generateCreatorEditorData(): CreatorEditorData {
   };
 }
 
+export function formatDurationFromMinutes(totalMinutes: number): string {
+  const days = Math.floor(totalMinutes / (24 * 60));
+  const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+  const minutes = totalMinutes % 60;
+
+  const dd = days.toString().padStart(2, "0");
+  const hh = hours.toString().padStart(2, "0");
+  const mm = minutes.toString().padStart(2, "0");
+
+  return `${dd}д ${hh}ч ${mm}м`;
+}
+
 // Основной генератор SlaRowData задачи
 export function generateRandomSlaRowDataTask(): SlaRowDataTask {
   const slaTypes = [
@@ -67,7 +79,9 @@ export function generateRandomSlaRowDataTask(): SlaRowDataTask {
         "Негативное",
       ])
     ),
-    value: new ItemDataString(`${Math.floor(Math.random() * 72)}h`),
+    value: new ItemDataString(
+      formatDurationFromMinutes(Math.floor(Math.random() * 4320))
+    ),
     status: new ItemData<SlaStatus>({
       value: "",
       info: getRandomElement(Object.values(SlaStatus)),
@@ -131,7 +145,9 @@ export function generateRandomSlaRowDataRequest(): SlaRowDataRequest {
         "Негативное",
       ])
     ),
-    value: new ItemDataString(`${Math.floor(Math.random() * 72)}h`),
+    value: new ItemDataString(
+      formatDurationFromMinutes(Math.floor(Math.random() * 4320))
+    ),
     status: new ItemData<SlaStatus>({
       value: "",
       info: getRandomElement(Object.values(SlaStatus)),

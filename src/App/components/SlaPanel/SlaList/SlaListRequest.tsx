@@ -20,6 +20,10 @@ import SlaEditColumn from "./SlaListColumn/SlaEditColumn/SlaEditColumn.tsx";
 import SlaOpenColumn from "./SlaListColumn/SlaOpenColumn/SlaOpenColumn.tsx";
 import CreatorEditorDataColumn from "./SlaListColumn/CreatorEditorDataColumn/CreateEditDataColumn.tsx";
 import Loader from "../../../../UIKit/Loader/Loader.tsx";
+import EditBaseModal from "../../ModalSla/EditSlaModal/EditBaseModal.tsx";
+import EditValidModal from "../../ModalSla/EditSlaModal/EditValidModal.tsx";
+import EditPlanModal from "../../ModalSla/EditSlaModal/EditPlanModal.tsx";
+import Scripts from "../../../shared/utils/clientScripts";
 
 /** Пропсы списка SLA */
 type SlaListProps = {
@@ -39,7 +43,17 @@ export default function SlaListRequest({
   isLoading,
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [editRowData, setEditRowData] = useState<ItemDataString | null>(null);
+  const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
+  const [isEditPlanModalOpen, setEditPlanModalOpen] = useState(false);
+  const [editRowData, setEditRowData] = useState<Record<
+    string,
+    ItemData
+  > | null>(null);
+
+  const handleSwitchToEditBaseModal = () => {
+    setEditValidModalOpen(false); // Закрываем текущую
+    setEditModalOpen(true); // Открываем новую
+  };
 
   // Функция для отрисовки колонки с индикатором базового SLA
   const getSlaBasicColumn = ({ value }: CustomColumnProps<boolean>) => (
@@ -62,12 +76,22 @@ export default function SlaListRequest({
       onEditClick={() => {
         if (
           typeof rowData.isBasic?.info === "boolean" &&
-          rowData.isBasic.info === true
+          rowData.isBasic.info === true &&
+          rowData.status.info === "valid"
         ) {
-          setEditRowData(value);
+          setEditRowData(rowData);
           setEditModalOpen(true);
+        } else if (
+          rowData.status.info === "valid" ||
+          rowData.status.info === "validPlanned"
+        ) {
+          setEditRowData(rowData);
+          setEditValidModalOpen(true);
+        } else if (rowData.status.info === "planned") {
+          setEditRowData(rowData);
+          setEditPlanModalOpen(true);
         } else {
-          console.log("Не базовый SLA — модалка не откроется");
+          return;
         }
       }}
     />
@@ -224,6 +248,32 @@ export default function SlaListRequest({
         />
       )}
       {isLoading && <Loader />}
+      {isEditModalOpen && editRowData && (
+        <EditBaseModal
+          title="SLA на обращение"
+          onClose={() => setEditModalOpen(false)}
+          rowData={editRowData}
+          onSave={Scripts.addSlaRequest}
+        />
+      )}
+      {isEditValidModalOpen && editRowData && (
+        <EditValidModal
+          title="SLA на обращение"
+          onClose={() => setEditValidModalOpen(false)}
+          rowData={editRowData}
+          onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
+          onComplete={Scripts.competeSlaRequest}
+        />
+      )}
+      {isEditPlanModalOpen && editRowData && (
+        <EditPlanModal
+          title="SLA на обращение"
+          onClose={() => setEditPlanModalOpen(false)}
+          rowData={editRowData}
+          onSave={Scripts.addSlaRequest}
+          onCancel={Scripts.cancelSlaRequest}
+        />
+      )}
     </>
   );
 }

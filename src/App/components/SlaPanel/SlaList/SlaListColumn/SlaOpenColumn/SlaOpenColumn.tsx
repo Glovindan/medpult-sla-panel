@@ -17,6 +17,7 @@ export default function SlaOpenColumn({ data }: SlaOpenColumnProps) {
   return (
     <button
       className="sla-open-button"
+      title="Развернуть"
       onClick={() => alert(JSON.stringify(data))}
     >
       {icons.Triangle}
