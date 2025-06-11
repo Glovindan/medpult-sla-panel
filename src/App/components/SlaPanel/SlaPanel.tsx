@@ -5,10 +5,7 @@ import TabItem from "../../../UIKit/Tabs/TabItem/TabItem.tsx";
 import SlaListTask from "./SlaList/SlaListTask.tsx";
 import SlaListRequest from "./SlaList/SlaListRequest.tsx";
 import { FetchData } from "../../../UIKit/CustomList/CustomListTypes.ts";
-import {
-  SlaRowDataGroupTask,
-  SlaRowDataGroupRequest,
-} from "./SlaList/slaListTypes.ts";
+import { SlaRowDataGroup } from "./SlaList/slaListTypes.ts";
 import AdditionalPanel from "./AdditionalPanel/AdditionalPanel.tsx";
 import Scripts from "../../shared/utils/clientScripts.ts";
 import TaskSlaModal from "../ModalSla/TaskSlaModal.tsx";
@@ -19,10 +16,10 @@ export default function SlaPanel() {
   const [data, setValue] = slaContext.useState();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [slaDataTask, setSlaDataTask] = useState<
-    FetchData<SlaRowDataGroupTask> | undefined
+    FetchData<SlaRowDataGroup> | undefined
   >();
   const [slaDataRequest, setSlaDataRequest] = useState<
-    FetchData<SlaRowDataGroupRequest> | undefined
+    FetchData<SlaRowDataGroup> | undefined
   >();
   const [showExpiredSla, setShowExpiredSla] = useState(false);
 
@@ -73,7 +70,7 @@ export default function SlaPanel() {
 
   /** Получение всех SLA задачи*/
   const getSlaTaskHandler = useCallback(async (): Promise<
-    FetchData<SlaRowDataGroupTask>
+    FetchData<SlaRowDataGroup>
   > => {
     if (!slaDataTask) return { hasMore: false, items: [] };
 
@@ -90,7 +87,7 @@ export default function SlaPanel() {
   }, [slaDataTask, showExpiredSla]);
   /** Получение всех SLA обращений*/
   const getSlaRequestHandler = useCallback(async (): Promise<
-    FetchData<SlaRowDataGroupRequest>
+    FetchData<SlaRowDataGroup>
   > => {
     if (!slaDataRequest) return { hasMore: false, items: [] };
 

@@ -22,7 +22,8 @@ export default function SlaEditColumn({
     <button
       title="Редактировать"
       className="sla-edit-button"
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
         onEditClick(data);
       }}
     >

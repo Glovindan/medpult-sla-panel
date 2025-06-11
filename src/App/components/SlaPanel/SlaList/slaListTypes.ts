@@ -1,7 +1,4 @@
 import {
-  SortData,
-  FetchData,
-  ListColumnData,
   ItemDataString,
   ItemData,
 } from "../../../../UIKit/CustomList/CustomListTypes.ts";
@@ -31,8 +28,8 @@ export enum SlaStatus {
   canceled = "canceled",
 }
 
-/** Значение строки Sla задачи */
-export interface SlaRowDataTask {
+/** Значение строки Sla */
+export interface SlaRowData {
   /** Идентификатор */
   id: ItemDataString;
   /** Является базовым */
@@ -50,61 +47,31 @@ export interface SlaRowDataTask {
   /** Дата окончания */
   endDate: ItemDataString;
   /** Тип задачи */
-  taskType: ItemDataString;
+  taskType?: ItemDataString;
   /** Вид задачи */
-  taskSort: ItemDataString;
+  taskSort?: ItemDataString;
   /** Тематика */
-  topic: ItemDataString;
+  topic?: ItemDataString;
   /** Срочность */
-  urgency: ItemDataString;
+  urgency?: ItemDataString;
+  /** Тип канала */
+  channelType?: ItemDataString;
+  /** Вид канала */
+  channelSort?: ItemDataString;
   /** Признак ВИП */
   signVip: ItemDataString;
   /** Продукт */
-  product: ItemDataString;
+  product?: ItemDataString;
   /** Страхователь */
-  executer: ItemDataString;
+  executer?: ItemDataString;
   /** Данные автора и редактора */
   creatorEditorData: ItemData<CreatorEditorData>;
 }
 
-/** Сгруппированное значение строки Sla задачи */
-export interface SlaRowDataGroupTask extends SlaRowDataTask {
+/** Сгруппированное значение строки Sla */
+export interface SlaRowDataGroup extends SlaRowData {
   /** Данные остальных SLA в группе */
-  groupData: SlaRowDataTask[];
-}
-
-/** Значение строки Sla обращения*/
-export interface SlaRowDataRequest {
-  /** Идентификатор */
-  id: ItemDataString;
-  /** Является базовым */
-  isBasic: ItemData<boolean>;
-  /** Показатель (Тип SLA) */
-  type: ItemData<string>;
-  /**Условия */
-  conditions: ItemDataString;
-  /** Значение показателя */
-  value: ItemDataString;
-  /** Статус */
-  status: ItemData<SlaStatus>;
-  /** Дата начала  */
-  startDate: ItemDataString;
-  /** Дата окончания */
-  endDate: ItemDataString;
-  /** Тип канала */
-  channelType: ItemDataString;
-  /** Вид канала */
-  channelSort: ItemDataString;
-  /** Признак ВИП */
-  signVip: ItemDataString;
-  /** Данные автора и редактора */
-  creatorEditorData: ItemData<CreatorEditorData>;
-}
-
-/** Сгруппированное значение строки Sla обращения */
-export interface SlaRowDataGroupRequest extends SlaRowDataRequest {
-  /** Данные остальных SLA в группе */
-  groupData: SlaRowDataRequest[];
+  groupData?: SlaRowData[];
 }
 
 /** Данные создания и изменения элемента */

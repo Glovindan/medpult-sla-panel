@@ -4,8 +4,7 @@ import {
 } from "../../../UIKit/CustomList/CustomListTypes";
 import {
   CreatorEditorData,
-  SlaRowDataTask,
-  SlaRowDataRequest,
+  SlaRowData,
   SlaStatus,
 } from "../../components/SlaPanel/SlaList/slaListTypes";
 
@@ -56,7 +55,7 @@ export function formatDurationFromMinutes(totalMinutes: number): string {
 }
 
 // Основной генератор SlaRowData задачи
-export function generateRandomSlaRowDataTask(): SlaRowDataTask {
+export function generateRandomSlaRowDataTask(): SlaRowData {
   const slaTypes = [
     { value: "Время реакции", code: "RESPONSE_TIME" },
     { value: "Время решения", code: "RESOLUTION_TIME" },
@@ -114,7 +113,7 @@ export function generateRandomSlaRowDataTask(): SlaRowDataTask {
   };
 }
 
-export function getRandomSlaListTask(length: number): SlaRowDataTask[] {
+export function getRandomSlaListTask(length: number): SlaRowData[] {
   const items = Array.from({ length: length }).map(
     generateRandomSlaRowDataTask
   );
@@ -122,7 +121,7 @@ export function getRandomSlaListTask(length: number): SlaRowDataTask[] {
 }
 
 // Основной генератор SlaRowData обращения
-export function generateRandomSlaRowDataRequest(): SlaRowDataRequest {
+export function generateRandomSlaRowDataRequest(): SlaRowData {
   const slaTypes = [
     { value: "Время реакции", code: "RESPONSE_TIME" },
     { value: "Время решения", code: "RESOLUTION_TIME" },
@@ -170,7 +169,7 @@ export function generateRandomSlaRowDataRequest(): SlaRowDataRequest {
   };
 }
 
-export function getRandomSlaListRequest(length: number): SlaRowDataRequest[] {
+export function getRandomSlaListRequest(length: number): SlaRowData[] {
   const items = Array.from({ length: length }).map(
     generateRandomSlaRowDataRequest
   );

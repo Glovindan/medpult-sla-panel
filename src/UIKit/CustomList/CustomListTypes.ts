@@ -1,3 +1,4 @@
+import { SlaRowDataGroup } from "../../App/components/SlaPanel/SlaList/slaListTypes";
 /** Атрибуты функции получения разметки деталей строки списка */
 export interface getDetailsLayoutAttributes {
   /** Сокращенные данные строки */
@@ -121,5 +122,5 @@ export interface FetchData<DataType> {
 
 export interface CustomColumnProps<T> {
   value: ItemData<T>;
-  rowData: Record<string, ItemData>;
+  rowData: SlaRowDataGroup;
 }

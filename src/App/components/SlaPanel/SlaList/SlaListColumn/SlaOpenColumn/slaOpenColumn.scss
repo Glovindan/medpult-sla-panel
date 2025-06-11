@@ -1,18 +1,21 @@
 .sla-open-button {
-	width: 24px;
-	height: 24px;
-	display: flex;
-	align-items: center;
-	padding: 0;
-	margin: 0;
-	justify-content: center;
-	background: transparent;
-	outline: none;
-	border: none;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+  background: transparent;
+  outline: none;
+  border: none;
 
-	cursor: pointer;
+  cursor: pointer;
 
-	&:hover {
-		opacity: .6;
-	}
+  &__open {
+    transform: rotate(180deg);
+  }
+  &:hover {
+    opacity: 0.6;
+  }
 }

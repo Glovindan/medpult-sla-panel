@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ItemData, ListColumnData } from "../CustomListTypes";
+import {
+  ItemData,
+  ListColumnData,
+  CustomColumnProps,
+} from "../CustomListTypes";
 
 interface ListColumnProps extends ListColumnData {
   data: ItemData<any>;
-  rowData?: Record<string, ItemData>;
+  rowData?: CustomColumnProps<any>;
   listRef?: React.RefObject<HTMLDivElement>;
+  isOpen?: boolean;
 }
 
 /** Столбец одной строки таблицы */
@@ -107,6 +112,7 @@ function CustomListRowColumn(props: ListColumnProps) {
         props.getCustomColumComponent({
           value: data,
           rowData: props.rowData!,
+          isOpen: props.isOpen ?? false,
         })}
 
       {!props.getCustomColumComponent && (

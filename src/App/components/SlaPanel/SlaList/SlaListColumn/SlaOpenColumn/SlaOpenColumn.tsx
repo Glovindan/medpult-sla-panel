@@ -11,14 +11,17 @@ import icons from "../../../../../shared/icons.tsx";
 
 type SlaOpenColumnProps = {
   data: ItemDataString;
+  isOpen?: boolean;
 };
 /** Колонка с треугольником */
-export default function SlaOpenColumn({ data }: SlaOpenColumnProps) {
+export default function SlaOpenColumn({
+  data,
+  isOpen = false,
+}: SlaOpenColumnProps) {
   return (
     <button
-      className="sla-open-button"
+      className={`sla-open-button ${isOpen ? "sla-open-button__open" : ""}`}
       title="Развернуть"
-      onClick={() => alert(JSON.stringify(data))}
     >
       {icons.Triangle}
     </button>

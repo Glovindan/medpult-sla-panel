@@ -8,11 +8,12 @@ import ModalWrapper from "../ModalWrapper/ModalWrapper.tsx";
 import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
+import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
 
 interface EditPlanModalProps {
   title: string;
   onClose: () => void;
-  rowData: Record<string, ItemData>;
+  rowData: SlaRowDataGroup;
   onSave: (
     days: string,
     hours: string,

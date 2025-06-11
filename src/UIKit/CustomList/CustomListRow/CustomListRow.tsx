@@ -65,14 +65,18 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
   } = props;
 
   /** Получение значения класса строки */
+  const hasGroup =
+    Array.isArray((data as any).groupData) &&
+    (data as any).groupData.length > 0;
+
+  /** Получение значения класса строки */
   const getRowClassname = (): string => {
-    // Показана детальная информация
-    if ((getDetailsLayout && isShowDetails) || isOpen)
+    if (((getDetailsLayout && isShowDetails) || isOpen) && hasGroup)
       return "custom-list-row custom-list-row_open";
-    // Скрыта детальная информация, можно развернуть
+
     if (getDetailsLayout || isClickable)
       return "custom-list-row custom-list-row_openable";
-    // Нельзя развернуть детальную информацию
+
     return "custom-list-row";
   };
 
@@ -83,46 +87,48 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
 
   return (
     <>
-      {!isShowDetails && (
-        <div
-          className={getRowClassname()}
-          onClick={setOpenRowIndex}
-          style={rowStyles}
-        >
-          {/* Селектор */}
-          {isSelectable && (
-            <CustomListSelector
-              onClickSelector={toggleChecked}
-              isMultiple={isMultipleSelect}
-              isChecked={isChecked}
-            />
-          )}
-          {/* Колонки с данными */}
-          {columnsSettings.map((settings) => {
-            if (data == undefined) {
-              return;
-            }
-            const columnData: ItemData<any> = data[settings.code];
+      <div
+        className={getRowClassname()}
+        onClick={setOpenRowIndex}
+        style={rowStyles}
+      >
+        {/* Селектор */}
+        {isSelectable && (
+          <CustomListSelector
+            onClickSelector={toggleChecked}
+            isMultiple={isMultipleSelect}
+            isChecked={isChecked}
+          />
+        )}
+        {/* Колонки с данными */}
+        {columnsSettings.map((settings) => {
+          if (data == undefined) {
+            return;
+          }
+          const columnData: ItemData<any> = data[settings.code];
 
-            return (
-              <CustomListRowColumn
-                listRef={listRef}
-                data={columnData}
-                {...settings}
-                rowData={data}
-              />
-            );
+          return (
+            <CustomListRowColumn
+              listRef={listRef}
+              data={columnData}
+              {...settings}
+              isOpen={isShowDetails}
+              rowData={data}
+            />
+          );
+        })}
+      </div>
+
+      {/* Заменять строку на разметку деталей строки списка */}
+      {isShowDetails && getDetailsLayout && (
+        <div className="custom-list-row-details">
+          {getDetailsLayout({
+            rowData: data,
+            reloadData,
+            onClickRowHandler: setOpenRowIndex,
           })}
         </div>
       )}
-      {/* Заменять строку на разметку деталей строки списка */}
-      {isShowDetails &&
-        getDetailsLayout &&
-        getDetailsLayout({
-          rowData: data,
-          reloadData: reloadData,
-          onClickRowHandler: setOpenRowIndex,
-        })}
     </>
   );
 }

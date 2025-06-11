@@ -12,7 +12,7 @@ import {
 import SlaBasicColumn from "./SlaListColumn/SlaBasicColumn/SlaBasicColumn.tsx";
 import {
   CreatorEditorData,
-  SlaRowDataGroupRequest,
+  SlaRowDataGroup,
   SlaStatus,
 } from "./slaListTypes.ts";
 import SlaStatusColumn from "./SlaListColumn/SlaStatusColumn/SlaStatusColumn.tsx";
@@ -28,27 +28,26 @@ import Scripts from "../../../shared/utils/clientScripts";
 /** Пропсы списка SLA */
 type SlaListProps = {
   /** Получение данных SLA */
-  getSlaHandler(): Promise<FetchData<SlaRowDataGroupRequest>>;
+  getSlaHandler(): Promise<FetchData<SlaRowDataGroup>>;
   /** Флаг загрузки */
   isLoading: boolean;
+  hideHeader?: boolean;
 };
 
 interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
-  rowData: SlaRowDataGroupRequest;
+  rowData: SlaRowDataGroup;
 }
 
 /** Список SLA */
 export default function SlaListRequest({
   getSlaHandler,
   isLoading,
+  hideHeader = false,
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
   const [isEditPlanModalOpen, setEditPlanModalOpen] = useState(false);
-  const [editRowData, setEditRowData] = useState<Record<
-    string,
-    ItemData
-  > | null>(null);
+  const [editRowData, setEditRowData] = useState<SlaRowDataGroup | null>(null);
 
   const handleSwitchToEditBaseModal = () => {
     setEditValidModalOpen(false); // Закрываем текущую
@@ -69,16 +68,12 @@ export default function SlaListRequest({
     rowData,
   }: {
     value: ItemDataString;
-    rowData: Record<string, ItemData>;
+    rowData: SlaRowDataGroup;
   }) => (
     <SlaEditColumn
       data={value}
       onEditClick={() => {
-        if (
-          typeof rowData.isBasic?.info === "boolean" &&
-          rowData.isBasic.info === true &&
-          rowData.status.info === "valid"
-        ) {
+        if (rowData.isBasic.info === true && rowData.status.info === "valid") {
           setEditRowData(rowData);
           setEditModalOpen(true);
         } else if (
@@ -97,9 +92,16 @@ export default function SlaListRequest({
     />
   );
   // Функция для отрисовки колонки с кнопкой треугольником
-  const getOpenColumn = (props: ItemDataString) => (
-    <SlaOpenColumn data={props} />
-  );
+  const getOpenColumn: (props: {
+    value: ItemDataString;
+    rowData: SlaRowDataGroup;
+    isOpen?: boolean;
+  }) => JSX.Element = ({ value, rowData, isOpen = false }) => {
+    const groupData = rowData.groupData;
+    const hasGroup = Array.isArray(groupData) && groupData.length > 0;
+
+    return hasGroup ? <SlaOpenColumn data={value} isOpen={isOpen} /> : <></>;
+  };
   // Функция для отрисовки колонки с данными автора и редактора
   const getCreatorEditorDataColumn = ({
     value,
@@ -107,9 +109,7 @@ export default function SlaListRequest({
     <CreatorEditorDataColumn data={value} />
   );
 
-  async function getSubSla(
-    id: string
-  ): Promise<FetchData<SlaRowDataGroupRequest>> {
+  async function getSubSla(id: string): Promise<FetchData<SlaRowDataGroup>> {
     // Все SLA
     const sla = await getSlaHandler();
     // Искомый SLA
@@ -117,7 +117,7 @@ export default function SlaListRequest({
     return {
       hasMore: false,
       items:
-        findSla?.data.groupData.map((item) => {
+        findSla?.data.groupData?.map((item) => {
           return {
             id: item.id.value,
             data: {
@@ -136,12 +136,19 @@ export default function SlaListRequest({
     onClickRowHandler,
   }: getSlaListDetailsLayoutAttributes) => {
     // TODO: Реализовать
-    // return (
-    // 	<SlaList
-    // 		getSlaHandler={() => getSubSla(rowData.id.value)}
-    // 		isLoading={false}
-    // 	/>
-    // )
+    const groupData = rowData.groupData;
+    if (!Array.isArray(groupData) || groupData.length === 0) {
+      return null;
+    }
+    return (
+      <div style={{ backgroundColor: "#F4F4F5" }}>
+        <SlaListRequest
+          getSlaHandler={() => getSubSla(rowData.id.value)}
+          isLoading={false}
+          hideHeader={true}
+        />
+      </div>
+    );
   };
 
   // Настройка колонок
@@ -242,9 +249,9 @@ export default function SlaListRequest({
         <CustomList
           columnsSettings={columnsSettings}
           getDataHandler={getSlaHandler}
-          isScrollable={
-            false
-          } /* getDetailsLayout={getCustomListDetailsLayout} */
+          isScrollable={false}
+          getDetailsLayout={getCustomListDetailsLayout}
+          hideHeader={hideHeader}
         />
       )}
       {isLoading && <Loader />}

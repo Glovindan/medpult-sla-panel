@@ -11,11 +11,12 @@ import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import icons from "../../../shared/icons.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
+import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
 
 interface EditBaseModalProps {
   title: string;
   onClose: () => void;
-  rowData: Record<string, ItemData>;
+  rowData: SlaRowDataGroup;
   onSave: (
     days: string,
     hours: string,

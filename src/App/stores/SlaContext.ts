@@ -1,10 +1,10 @@
 import { initGlobalContext } from "./GlobalContext";
-import { SlaRowDataTask } from "../components/SlaPanel/SlaList/slaListTypes";
+import { SlaRowData } from "../components/SlaPanel/SlaList/slaListTypes";
 
 /** Контекст SLA */
 export class SlaContext {
   /** Список данных SLA */
-  slaDataList: SlaRowDataTask[];
+  slaDataList: SlaRowData[];
 
   constructor() {
     this.slaDataList = [];
