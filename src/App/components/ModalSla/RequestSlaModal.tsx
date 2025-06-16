@@ -194,7 +194,6 @@ export default function RequestSlaModal({ onClose }: RequestSlaModalProps) {
     );
     return true;
   };
-
   return (
     <ModalWrapper>
       <ModalSla
