@@ -2,6 +2,7 @@ import { FetchData } from "../../../UIKit/CustomList/CustomListTypes";
 import { SlaRowDataGroup } from "../../components/SlaPanel/SlaList/slaListTypes";
 import { getRandomSlaListTask, getRandomSlaListRequest } from "./slaGenerator";
 import { CustomSelectOption } from "../../../UIKit/CustomSelect/CustomSelectTypes";
+import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
 
 /** Ожидание */
 function sleep(ms: number) {
@@ -49,81 +50,82 @@ async function getSlaRequest(): Promise<FetchData<SlaRowDataGroup>> {
 }
 
 /** Получение списка Показателей */
-async function getSLaTypes(): Promise<CustomSelectOption[]> {
+async function getSLaTypes(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    {
-      code: "9f8e6dda-94f3-47f0-b69c-bc514a446b14",
-      value: "103.test",
-    },
-    {
-      code: "b97aa797-55a4-4429-a64d-e7c51910b33c",
-      value: "sa-medpult-mail",
-    },
+  const slaTypes: ObjectItem[] = [
+    new ObjectItem({ code: "test", value: "Скорость обработки обращения" }),
+    new ObjectItem({ code: "test1", value: "Скорость решения задачи" }),
   ];
+
+  return slaTypes;
 }
 /** Получение списка ВИП */
-async function getVipStatuses(): Promise<CustomSelectOption[]> {
+async function getVipStatuses(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    { code: "Gold", value: "Gold" },
-    { code: "Silver", value: "Silver" },
-    { code: "Platinum", value: "Platinum" },
+  const vipStatuses: ObjectItem[] = [
+    new ObjectItem({ code: "Gold", value: "Gold" }),
+    new ObjectItem({ code: "Silver", value: "Silver" }),
+    new ObjectItem({ code: "Platinum", value: "Platinum" }),
   ];
+  return vipStatuses;
 }
 /** Получение списка тип Задачи */
-async function getTaskTypes(): Promise<CustomSelectOption[]> {
+async function getTaskTypes(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    { code: "medical", value: "Медицинская" },
-    { code: "informational", value: "Информационная" },
-    { code: "negative", value: "Негативная" },
+  const taskTypes: ObjectItem[] = [
+    new ObjectItem({ code: "medical", value: "Медицинская" }),
+    new ObjectItem({ code: "informational", value: "Информационная" }),
+    new ObjectItem({ code: "negative", value: "Негативная" }),
   ];
+  return taskTypes;
 }
 /** Получение списка вид Задачи */
-async function getTaskSort(): Promise<CustomSelectOption[]> {
+async function getTaskSort(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    { code: "smp", value: "СМП" },
-    { code: "pnd", value: "ПНД" },
-    { code: "approval", value: "Согласование услуг" },
+  const taskSort: ObjectItem[] = [
+    new ObjectItem({ code: "smp", value: "СМП" }),
+    new ObjectItem({ code: "pnd", value: "ПНД" }),
+    new ObjectItem({ code: "approval", value: "Согласование услуг" }),
   ];
+  return taskSort;
 }
 
 /** Получение списка тематики */
-async function getTopic(): Promise<CustomSelectOption[]> {
+async function getTopic(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    { code: "incident", value: "Инцидент" },
-    { code: "request", value: "Запрос" },
+  const topic: ObjectItem[] = [
+    new ObjectItem({ code: "incident", value: "Инцидент" }),
+    new ObjectItem({ code: "request", value: "Запрос" }),
   ];
+  return topic;
 }
 /** Получение списка срочности */
-async function getUrgency(): Promise<CustomSelectOption[]> {
+async function getUrgency(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    { code: "plan", value: "Планово" },
-    { code: "extra", value: "Экстренно" },
+  const urgency: ObjectItem[] = [
+    new ObjectItem({ code: "plan", value: "Планово" }),
+    new ObjectItem({ code: "extra", value: "Экстренно" }),
   ];
+  return urgency;
 }
 
 /** Получение списка тип Канала */
-async function getTypeChannel(): Promise<CustomSelectOption[]> {
+async function getTypeChannel(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    { code: "medical", value: "Медицинская" },
-    { code: "informational", value: "Информационная" },
-    { code: "negative", value: "Негативная" },
+  const typeChannel: ObjectItem[] = [
+    new ObjectItem({ code: "plan", value: "Планово" }),
+    new ObjectItem({ code: "extra", value: "Экстренно" }),
   ];
+  return typeChannel;
 }
 /** Получение списка вид Канала */
-async function getSortChannel(): Promise<CustomSelectOption[]> {
+async function getSortChannel(): Promise<ObjectItem[]> {
   await sleep(1000);
-  return [
-    { code: "smp", value: "СМП" },
-    { code: "pnd", value: "ПНД" },
-    { code: "approval", value: "Согласование услуг" },
+  const sortChannel: ObjectItem[] = [
+    new ObjectItem({ code: "plan", value: "Планово" }),
+    new ObjectItem({ code: "extra", value: "Экстренно" }),
   ];
+  return sortChannel;
 }
 
 /** Добавить sla Задачи */
@@ -185,6 +187,9 @@ async function cancelSlaRequest(): Promise<void> {
   // TODO
   await sleep(1000);
 }
+async function OnInit(): Promise<void> {
+  await sleep(1000);
+}
 
 export default {
   getSlaTask,
@@ -205,4 +210,6 @@ export default {
   competeSlaRequest,
   cancelSlaTask,
   cancelSlaRequest,
+
+  OnInit,
 };

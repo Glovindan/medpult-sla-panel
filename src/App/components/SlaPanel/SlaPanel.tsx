@@ -29,17 +29,19 @@ export default function SlaPanel() {
 
   // Загрузка всех SLA
   useEffect(() => {
-    setIsLoading(true);
+    Scripts.OnInit().then(() => {
+      setIsLoading(true);
 
-    Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()])
-      .then(([slaDataTask, slaDataRequest]) => {
-        setSlaDataTask(slaDataTask); // Сохраняем данные для задач
-        setSlaDataRequest(slaDataRequest); // Сохраняем данные для обращений
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
+      Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()])
+        .then(([slaDataTask, slaDataRequest]) => {
+          setSlaDataTask(slaDataTask); // Сохраняем данные для задач
+          setSlaDataRequest(slaDataRequest); // Сохраняем данные для обращений
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+    });
   }, []);
 
   /** Сортировка списка*/
