@@ -209,19 +209,34 @@ export const flattenTree = (jsonData: JsonDataType) => {
 
 // Поиск в справочнике МКБ-10
 export const searchMkbItems = (searchQuery: string, nodes: JsonDataType[]) => {
-	// Сделать из дерева массив
-	const items = nodes.flatMap(flattenTree)
-	const searchQueryProcessed = searchQuery.toLowerCase().trim().normalize()
+  // Сделать из дерева массив
+  const items = nodes.flatMap(flattenTree);
+  const searchQueryProcessed = searchQuery.toLowerCase().trim().normalize();
 
-	// Поиск по searchQuery
-	return items.filter((item) => {
-		return (
-			(item.code && item.code.toLowerCase().trim().normalize().includes(searchQueryProcessed)) || // Код
-			(item.fullname && item.fullname.toLowerCase().trim().normalize().includes(searchQueryProcessed)) || // Название
-			(item.comment && item.comment.toLowerCase().trim().normalize().includes(searchQueryProcessed)) // Комментарий
-		)
-	})
-}
+  // Поиск по searchQuery
+  return items.filter((item) => {
+    return (
+      (item.code &&
+        item.code
+          .toLowerCase()
+          .trim()
+          .normalize()
+          .includes(searchQueryProcessed)) || // Код
+      (item.fullname &&
+        item.fullname
+          .toLowerCase()
+          .trim()
+          .normalize()
+          .includes(searchQueryProcessed)) || // Название
+      (item.comment &&
+        item.comment
+          .toLowerCase()
+          .trim()
+          .normalize()
+          .includes(searchQueryProcessed)) // Комментарий
+    );
+  });
+};
 
 export const removeChildNodes = (selectedIds: string[], node: JsonDataType) => {
   // Плоское дерево
@@ -244,6 +259,22 @@ export const removeChildNodes = (selectedIds: string[], node: JsonDataType) => {
 
   return filteredIds;
 };
+
+export function parseDuration(value: string): {
+  days: string;
+  hours: string;
+  minutes: string;
+} {
+  const dayMatch = value.match(/(\d{2})д/);
+  const hourMatch = value.match(/(\d{2})ч/);
+  const minuteMatch = value.match(/(\d{2})м/);
+
+  return {
+    days: dayMatch ? dayMatch[1] : "00",
+    hours: hourMatch ? hourMatch[1] : "00",
+    minutes: minuteMatch ? minuteMatch[1] : "00",
+  };
+}
 
 export default {
   redirectSPA,

@@ -1,56 +1,64 @@
 .custom-input {
-	&__buttons {
-		padding-right: 6px;
-		display: flex;
-	}
+  &__buttons {
+    padding-right: 6px;
+    display: flex;
+  }
 
-	&__wrapper {
-		color: black;
-		font-size: 14px;
-		font-style: normal;
-		font-weight: 400;
-		line-height: normal;
-		letter-spacing: 0.42px;
+  &__wrapper {
+    color: black;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.42px;
 
-		opacity: 1;
+    opacity: 1;
 
-		border: 2px solid var(--medpult-field-border-color);
-		border-radius: 7px;
-		height: 40px;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		overflow: hidden;
+    border: 2px solid var(--medpult-field-border-color);
+    border-radius: 7px;
+    //height: 40px;
+    height: 32px;
+    //width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
 
-		&_open {
-			border-bottom-right-radius: 0;
-			border-bottom-left-radius: 0;
-			box-shadow: none;
-		}
+    &_open {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+      box-shadow: none;
+    }
 
-		&_invalid {
-			border-color: var(--medpult-alert-color);
-		}
-	}
+    &_invalid {
+      border-color: var(--medpult-alert-color);
+    }
+    &_disabled {
+      border: 1px solid #bfc0c2;
+      background-color: #f4f4f5;
+    }
+  }
 
-	&__input {
-		width: 100%;
-		height: 100%;
-		padding-left: 6px;
-		user-select: text;
-		outline: none;
-		border: none;
-		background-color: transparent;
-		font-style: normal;
-		font-weight: 400;
-		font-family: Inter;
-		font-size: 14px;
-	}
+  &__input {
+    width: 100%;
+    height: 100%;
+    padding-left: 6px;
+    user-select: text;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    font-style: normal;
+    font-weight: 400;
+    font-family: Inter;
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 
 .button__wrapper {
-	width: 30px;
-	height: 30px;
-	background-color: red;
+  width: 30px;
+  height: 30px;
+  background-color: red;
 }

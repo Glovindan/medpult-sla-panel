@@ -1,57 +1,147 @@
-import React, { useEffect, useState } from 'react'
-import { slaContext } from '../../stores/SlaContext'
-import Panel from '../../../UIKit/Panel/Panel.tsx'
-import TabsWrapper from '../../../UIKit/Tabs/TabsWrapper/TabsWrapper.tsx'
-import TabItem from '../../../UIKit/Tabs/TabItem/TabItem.tsx'
-import SlaList from './SlaList/SlaList.tsx'
-import { FetchData } from '../../../UIKit/CustomList/CustomListTypes.ts'
-import { SlaRowDataGroup } from './SlaList/slaListTypes.ts'
+import React, { useEffect, useState, useCallback } from "react";
+import { slaContext } from "../../stores/SlaContext";
+import TabsWrapper from "../../../UIKit/Tabs/TabsWrapper/TabsWrapper.tsx";
+import TabItem from "../../../UIKit/Tabs/TabItem/TabItem.tsx";
+import SlaListTask from "./SlaList/SlaListTask.tsx";
+import SlaListRequest from "./SlaList/SlaListRequest.tsx";
+import { FetchData } from "../../../UIKit/CustomList/CustomListTypes.ts";
+import { SlaRowDataGroup } from "./SlaList/slaListTypes.ts";
+import AdditionalPanel from "./AdditionalPanel/AdditionalPanel.tsx";
+import Scripts from "../../shared/utils/clientScripts.ts";
+import TaskSlaModal from "../ModalSla/TaskSlaModal.tsx";
+import RequestSlaModal from "../ModalSla/RequestSlaModal.tsx";
 
-import Scripts from '../../shared/utils/clientScripts.ts'
 /** Панель администрирования SLA */
 export default function SlaPanel() {
-	const [data, setValue] = slaContext.useState()
+  const [data, setValue] = slaContext.useState();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [slaDataTask, setSlaDataTask] = useState<
+    FetchData<SlaRowDataGroup> | undefined
+  >();
+  const [slaDataRequest, setSlaDataRequest] = useState<
+    FetchData<SlaRowDataGroup> | undefined
+  >();
+  const [showExpiredSla, setShowExpiredSla] = useState(false);
 
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [slaData, setSlaData] = useState<FetchData<SlaRowDataGroup> | undefined>();
+  // Состояния для модальных окон
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
-	// Загрузка всех SLA
-	useEffect(() => {
-		setIsLoading(true);
+  // Загрузка всех SLA
+  useEffect(() => {
+    Scripts.OnInit().then(() => {
+      setIsLoading(true);
 
-		Scripts.getSla().then(slaData => {
-			setSlaData(slaData);
-			setIsLoading(false)
-		})
-	}, [])
+      Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()])
+        .then(([slaDataTask, slaDataRequest]) => {
+          setSlaDataTask(slaDataTask); // Сохраняем данные для задач
+          setSlaDataRequest(slaDataRequest); // Сохраняем данные для обращений
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+    });
+  }, []);
 
-	/** Получение всех SLA */
-	async function getSlaHandler(): Promise<FetchData<SlaRowDataGroup>> {
-		if(!slaData) {
-			return {
-				hasMore: false,
-				items: []
-			}
-		}
+  /** Сортировка списка*/
+  const sortSlaItems = <T extends { data: any }>(items: T[]): T[] => {
+    const statusOrder = [
+      "valid",
+      "validPlanned",
+      "planned",
+      "expired",
+      "canceled",
+    ];
 
-		return slaData;
-	}
+    return [...items].sort((a, b) => {
+      //Сначала сортируем по isBasic
+      const aIsBasic = a.data?.isBasic?.info === true ? 0 : 1;
+      const bIsBasic = b.data?.isBasic?.info === true ? 0 : 1;
+      if (aIsBasic !== bIsBasic) return aIsBasic - bIsBasic;
 
-	// Получение SLA для Задач
-	// Получение SLA для Обращений
+      //Потом по статусу
+      const aStatus = a.data?.status?.info;
+      const bStatus = b.data?.status?.info;
+      const aIndex = statusOrder.indexOf(aStatus);
+      const bIndex = statusOrder.indexOf(bStatus);
 
-	return (
-		<slaContext.Provider value={{ data, setValue }}>
-			<Panel label='SLA' isRollable={false}>
-				<TabsWrapper>
-					<TabItem code={'requests'} name={'Обращения'}>
-						<SlaList getSlaHandler={getSlaHandler} isLoading={isLoading}/>
-					</TabItem>
-					<TabItem code={'tasks'} name={'Задачи'}>
-						test1
-					</TabItem>
-				</TabsWrapper>
-			</Panel>
-		</slaContext.Provider>
-	)
+      return aIndex - bIndex;
+    });
+  };
+
+  /** Получение всех SLA задачи*/
+  const getSlaTaskHandler = useCallback(async (): Promise<
+    FetchData<SlaRowDataGroup>
+  > => {
+    if (!slaDataTask) return { hasMore: false, items: [] };
+
+    const filteredItems = showExpiredSla
+      ? slaDataTask.items
+      : slaDataTask.items.filter(
+          (item) => item.data.status?.info !== "expired"
+        );
+
+    return {
+      hasMore: slaDataTask.hasMore,
+      items: sortSlaItems(filteredItems),
+    };
+  }, [slaDataTask, showExpiredSla]);
+  /** Получение всех SLA обращений*/
+  const getSlaRequestHandler = useCallback(async (): Promise<
+    FetchData<SlaRowDataGroup>
+  > => {
+    if (!slaDataRequest) return { hasMore: false, items: [] };
+
+    const filteredItems = showExpiredSla
+      ? slaDataRequest.items
+      : slaDataRequest.items.filter(
+          (item) => item.data.status?.info !== "expired"
+        );
+
+    return {
+      hasMore: slaDataRequest.hasMore,
+      items: sortSlaItems(filteredItems),
+    };
+  }, [slaDataTask, showExpiredSla]);
+
+  return (
+    <slaContext.Provider value={{ data, setValue }}>
+      <div className="medpult-sla-panel">
+        <div className="medpult-sla-panel__title">SLA</div>
+        <TabsWrapper>
+          <TabItem code={"requests"} name={"Обращения"}>
+            <AdditionalPanel
+              onAddClick={() => setIsRequestModalOpen(true)}
+              isSlaExpiredVisible={showExpiredSla}
+              setIsSlaExpiredVisible={setShowExpiredSla}
+            />
+            <SlaListRequest
+              key={`request-${showExpiredSla}`}
+              getSlaHandler={getSlaRequestHandler}
+              isLoading={isLoading}
+            />
+            {isRequestModalOpen && (
+              <RequestSlaModal onClose={() => setIsRequestModalOpen(false)} />
+            )}
+          </TabItem>
+          <TabItem code={"tasks"} name={"Задачи"}>
+            <AdditionalPanel
+              onAddClick={() => setIsTaskModalOpen(true)}
+              isSlaExpiredVisible={showExpiredSla}
+              setIsSlaExpiredVisible={setShowExpiredSla}
+            />
+            <SlaListTask
+              key={`task-${showExpiredSla}`}
+              getSlaHandler={getSlaTaskHandler}
+              isLoading={isLoading}
+            />
+            {isTaskModalOpen && (
+              <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} />
+            )}
+          </TabItem>
+        </TabsWrapper>
+      </div>
+    </slaContext.Provider>
+  );
 }

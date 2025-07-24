@@ -1,38 +1,35 @@
-import {
-  ItemData,
-  ItemDataString,
-} from "../../UIKit/CustomList/CustomListTypes";
-import { Mkb10Data } from "../stores/Mkb10Context";
-
-export interface JsonDataType {
-  /** Идентификатор записи */
-  id: string;
-  /** Идентификатор родительской записи */
-  parentID?: string;
-  /** Код записи */
-  code?: string;
-  /** Краткое наименование записи */
-  shortname?: string;
-  /** Полное наименование записи */
-  fullname?: string;
-  /** Дата начала действия записи */
-  startDate?: Date;
-  /** Дата окончания действия записи */
-  endDate?: Date | null;
-  /** Статус */
-  status?: string;
-  /** Внешний Идентификатор версии справочника */
-  versionId?: string;
-  /** Комментарий */
-  comment?: string;
-
-  children?: JsonDataType[];
+import { CustomSelectOption } from "../../UIKit/CustomSelect/CustomSelectTypes";
+/** Тип поля */
+export enum FieldType {
+  /** Поле ввода */
+  input = "input",
+  /** Текстовое поле */
+  textarea = "textarea",
+  /** Выпадающий список линий */
+  lineDropdown = "lineDropdown",
 }
 
-export type RecursionListProps = {
-  jsonData: JsonDataType;
-  selectedItemsIds: string[];
-  setSelectedItemsIds: React.Dispatch<React.SetStateAction<string[]>>;
-  depth?: number;
-  onSelect?: (selectedIds: string[], codes: string[]) => void;
-};
+export interface FieldConfig {
+  type: FieldType;
+  label: string;
+  value: string | string[];
+  setValue?: (value: string | string[]) => void;
+  placeholder?: string;
+  style?: React.CSSProperties;
+  maskFunction?: (value: string) => string;
+  days?: string;
+  setDays?: (value: string) => void;
+  hours?: string;
+  setHours?: (value: string) => void;
+  minutes?: string;
+  setMinutes?: (value: string) => void;
+  href?: string;
+  saveStateHandler?: () => void;
+  isRequired?: boolean;
+  getDataHandler?: () => Promise<CustomSelectOption[]>;
+  isMulti?: boolean;
+  isInvalid?: boolean;
+  disabled?: boolean;
+  startDate?: string;
+  onStartDateNotSet?: () => void;
+}

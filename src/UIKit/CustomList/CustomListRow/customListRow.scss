@@ -11,13 +11,13 @@
   &_openable {
     cursor: pointer;
 
-    &:hover {
-      background-color: var(--medpult-hover-color);
-    }
+    // &:hover {
+    //   background-color: var(--medpult-hover-color);
+    // }
   }
 
   &_open {
     cursor: pointer;
-    background-color: var(--medpult-bg-color);
+    background-color: #daeffa;
   }
 }

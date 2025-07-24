@@ -1,26 +1,26 @@
 .tabs-wrapper {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-	&__actions {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		height: 100%;
-	}
+  &__actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+  }
 
-	&__header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		border-bottom: 2px solid var(--medpult-bg-color);
-		height: 55px;
-		align-items: center;
-		padding: 0 18px;
-	}
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 61px;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #d2d3d6;
+  }
 
-	&__selector {
-		display: flex;
-		flex-direction: row;
-	}
+  &__selector {
+    display: flex;
+    flex-direction: row;
+  }
 }
