@@ -3,6 +3,8 @@ import { SlaRowDataGroup } from "../../components/SlaPanel/SlaList/slaListTypes"
 import { getRandomSlaListTask, getRandomSlaListRequest } from "./slaGenerator";
 import { CustomSelectOption } from "../../../UIKit/CustomSelect/CustomSelectTypes";
 import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
+import { requestMock } from "./requestMock";
+import { taskMock } from "./taskMock";
 
 /** Ожидание */
 function sleep(ms: number) {
@@ -12,7 +14,7 @@ function sleep(ms: number) {
 /** Получение списка SLA */
 async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
   await sleep(1000);
-  const items = getRandomSlaListTask(5).map((rowData) => {
+  const items = taskMock.map((rowData) => {
     //const subData = getRandomSlaListTask(2);
     const shouldAddGroup = Math.random() > 0.5;
     return {
@@ -32,7 +34,7 @@ async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
 
 async function getSlaRequest(): Promise<FetchData<SlaRowDataGroup>> {
   await sleep(1000);
-  const items = getRandomSlaListRequest(20).map((rowData) => {
+  const items = requestMock.map((rowData) => {
     const shouldAddGroup = Math.random() > 0.5;
     return {
       id: rowData.id.value,

@@ -120,7 +120,7 @@ function CustomListRowColumn(props: ListColumnProps) {
           onMouseEnter={showMore}
           onMouseOut={hideMore}
           ref={spanRef}
-          title={isRollable ? "" : data.value}
+          title={isRollable ? "" : data?.value ?? ""}
           onClick={onClickColumn}
           className={
             isShowMore
@@ -128,7 +128,7 @@ function CustomListRowColumn(props: ListColumnProps) {
               : "custom-list-row-column__less"
           }
         >
-          {data.value}
+          {data?.value ?? ""}
         </span>
       )}
     </div>
