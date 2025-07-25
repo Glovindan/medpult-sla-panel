@@ -158,7 +158,8 @@ export default function SlaListTask({
       code: "isBasic",
       name: "",
       fr: 1,
-      fixedWidth: "32px",
+      fixedWidth: "40px",
+      contentPadding: "17px 11px",
       getCustomColumComponent: getSlaBasicColumn,
     }),
     // Показатель (Тип SLA)
