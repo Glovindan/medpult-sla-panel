@@ -4,7 +4,7 @@ import Scripts from "../../../shared/utils/clientScripts.ts";
 import { parseDuration } from "../../../shared/utils/utils.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
 import ModalInputDate from "../ModalType/ModalInputDate/ModalInputDate.tsx";
-import ModalLineSelect from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
+import CustomSelectWithLabel from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
 import ModalWrapper from "../ModalWrapper/ModalWrapper.tsx";
 import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
@@ -113,7 +113,7 @@ export default function EditValidModal({
           </div>
           {/* Поля ввода */}
           <div className="sla-modal__fields">
-            <ModalLineSelect {...fields[0]} />
+            <CustomSelectWithLabel {...fields[0]} />
             <ModalTime {...fields[1]} />
             <ModalInputDate {...fields[2]} />
             <ModalInputDate

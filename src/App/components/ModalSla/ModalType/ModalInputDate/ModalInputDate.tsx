@@ -1,10 +1,22 @@
 import React, { useState } from "react";
-import { FieldConfig } from "../../../../shared/types";
 import CustomInputDate from "../../../../../UIKit/CustomInputDate/CustomInputDate";
 import { InputDateType } from "../../../../../UIKit/CustomInputDate/CustomInputDateTypes";
 import masks from "../../../../shared/utils/masks";
+import ModalLabledField from "../ModalLabledField/modalLabledField";
 
-/** Поле ввода в модальном окне */
+export type ModalInputDateProps = {
+  label: string;
+  value: string;
+  setValue?: (value: string) => void;
+  style?: React.CSSProperties;
+  isRequired?: boolean;
+  isInvalid?: boolean;
+  disabled?: boolean;
+  startDate?: string;
+  onStartDateNotSet?: () => void;
+}
+
+/** Поле ввода даты в модальном окне */
 export default function ModalInputDate({
   label,
   value,
@@ -15,16 +27,10 @@ export default function ModalInputDate({
   disabled,
   startDate,
   onStartDateNotSet,
-}: FieldConfig) {
+}: ModalInputDateProps) {
   return (
-    <div className="modal-input__left">
-      <span
-        className={`modal-line-select__label ${
-          isRequired ? "medpult-required" : ""
-        }`}
-      >
-        {label}
-      </span>
+    // TODO: Вынести логику с датами из CustomInputDate и затем вынести ModalLabledField
+    <ModalLabledField label={label} isRequired={isRequired}>
       <CustomInputDate
         type={InputDateType.date}
         value={typeof value === "string" ? masks.applyDateMask(value) : ""}
@@ -36,6 +42,6 @@ export default function ModalInputDate({
         onStartDateNotSet={onStartDateNotSet}
         label={label}
       />
-    </div>
+    </ModalLabledField>
   );
 }

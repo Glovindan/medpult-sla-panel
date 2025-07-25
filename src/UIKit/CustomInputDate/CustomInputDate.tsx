@@ -20,6 +20,7 @@ function CustomInputDate(props: CustomInputDateProps) {
   const pickerRef = useRef<HTMLInputElement>(null);
   const buttonSvg = icons.Calendar;
 
+  // TODO: Вынести снаружи компонента
   const getMinDate = () => {
     if (props.label === "Дата окончания" && props.startDate) {
       // Парсим дату начала из формата ДД.ММ.ГГГГ

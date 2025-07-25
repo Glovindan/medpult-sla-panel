@@ -58,7 +58,6 @@ function CustomListRowColumn(props: ListColumnProps) {
     // console.log(spanRef.current.getBoundingClientRect())
 
     // if (moreWrapperBottom > listWrapperBottom) {
-    // 	console.log("иди ты нахуй сука")
     // 	// spanRef.current.style.removeProperty("margin-top")
     // 	// spanRef.current.style.marginBottom = "0"
     // }

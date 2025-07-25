@@ -33,3 +33,53 @@ export interface FieldConfig {
   startDate?: string;
   onStartDateNotSet?: () => void;
 }
+
+/** Аргументы для добавления SLA */
+export interface AddSlaArgs {
+  /** Значение SLA дни */
+  days: string,
+  /** Значение SLA часы */
+  hours: string,
+  /** Значение SLA минуты */
+  minutes: string,
+  /** Дата начала */
+  startDate: string,
+  /** Дата окончания */
+  endDate?: string,
+  /** Тип SLA */
+  type?: string,
+}
+
+/** Аргументы для обновления SLA */
+export interface EditSlaArgs extends AddSlaArgs {
+  /** Идентификатор SLA */
+  id: string,
+}
+
+/** Аргументы для добавления SLA задачи */
+export interface AddTaskSlaArgs extends AddSlaArgs {
+  /** Признак важности */
+  signVip?: string[],
+  /** Тип задачи */
+  taskType?: string[],
+  /** Вид задачи */
+  taskSort?: string[],
+  /** Тематика задачи */
+  topic?: string[],
+  /** Срочность задачи */
+  urgency?: string[],
+  /** Продукт */
+  product?: string,
+  /** Страхователь */
+  executer?: string
+}
+
+/** Аргументы для добавления SLA обращения */
+export interface AddRequestSlaArgs extends AddSlaArgs {
+  /** Признак важности */
+  signVip?: string[],
+  /** Тип канала */
+  channelType?: string[],
+  /** Вид канала (Линия) */
+  channelSort?: string[]
+}

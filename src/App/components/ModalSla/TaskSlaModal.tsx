@@ -5,7 +5,7 @@ import Scripts from "../../shared/utils/clientScripts";
 import ModalInput from "./ModalType/ModalInputSearch/ModalInputSearch";
 import ModalTime from "./ModalType/ModalTime/ModalTime";
 import ModalInputDate from "./ModalType/ModalInputDate/ModalInputDate";
-import ModalLineSelect from "./ModalType/ModalLineSelect/ModalLineSelect";
+import CustomSelectWithLabel from "./ModalType/ModalLineSelect/ModalLineSelect";
 import ModalWrapper from "./ModalWrapper/ModalWrapper";
 
 interface TaskSlaModalProps {
@@ -32,6 +32,7 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
   const [minutes, setMinutes] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  
   const [signVip, setSignVip] = useState<string[]>([]);
   const [taskType, setTaskType] = useState<string[]>([]);
   const [taskSort, setTaskSort] = useState<string[]>([]);
@@ -233,21 +234,22 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
       return false;
     }
     setErrorMessage("");
-    await Scripts.addSlaTask(
-      days,
-      hours,
-      minutes,
-      startDate,
-      endDate,
-      type,
-      signVip,
-      taskType,
-      taskSort,
-      topic,
-      urgency,
-      product,
-      executer
-    );
+    await Scripts.addSlaTask({
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      startDate: startDate,
+      endDate: endDate,
+      type: type,
+      signVip: signVip,
+      taskType: taskType,
+      taskSort: taskSort,
+      topic: topic,
+      urgency: urgency,
+      product: product,
+      executer: executer
+    });
+
     return true;
   };
 
@@ -259,7 +261,14 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
         closeModal={onClose}
         errorMessage={errorMessage}
       >
-        <ModalLineSelect {...fields[0]} />
+        <CustomSelectWithLabel
+          label={"Показатель"}
+          value={type}
+          setValue={(value) => setType(value as string)}
+          isRequired={true}
+          getDataHandler={Scripts.getSLaTypes}
+          isInvalid={isTypeInvalid}
+        />
         <ModalTime {...fields[1]} />
         <ModalInputDate {...fields[2]} />
         <ModalInputDate
@@ -270,11 +279,11 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
             setErrorMessage("Установите дату начала");
           }}
         />
-        <ModalLineSelect {...fields[4]} />
-        <ModalLineSelect {...fields[5]} />
-        <ModalLineSelect {...fields[6]} />
-        <ModalLineSelect {...fields[7]} />
-        <ModalLineSelect {...fields[8]} />
+        <CustomSelectWithLabel {...fields[4]} />
+        <CustomSelectWithLabel {...fields[5]} />
+        <CustomSelectWithLabel {...fields[6]} />
+        <CustomSelectWithLabel {...fields[7]} />
+        <CustomSelectWithLabel {...fields[8]} />
         <ModalInput {...fields[9]} />
         <ModalInput {...fields[10]} />
       </ModalSla>

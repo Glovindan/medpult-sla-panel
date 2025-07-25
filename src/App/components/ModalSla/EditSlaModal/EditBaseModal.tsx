@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FieldConfig, FieldType } from "../../../shared/types.ts";
+import { AddSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
 import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
 import { parseDuration } from "../../../shared/utils/utils.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
 import ModalInputDate from "../ModalType/ModalInputDate/ModalInputDate.tsx";
-import ModalLineSelect from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
+import CustomSelectWithLabel from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
 import ModalWrapper from "../ModalWrapper/ModalWrapper.tsx";
 import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
@@ -17,13 +17,7 @@ interface EditBaseModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onSave: (
-    days: string,
-    hours: string,
-    minutes: string,
-    startDate: string,
-    endDate: string
-  ) => Promise<void>;
+  onSave: (slaData: AddSlaArgs) => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditBaseModal({
@@ -173,7 +167,7 @@ export default function EditBaseModal({
     }
     setErrorMessage("");
     // ... логика сохранения
-    await onSave(days, hours, minutes, startDate, endDate);
+    await onSave({days: days, hours: hours, minutes: minutes, startDate: startDate, endDate: endDate});
     onClose();
     return true;
   };
@@ -199,7 +193,7 @@ export default function EditBaseModal({
             className="sla-modal__fields"
             style={{ borderBottom: "1px solid #D2D3D6" }}
           >
-            <ModalLineSelect {...fields[0]} />
+            <CustomSelectWithLabel {...fields[0]} />
             <ModalTime {...fields[1]} />
             <ModalInputDate {...fields[2]} />
             <ModalInputDate {...fields[3]} />
@@ -214,7 +208,7 @@ export default function EditBaseModal({
           </div>
           {/* Поля ввода */}
           <div className="sla-modal__fields">
-            <ModalLineSelect {...fields[0]} />
+            <CustomSelectWithLabel {...fields[0]} />
             <ModalTime {...fields[4]} />
             <ModalInputDate {...fields[5]} />
             <ModalInputDate
