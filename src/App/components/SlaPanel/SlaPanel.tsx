@@ -29,8 +29,8 @@ export default function SlaPanel() {
 
   // Загрузка всех SLA
   useEffect(() => {
+    setIsLoading(true);
     Scripts.OnInit().then(() => {
-      setIsLoading(true);
 
       Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()])
         .then(([slaDataTask, slaDataRequest]) => {
