@@ -33,95 +33,25 @@ export default function RequestSlaModal({ onClose }: RequestSlaModalProps) {
 
   // const [type, setType] = useState<string>("Скорость обработки");
   // Показатель
-  const [type, setType] = useState<ObjectItem>({value: "Скорость обработки", code: "speed_code"}); // TODO: Реализовать функцию получения стандартной категории
+  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaType()); // TODO: Реализовать функцию получения стандартной категории
+
+  // Значение показателя дни
   const [days, setDays] = useState<string>("");
+  // Значение показателя часы
   const [hours, setHours] = useState<string>("");
+  // Значение показателя минуты
   const [minutes, setMinutes] = useState<string>("");
+  // Дата начала действия
   const [startDate, setStartDate] = useState<string>("");
+  // Дата окончания действия
   const [endDate, setEndDate] = useState<string>("");
 
+  // Признак важности
   const [signVip, setSignVip] = useState<ObjectItem[]>([]);
+  // Тип канала
   const [channelType, setChannelType] = useState<ObjectItem[]>([]);
+  // Вид канала (Линии)
   const [channelSort, setChannelSort] = useState<ObjectItem[]>([]);
-  // const [signVip, setSignVip] = useState<string[]>([]);
-  // const [channelType, setChannelType] = useState<string[]>([]);
-  // const [channelSort, setChannelSort] = useState<string[]>([]);
-
-  const fields: FieldConfig[] = [
-    {
-      type: FieldType.lineDropdown,
-      label: "Показатель",
-      value: type.value,
-      setValue: (value) => {},
-      style: { width: "236px" },
-      isRequired: true,
-      getDataHandler: Scripts.getSLaTypes,
-      isInvalid: isTypeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Значение показателя",
-      value: "",
-      setValue: () => {},
-      style: { width: "72px" },
-      days: days,
-      setDays: setDays,
-      hours: hours,
-      setHours: setHours,
-      minutes: minutes,
-      setMinutes: setMinutes,
-      isRequired: true,
-      isInvalid: isTimeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата начала",
-      value: startDate,
-      setValue: (value) => setStartDate(value as string),
-      style: { width: "202px" },
-      isRequired: true,
-      isInvalid: isStartDateInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата окончания",
-      value: endDate,
-      setValue: (value) => setEndDate(value as string),
-      style: { width: "202px" },
-    },
-    {
-      type: FieldType.input,
-      label: "Признак ВИП",
-      value: signVip,
-      setValue: (value) => setSignVip(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getVipStatuses,
-      isMulti: true,
-      isInvalid: isSignVipInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Тип канала",
-      value: channelType,
-      setValue: (value) =>
-        setChannelType(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getTypeChannel,
-      isMulti: true,
-      isInvalid: isChannelTypeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Вид канала",
-      value: channelSort,
-      setValue: (value) =>
-        setChannelSort(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getSortChannel,
-      isMulti: true,
-      isInvalid: isChannelSortInvalid,
-    },
-  ];
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
@@ -175,7 +105,6 @@ export default function RequestSlaModal({ onClose }: RequestSlaModalProps) {
   const validateFields = () => {
     let isValid = true;
 
-    // TODO: Доработка под коды
     if (
       signVip.length === 0 &&
       channelType.length === 0 &&
@@ -212,7 +141,6 @@ export default function RequestSlaModal({ onClose }: RequestSlaModalProps) {
     }
     setErrorMessage("");
     
-    // TODO: Переделать под коды и идентификаторы
     await Scripts.addSlaRequest({
       days: days,
       hours: hours,

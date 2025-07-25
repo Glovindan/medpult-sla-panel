@@ -196,6 +196,11 @@ async function OnInit(): Promise<void> {
   await sleep(1000);
 }
 
+/** Получить стандартный тип SLA */
+function getDefaultSlaType(): ObjectItem {
+  return {value: "Скорость обработки", code: "speed_code"}
+}
+
 export default {
   getSlaTask,
   getSlaRequest,
@@ -217,4 +222,5 @@ export default {
   cancelSlaRequest,
 
   OnInit,
+  getDefaultSlaType
 };

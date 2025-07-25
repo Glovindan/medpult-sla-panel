@@ -7,6 +7,12 @@ import ModalTime from "./ModalType/ModalTime/ModalTime";
 import ModalInputDate from "./ModalType/ModalInputDate/ModalInputDate";
 import CustomSelectWithLabel from "./ModalType/ModalLineSelect/ModalLineSelect";
 import ModalWrapper from "./ModalWrapper/ModalWrapper";
+import ModalLabledField from "./ModalType/ModalLabledField/modalLabledField";
+import CustomSelect from "../../../UIKit/CustomSelect/CustomSelect";
+import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
+import ModalTimeInput from "./ModalType/ModalTimeInput/ModalTimeInput";
+import ModalMultipleCustomSelect from "./ModalType/ModalMultipleCustomSelect/ModalMultipleCustomSelect";
+import CustomInputAppItem from "../../../UIKit/CustomInputAppItem/CustomInputAppItem";
 
 interface TaskSlaModalProps {
   onClose: () => void;
@@ -26,163 +32,73 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
   const [isTopicInvalid, setIsTopicInvalid] = useState(false);
   const [isUrgencyInvalid, setIsSUrgencyInvalid] = useState(false);
 
-  const [type, setType] = useState<string>("Скорость решения");
+  // Показатель
+  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaType());
+
+  // Значение показателя дни
   const [days, setDays] = useState<string>("");
+  // Значение показателя часы
   const [hours, setHours] = useState<string>("");
+  // Значение показателя минуты
   const [minutes, setMinutes] = useState<string>("");
+  // Дата начала действия
   const [startDate, setStartDate] = useState<string>("");
+  // Дата окончания действия
   const [endDate, setEndDate] = useState<string>("");
   
-  const [signVip, setSignVip] = useState<string[]>([]);
-  const [taskType, setTaskType] = useState<string[]>([]);
-  const [taskSort, setTaskSort] = useState<string[]>([]);
-  const [topic, setTopic] = useState<string[]>([]);
-  const [urgency, setUrgency] = useState<string[]>([]);
-  const [product, setProduct] = useState<string>("");
-  const [executer, setExecuter] = useState<string>("");
+  // Признак важности
+  const [signVip, setSignVip] = useState<ObjectItem[]>([]);
+  // Типы задач
+  const [taskType, setTaskType] = useState<ObjectItem[]>([]);
+  // Виды задач
+  const [taskSort, setTaskSort] = useState<ObjectItem[]>([]);
+  // Тематики задач
+  const [topic, setTopic] = useState<ObjectItem[]>([]);
+  // Виды срочности задач
+  const [urgency, setUrgency] = useState<ObjectItem[]>([]);
+  // Продукт
+  const [product, setProduct] = useState<ObjectItem>();
+  // Страхователь
+  const [executer, setExecuter] = useState<ObjectItem>();
 
   /** Сохранение состояния формы */
   const saveStateHandler = () => {};
 
-  const fields: FieldConfig[] = [
-    {
-      type: FieldType.lineDropdown,
-      label: "Показатель",
-      value: type,
-      setValue: (value) => setType(value as string),
-      style: { width: "236px" },
-      isRequired: true,
-      getDataHandler: Scripts.getSLaTypes,
-      isInvalid: isTypeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Значение показателя",
-      value: "",
-      setValue: () => {},
-      style: { width: "72px" },
-      days: days,
-      setDays: setDays,
-      hours: hours,
-      setHours: setHours,
-      minutes: minutes,
-      setMinutes: setMinutes,
-      isRequired: true,
-      isInvalid: isTimeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата начала",
-      value: startDate,
-      setValue: (value) => setStartDate(value as string),
-      style: { width: "202px" },
-      isRequired: true,
-      isInvalid: isStartDateInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата окончания",
-      value: endDate,
-      setValue: (value) => setEndDate(value as string),
-      style: { width: "202px" },
-    },
-    {
-      type: FieldType.input,
-      label: "Признак ВИП",
-      value: signVip,
-      setValue: (value) => setSignVip(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getVipStatuses,
-      isMulti: true,
-      isInvalid: isSignVipInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Тип задачи",
-      value: taskType,
-      setValue: (value) => setTaskType(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getTaskTypes,
-      isMulti: true,
-      isInvalid: isTaskTypeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Вид задачи",
-      value: taskSort,
-      setValue: (value) => setTaskSort(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getTaskSort,
-      isMulti: true,
-      isInvalid: isTaskSortInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Тематика",
-      value: topic,
-      setValue: (value) => setTopic(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getTopic,
-      isMulti: true,
-      isInvalid: isTopicInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Срочность",
-      value: urgency,
-      setValue: (value) => setUrgency(Array.isArray(value) ? value : [value]),
-      style: { width: "236px" },
-      getDataHandler: Scripts.getUrgency,
-      isMulti: true,
-      isInvalid: isUrgencyInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Продукт",
-      value: product,
-      setValue: (value) => setProduct(value as string),
-      style: { width: "202px" },
-      href: "",
-      saveStateHandler: saveStateHandler,
-    },
-    {
-      type: FieldType.input,
-      label: "Страхователь",
-      value: executer,
-      setValue: (value) => setExecuter(value as string),
-      style: { width: "202px" },
-      href: "",
-      saveStateHandler: saveStateHandler,
-    },
-  ];
-
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
     let isValid = true;
-    if (!type.trim()) {
+
+    // Валидация Типа показателя
+    if (!type.code) {
       setIsTypeInvalid(true);
       isValid = false;
     } else {
       setIsTypeInvalid(false);
     }
+    
+    // Валидация Значения показателя
     if (!days.trim() && !hours.trim() && !minutes.trim()) {
       setIsTimeInvalid(true);
       isValid = false;
     } else {
       setIsTimeInvalid(false);
     }
+
+    // Валидация Даты начала
     if (!startDate.trim()) {
       setIsStartDateInvalid(true);
       isValid = false;
     } else {
       setIsStartDateInvalid(false);
     }
+
     return isValid;
   };
 
   /** Проверка на поле значение показателя */
   const validateSlaValue = () => {
     let isValid = true;
+
     if (
       (hours.trim() && hours && parseInt(hours) > 24) ||
       (minutes.trim() && minutes && parseInt(minutes) > 60)
@@ -192,9 +108,9 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
     } else {
       setIsTimeInvalid(false);
     }
+
     return isValid;
   };
-
   /** Проверка на заполненость хотя бы одного поля */
   const validateFields = () => {
     let isValid = true;
@@ -226,28 +142,34 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
     if (!validateFieldsRequired()) {
       setErrorMessage("Заполните обязательные поля");
       return false;
-    } else if (!validateSlaValue()) {
+    }
+
+    if (!validateSlaValue()) {
       setErrorMessage("Укажите корректно часы и минуты");
       return false;
-    } else if (!validateFields()) {
+    }
+
+    if (!validateFields()) {
       setErrorMessage("Укажите хотя бы один из критериев");
       return false;
     }
+
     setErrorMessage("");
+
     await Scripts.addSlaTask({
       days: days,
       hours: hours,
       minutes: minutes,
       startDate: startDate,
       endDate: endDate,
-      type: type,
-      signVip: signVip,
-      taskType: taskType,
-      taskSort: taskSort,
-      topic: topic,
-      urgency: urgency,
-      product: product,
-      executer: executer
+      type: type.code,
+      signVip: signVip.map(item => item.code),
+      taskType: taskType.map(item => item.code),
+      taskSort: taskSort.map(item => item.code),
+      topic: topic.map(item => item.code),
+      urgency: urgency.map(item => item.code),
+      product: product?.code,
+      executer: executer?.code
     });
 
     return true;
@@ -261,31 +183,112 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
         closeModal={onClose}
         errorMessage={errorMessage}
       >
-        <CustomSelectWithLabel
-          label={"Показатель"}
-          value={type}
-          setValue={(value) => setType(value as string)}
+        <ModalLabledField label={"Показатель"} isRequired={true}>
+          <CustomSelect
+            value={type.value}
+            setValue={(value, code) => setType({value: value, code: code ?? ""})}
+            getDataHandler={Scripts.getSLaTypes}
+            isInvalid={isTypeInvalid}
+          />
+        </ModalLabledField>
+
+        <ModalLabledField label={"Значение показателя"} isRequired={true}>
+          <ModalTimeInput
+            days={days} 
+            setDays={setDays} 
+            hours={hours} 
+            setHours={setHours} 
+            minutes={minutes} 
+            setMinutes={setMinutes} 
+            isInvalid = {isTimeInvalid}
+          />
+        </ModalLabledField>
+
+        <ModalInputDate 
+          label={"Дата начала"}
+          value={startDate}
+          setValue={(value) => setStartDate(value)}
+          style={{ width: "202px" }}
           isRequired={true}
-          getDataHandler={Scripts.getSLaTypes}
-          isInvalid={isTypeInvalid}
+          isInvalid={isStartDateInvalid}
         />
-        <ModalTime {...fields[1]} />
-        <ModalInputDate {...fields[2]} />
+
         <ModalInputDate
-          {...fields[3]}
+          label={"Дата окончания"}
+          value={endDate}
+          setValue={(value) => setEndDate(value)}
+          style={{ width: "202px" }}
           startDate={startDate}
           onStartDateNotSet={() => {
             setIsStartDateInvalid(true);
             setErrorMessage("Установите дату начала");
           }}
         />
-        <CustomSelectWithLabel {...fields[4]} />
-        <CustomSelectWithLabel {...fields[5]} />
-        <CustomSelectWithLabel {...fields[6]} />
-        <CustomSelectWithLabel {...fields[7]} />
-        <CustomSelectWithLabel {...fields[8]} />
-        <ModalInput {...fields[9]} />
-        <ModalInput {...fields[10]} />
+                
+        <ModalLabledField label={"Признак ВИП"}>
+          <ModalMultipleCustomSelect
+            values={signVip}
+            setValues={setSignVip}
+            getDataHandler={Scripts.getVipStatuses}
+            isInvalid={isSignVipInvalid}
+          />
+        </ModalLabledField>
+
+        <ModalLabledField label={"Тип задачи"}>
+          <ModalMultipleCustomSelect
+            values={taskType}
+            setValues={setTaskType}
+            getDataHandler={Scripts.getTaskTypes}
+            isInvalid={isTaskTypeInvalid}
+          />
+        </ModalLabledField>
+
+        <ModalLabledField label={"Вид задачи"}>
+          <ModalMultipleCustomSelect
+            values={taskSort}
+            setValues={setTaskSort}
+            getDataHandler={Scripts.getTaskSort}
+            isInvalid={isTaskSortInvalid}
+          />
+        </ModalLabledField>
+
+        <ModalLabledField label={"Тематика"}>
+          <ModalMultipleCustomSelect
+            values={topic}
+            setValues={setTopic}
+            getDataHandler={Scripts.getTopic}
+            isInvalid={isTopicInvalid}
+          />
+        </ModalLabledField>
+
+        <ModalLabledField label={"Срочность"}>
+          <ModalMultipleCustomSelect
+            values={urgency}
+            setValues={setUrgency}
+            getDataHandler={Scripts.getUrgency}
+            isInvalid={isUrgencyInvalid}
+          />
+        </ModalLabledField>
+        
+        {/* TODO: Доработать при получении постановки */}
+        <ModalLabledField label={"Продукт"}>
+          <CustomInputAppItem
+            value={product?.value ?? ""}
+            setValue={() => {}}
+            href={""}
+            saveStateHandler={saveStateHandler}
+            />
+        </ModalLabledField>
+
+        {/* TODO: Доработать при получении постановки */}
+        <ModalLabledField label={"Страхователь"}>
+          <CustomInputAppItem
+            value={product?.value ?? ""}
+            setValue={() => {}}
+            href={""}
+            saveStateHandler={saveStateHandler}
+          />
+        </ModalLabledField>
       </ModalSla>
     </ModalWrapper>
   );
