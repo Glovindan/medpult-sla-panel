@@ -254,7 +254,7 @@ export default function SlaListTask({
       code: "id",
       name: "",
       fr: 1,
-      fixedWidth: "36px",
+      fixedWidth: "52px",
       getCustomColumComponent: getEditColumn,
     }),
     // Кнопка разворачивания
@@ -262,7 +262,7 @@ export default function SlaListTask({
       code: "id",
       name: "",
       fr: 1,
-      fixedWidth: "36px",
+      fixedWidth: "56px",
       getCustomColumComponent: getOpenColumn,
     }),
   ];
