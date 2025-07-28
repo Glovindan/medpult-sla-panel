@@ -201,6 +201,11 @@ function getDefaultSlaType(): ObjectItem {
   return {value: "Скорость обработки", code: "speed_code"}
 }
 
+/** Обновление буфера SLA */
+async function updateSlaDataBuffer(): Promise<void> {
+  await sleep(1000);
+}
+
 export default {
   getSlaTask,
   getSlaRequest,
@@ -222,5 +227,6 @@ export default {
   cancelSlaRequest,
 
   OnInit,
-  getDefaultSlaType
+  getDefaultSlaType,
+  updateSlaDataBuffer
 };

@@ -17,10 +17,12 @@ import ModalMultipleCustomSelect from "./ModalType/ModalMultipleCustomSelect/Mod
 
 interface RequestSlaModalProps {
   onClose: () => void;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 
 /** Модальное окно звонка */
-export default function RequestSlaModal({ onClose }: RequestSlaModalProps) {
+export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
@@ -152,6 +154,9 @@ export default function RequestSlaModal({ onClose }: RequestSlaModalProps) {
       channelType: channelType.map(item => item.code),
       channelSort: channelSort.map(item => item.code)
     });
+    
+    // Перезагрузить список на фоне
+    onReload()
 
     return true;
   };

@@ -16,10 +16,12 @@ import CustomInputAppItem from "../../../UIKit/CustomInputAppItem/CustomInputApp
 
 interface TaskSlaModalProps {
   onClose: () => void;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 
 /** Модальное окно звонка */
-export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
+export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
@@ -138,7 +140,7 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
   };
 
   /** Сохранить sla Задачи */
-  const savelSlaHandler = async (): Promise<boolean> => {
+  const saveSlaHandler = async (): Promise<boolean> => {
     if (!validateFieldsRequired()) {
       setErrorMessage("Заполните обязательные поля");
       return false;
@@ -171,6 +173,9 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
       product: product?.code,
       executer: executer?.code
     });
+    
+    // Перезагрузить список на фоне
+    onReload()
 
     return true;
   };
@@ -179,7 +184,7 @@ export default function TaskSlaModal({ onClose }: TaskSlaModalProps) {
     <ModalWrapper>
       <ModalSla
         title="SLA на задачу"
-        saveHandler={savelSlaHandler}
+        saveHandler={saveSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
       >

@@ -44,6 +44,21 @@ export default function SlaPanel() {
     });
   }, []);
 
+  /** Обновить список SLA задач и обращений */
+  async function reloadList() {
+    setIsLoading(true);
+    
+    // Обновить значения SLA с сервера
+    await Scripts.updateSlaDataBuffer()
+    
+    // Получить значения списков
+    const [slaDataTask, slaDataRequest] = await Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()]);
+    setSlaDataTask(slaDataTask)
+    setSlaDataRequest(slaDataRequest)
+
+    setIsLoading(false);
+  }
+
   /** Сортировка списка*/
   const sortSlaItems = <T extends { data: any }>(items: T[]): T[] => {
     const statusOrder = [
@@ -122,7 +137,7 @@ export default function SlaPanel() {
               isLoading={isLoading}
             />
             {isRequestModalOpen && (
-              <RequestSlaModal onClose={() => setIsRequestModalOpen(false)} />
+              <RequestSlaModal onClose={() => setIsRequestModalOpen(false)}  onReload={reloadList}/>
             )}
           </TabItem>
           <TabItem code={"tasks"} name={"Задачи"}>
@@ -137,7 +152,7 @@ export default function SlaPanel() {
               isLoading={isLoading}
             />
             {isTaskModalOpen && (
-              <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} />
+              <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} onReload={reloadList}/>
             )}
           </TabItem>
         </TabsWrapper>
