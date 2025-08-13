@@ -10,6 +10,9 @@ import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
 import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
+import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
+import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
+import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
 
 interface EditValidModalProps {
   title: string;
@@ -30,41 +33,6 @@ export default function EditValidModal({
   const [isEndDateInvalid, setIsEndDateInvalid] = useState(false);
   const duration = parseDuration(rowData?.value?.value ?? "");
   const [endDate, setEndDate] = useState<string>("");
-
-  const fields: FieldConfig[] = [
-    {
-      type: FieldType.lineDropdown,
-      label: "Показатель",
-      value: rowData.type?.value ?? "",
-      style: { width: "236px" },
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Значение показателя",
-      value: "",
-      style: { width: "74px" },
-      days: duration.days + "д",
-      hours: duration.hours + "ч",
-      minutes: duration.minutes + "м",
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата начала",
-      value: rowData.startDate?.value ?? "",
-      style: { width: "202px" },
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата окончания",
-      value: endDate,
-      setValue: (value) => setEndDate(value as string),
-      style: { width: "202px" },
-      isInvalid: isEndDateInvalid,
-    },
-  ];
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
@@ -108,17 +76,43 @@ export default function EditValidModal({
               className="sla-modal__status__span"
               style={{ backgroundColor: "rgb(129, 229, 146)" }}
             >
-              Дейтсвует
+              Дейcтвует
             </span>
           </div>
           {/* Поля ввода */}
           <div className="sla-modal__fields">
-            <CustomSelectWithLabel {...fields[0]} />
-            <ModalTime {...fields[1]} />
-            <ModalInputDate {...fields[2]} />
-            <ModalInputDate
-              {...fields[3]}
+            <ModalLabledField label={"Показатель"}>
+              <CustomSelect
+                value={rowData.type?.value ?? ""}
+                getDataHandler={Scripts.getSLaTypes}
+                setValue={() => {}}
+                disabled={true}
+              />
+            </ModalLabledField>
+
+            <ModalLabledField label={"Значение показателя"}>
+              <ModalTimeInput
+                days={duration.days + "д"} 
+                hours={duration.hours + "ч"} 
+                minutes={duration.minutes + "м"} 
+                disabled = {true}
+                style={{ width: "74px" }}
+              />
+            </ModalLabledField>
+            
+            <ModalInputDate 
+              label={"Дата начала"}
+              value={rowData.startDate?.value ?? ""}
+              style={{ width: "202px" }}
+              disabled={true}
+            />
+            <ModalInputDate 
+              label={"Дата окончания"}
+              value={endDate}
               startDate={rowData.startDate?.value}
+              setValue={(value) => setEndDate(value as string)}
+              style={{ width: "202px" }}
+              isInvalid={isEndDateInvalid}
             />
           </div>
           {/* Кнопки */}
