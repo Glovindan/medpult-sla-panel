@@ -7,7 +7,6 @@ interface ModalSlaProps extends React.PropsWithChildren {
   title: string;
   /** Функция для сохранения данных */
   saveHandler?: () => Promise<boolean>;
-
   /** Отменить */
   closeModal: () => void;
   /** Сообщение об ошибке */

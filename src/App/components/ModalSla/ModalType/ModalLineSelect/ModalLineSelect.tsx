@@ -4,20 +4,32 @@ import CustomSelect from "../../../../../UIKit/CustomSelect/CustomSelect";
 import { CustomSelectOption } from "../../../../../UIKit/CustomSelect/CustomSelectTypes";
 import Scripts from "../../../../shared/utils/clientScripts";
 
-/** Выпадающий список выбора Линии */
-export default function ModalLineSelect({
+export type ModalLineSelectProps = {
+  label: string;
+  value: string | string[];
+  setValue?: (value: string | string[]) => void;
+  placeholder?: string;
+  maskFunction?: (value: string) => string;
+  isRequired?: boolean;
+  getDataHandler?: () => Promise<CustomSelectOption[]>;
+  isMulti?: boolean;
+  isInvalid?: boolean;
+  disabled?: boolean;
+}
+
+/** Выпадающий список с названием */
+export default function CustomSelectWithLabel({
   label,
   value,
   setValue = () => {},
   placeholder,
-  style,
   maskFunction,
   isRequired,
   getDataHandler,
   isMulti,
   isInvalid,
   disabled,
-}: FieldConfig) {
+}: ModalLineSelectProps) {
   const defaultHandler = async (): Promise<CustomSelectOption[]> => {
     return [];
   };
@@ -38,7 +50,7 @@ export default function ModalLineSelect({
           placeholder={placeholder}
           maskFunction={maskFunction}
           getDataHandler={getDataHandler || defaultHandler}
-          isMulti={isMulti}
+          // isMulti={isMulti}
           isInvalid={isInvalid}
           disabled={disabled}
         />

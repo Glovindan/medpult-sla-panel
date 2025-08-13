@@ -10,14 +10,13 @@ export interface CustomSelectOption {
 
 export interface CustomSelectProps extends CustomInputProps {
   /** Измение состояния */
-  setValue: (value: string | string[], code?: string) => any;
+  setValue: (value: string, code?: string) => any;
   /** Получение списка значений */
   getDataHandler: () => Promise<CustomSelectOption[]>;
   /** Флажок режима просмотра */
   isViewMode?: boolean;
   /** Флажок валидации */
   isInvalid?: boolean;
-  /** Мультивыбор */
-  isMulti?: boolean;
+  /** Только для чтения */
   disabled?: boolean;
 }

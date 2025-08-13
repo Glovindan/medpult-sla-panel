@@ -5,6 +5,7 @@ import { CustomSelectOption } from "../../../UIKit/CustomSelect/CustomSelectType
 import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
 import { requestMock } from "./requestMock";
 import { taskMock } from "./taskMock";
+import { AddRequestSlaArgs, AddTaskSlaArgs } from "../types";
 
 /** Ожидание */
 function sleep(ms: number) {
@@ -115,8 +116,8 @@ async function getUrgency(): Promise<ObjectItem[]> {
 async function getTypeChannel(): Promise<ObjectItem[]> {
   await sleep(1000);
   const typeChannel: ObjectItem[] = [
-    new ObjectItem({ code: "plan", value: "Планово" }),
-    new ObjectItem({ code: "extra", value: "Экстренно" }),
+    new ObjectItem({ code: "email", value: "Email" }),
+    new ObjectItem({ code: "phone", value: "Телефон" }),
   ];
   return typeChannel;
 }
@@ -124,45 +125,47 @@ async function getTypeChannel(): Promise<ObjectItem[]> {
 async function getSortChannel(): Promise<ObjectItem[]> {
   await sleep(1000);
   const sortChannel: ObjectItem[] = [
-    new ObjectItem({ code: "plan", value: "Планово" }),
-    new ObjectItem({ code: "extra", value: "Экстренно" }),
+    new ObjectItem({ code: "dog", value: "dog@pesik.com" }),
+    new ObjectItem({ code: "cat", value: "cat@kotik.com" }),
   ];
   return sortChannel;
 }
 
 /** Добавить sla Задачи */
-async function addSlaTask(
-  days: string,
-  hours: string,
-  minutes: string,
-  startDate: string,
-  type?: string,
-  endDate?: string,
-  signVip?: string | string[],
-  taskType?: string | string[],
-  taskSort?: string | string[],
-  topic?: string | string[],
-  urgency?: string | string[],
-  product?: string,
-  executer?: string
-): Promise<void> {
-  // TODO
+async function addSlaTask(slaData: AddTaskSlaArgs): Promise<void> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    signVip,
+    taskType,
+    taskSort,
+    topic,
+    urgency,
+    product,
+    executer,
+  } = slaData;
+
   await sleep(1000);
 }
 
 /** Добавить sla Обращения */
-async function addSlaRequest(
-  days: string,
-  hours: string,
-  minutes: string,
-  startDate: string,
-  type?: string,
-  endDate?: string,
-  signVip?: string | string[],
-  channelType?: string | string[],
-  channelSort?: string | string[]
-): Promise<void> {
-  // TODO
+async function addSlaRequest(slaData: AddRequestSlaArgs): Promise<void> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    signVip,
+    channelType,
+    channelSort,
+  } = slaData;
+  
   await sleep(1000);
 }
 
@@ -193,6 +196,16 @@ async function OnInit(): Promise<void> {
   await sleep(1000);
 }
 
+/** Получить стандартный тип SLA */
+function getDefaultSlaType(): ObjectItem {
+  return {value: "Скорость обработки", code: "speed_code"}
+}
+
+/** Обновление буфера SLA */
+async function updateSlaDataBuffer(): Promise<void> {
+  await sleep(1000);
+}
+
 export default {
   getSlaTask,
   getSlaRequest,
@@ -214,4 +227,6 @@ export default {
   cancelSlaRequest,
 
   OnInit,
+  getDefaultSlaType,
+  updateSlaDataBuffer
 };

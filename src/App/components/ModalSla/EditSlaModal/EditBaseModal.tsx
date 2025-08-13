@@ -1,29 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { FieldConfig, FieldType } from "../../../shared/types.ts";
+import { AddSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
 import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
 import { parseDuration } from "../../../shared/utils/utils.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
 import ModalInputDate from "../ModalType/ModalInputDate/ModalInputDate.tsx";
-import ModalLineSelect from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
+import CustomSelectWithLabel from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
 import ModalWrapper from "../ModalWrapper/ModalWrapper.tsx";
 import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import icons from "../../../shared/icons.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
 import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
+import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
+import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
+import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
 
 interface EditBaseModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onSave: (
-    days: string,
-    hours: string,
-    minutes: string,
-    startDate: string,
-    endDate: string
-  ) => Promise<void>;
+  onSave: (slaData: AddSlaArgs) => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditBaseModal({
@@ -173,7 +170,7 @@ export default function EditBaseModal({
     }
     setErrorMessage("");
     // ... логика сохранения
-    await onSave(days, hours, minutes, startDate, endDate);
+    await onSave({days: days, hours: hours, minutes: minutes, startDate: startDate, endDate: endDate});
     onClose();
     return true;
   };
@@ -199,10 +196,38 @@ export default function EditBaseModal({
             className="sla-modal__fields"
             style={{ borderBottom: "1px solid #D2D3D6" }}
           >
-            <ModalLineSelect {...fields[0]} />
-            <ModalTime {...fields[1]} />
-            <ModalInputDate {...fields[2]} />
-            <ModalInputDate {...fields[3]} />
+            <ModalLabledField label={"Показатель"}>
+              <CustomSelect
+                value={rowData.type?.value ?? ""}
+                getDataHandler={Scripts.getSLaTypes}
+                setValue={() => {}}
+                disabled={true}
+              />
+            </ModalLabledField>
+            
+            <ModalLabledField label={"Значение показателя"}>
+              <ModalTimeInput
+                days={duration.days + "д"} 
+                hours={duration.hours + "ч"} 
+                minutes={duration.minutes + "м"} 
+                disabled = {true}
+                style={{ width: "74px" }}
+              />
+            </ModalLabledField>
+                        
+            <ModalInputDate 
+              label={"Дата начала"}
+              value={rowData.startDate?.value ?? ""}
+              style={{ width: "202px" }}
+              disabled={true}
+            />
+
+            <ModalInputDate 
+              label={"Дата окончания"}
+              value={rowData.endDate?.value}
+              style={{ width: "202px" }}
+              disabled={true}
+            />
           </div>
           <div className="sla-modal__status">
             <span
@@ -214,11 +239,52 @@ export default function EditBaseModal({
           </div>
           {/* Поля ввода */}
           <div className="sla-modal__fields">
-            <ModalLineSelect {...fields[0]} />
-            <ModalTime {...fields[4]} />
+            <ModalLabledField label={"Показатель"}>
+              <CustomSelect
+                value={rowData.type?.value ?? ""}
+                getDataHandler={Scripts.getSLaTypes}
+                setValue={() => {}}
+                disabled={true}
+              />
+            </ModalLabledField>
+
+            {/* <ModalTime {...fields[4]} />
             <ModalInputDate {...fields[5]} />
             <ModalInputDate
               {...fields[6]}
+              startDate={startDate}
+              onStartDateNotSet={() => {
+                setIsStartDateInvalid(true);
+                setErrorMessage("Установите дату начала");
+              }}
+            /> */}
+            
+            <ModalLabledField label={"Значение показателя"} isRequired={true}>
+              <ModalTimeInput
+                days={days}
+                setDays={setDays}
+                hours={hours}
+                setHours={setHours}
+                minutes={minutes}
+                setMinutes={setMinutes}
+                isInvalid={isTimeInvalid}
+              />
+            </ModalLabledField>
+                        
+            <ModalInputDate 
+              label={"Дата начала"}
+              value={startDate}
+              style={{ width: "202px" }}
+              setValue={(value) => setStartDate(value as string)}
+              isRequired={true}
+              isInvalid={isStartDateInvalid}
+            />
+
+            <ModalInputDate 
+              label={"Дата окончания"}
+              value={endDate}
+              style={{ width: "202px" }}
+              setValue={(value) => setEndDate(value as string)}
               startDate={startDate}
               onStartDateNotSet={() => {
                 setIsStartDateInvalid(true);

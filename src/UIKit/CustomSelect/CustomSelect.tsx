@@ -51,20 +51,8 @@ function CustomSelect(props: CustomSelectProps) {
     value: string;
     code: string;
   }) => {
-    if (props.isMulti) {
-      const current = Array.isArray(props.value) ? props.value : [];
-      const exists = current.includes(value);
-
-      const newValues = exists
-        ? current.filter((v) => v !== value)
-        : [...current, value];
-
-      props.setValue(newValues);
-      setIsOpen(false);
-    } else {
-      props.setValue(value, code);
-      setIsOpen(false);
-    }
+    props.setValue(value, code);
+    setIsOpen(false);
   };
 
   useEffect(() => {
