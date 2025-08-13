@@ -157,7 +157,7 @@ export default function SlaListTask({
     new ListColumnData({
       code: "isBasic",
       name: "",
-      fr: 1,
+      fr: 0.5,
       fixedWidth: "40px",
       contentPadding: "17px 11px",
       getCustomColumComponent: getSlaBasicColumn,
@@ -178,13 +178,13 @@ export default function SlaListTask({
     new ListColumnData({
       code: "value",
       name: "Значение показателя",
-      fr: 1,
+      fr: 2,
     }),
     // Статус
     new ListColumnData({
       code: "status",
       name: "Статус",
-      fr: 1,
+      fr: 2,
       fixedWidth: "170px",
       getCustomColumComponent: getSlaStatusColumn,
     }),

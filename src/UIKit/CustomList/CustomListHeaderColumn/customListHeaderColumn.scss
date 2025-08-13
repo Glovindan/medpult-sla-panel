@@ -10,9 +10,12 @@
   align-items: center;
   height: 100%;
   //overflow: hidden;
+  //white-space: nowrap;
+  //text-overflow: ellipsis;
   overflow: visible !important;
   white-space: normal !important;
   word-break: break-word !important;
+
   padding: 8px 16px;
 
   &__name {
@@ -40,6 +43,9 @@
     letter-spacing: 0.0025em;
     overflow: visible;
     white-space: normal;
+    //overflow: hidden;
+    //white-space: nowrap;
+    //text-overflow: ellipsis;
     text-transform: uppercase;
   }
 

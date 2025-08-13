@@ -170,7 +170,13 @@ export default function EditBaseModal({
     }
     setErrorMessage("");
     // ... логика сохранения
-    await onSave({days: days, hours: hours, minutes: minutes, startDate: startDate, endDate: endDate});
+    await onSave({
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      startDate: startDate,
+      endDate: endDate,
+    });
     onClose();
     return true;
   };
@@ -188,7 +194,7 @@ export default function EditBaseModal({
               className="sla-modal__status__span"
               style={{ backgroundColor: "rgb(129, 229, 146)" }}
             >
-              Дейтсвует
+              Действует
             </span>
           </div>
           {/* Поля ввода */}
@@ -204,25 +210,25 @@ export default function EditBaseModal({
                 disabled={true}
               />
             </ModalLabledField>
-            
+
             <ModalLabledField label={"Значение показателя"}>
               <ModalTimeInput
-                days={duration.days + "д"} 
-                hours={duration.hours + "ч"} 
-                minutes={duration.minutes + "м"} 
-                disabled = {true}
+                days={duration.days + "д"}
+                hours={duration.hours + "ч"}
+                minutes={duration.minutes + "м"}
+                disabled={true}
                 style={{ width: "74px" }}
               />
             </ModalLabledField>
-                        
-            <ModalInputDate 
+
+            <ModalInputDate
               label={"Дата начала"}
               value={rowData.startDate?.value ?? ""}
               style={{ width: "202px" }}
               disabled={true}
             />
 
-            <ModalInputDate 
+            <ModalInputDate
               label={"Дата окончания"}
               value={rowData.endDate?.value}
               style={{ width: "202px" }}
@@ -258,7 +264,7 @@ export default function EditBaseModal({
                 setErrorMessage("Установите дату начала");
               }}
             /> */}
-            
+
             <ModalLabledField label={"Значение показателя"} isRequired={true}>
               <ModalTimeInput
                 days={days}
@@ -270,8 +276,8 @@ export default function EditBaseModal({
                 isInvalid={isTimeInvalid}
               />
             </ModalLabledField>
-                        
-            <ModalInputDate 
+
+            <ModalInputDate
               label={"Дата начала"}
               value={startDate}
               style={{ width: "202px" }}
@@ -280,7 +286,7 @@ export default function EditBaseModal({
               isInvalid={isStartDateInvalid}
             />
 
-            <ModalInputDate 
+            <ModalInputDate
               label={"Дата окончания"}
               value={endDate}
               style={{ width: "202px" }}
