@@ -83,7 +83,7 @@ async function getTaskTypes(): Promise<ObjectItem[]> {
   return taskTypes;
 }
 /** Получение списка вид Задачи */
-async function getTaskSort(): Promise<ObjectItem[]> {
+async function getTaskSort(typeCode?: string): Promise<ObjectItem[]> {
   await sleep(1000);
   const taskSort: ObjectItem[] = [
     new ObjectItem({ code: "smp", value: "СМП" }),
@@ -92,9 +92,17 @@ async function getTaskSort(): Promise<ObjectItem[]> {
   ];
   return taskSort;
 }
+/** Получение типа задачи по коду вида задачи */
+async function getParentTaskTypeBySortCode(
+  sortCode: string
+): Promise<ObjectItem> {
+  const taskSort = new ObjectItem({ code: "smp", value: "СМП" });
+
+  return taskSort;
+}
 
 /** Получение списка тематики */
-async function getTopic(): Promise<ObjectItem[]> {
+async function getTopic(sortCode?: string): Promise<ObjectItem[]> {
   await sleep(1000);
   const topic: ObjectItem[] = [
     new ObjectItem({ code: "incident", value: "Инцидент" }),
@@ -165,7 +173,7 @@ async function addSlaRequest(slaData: AddRequestSlaArgs): Promise<void> {
     channelType,
     channelSort,
   } = slaData;
-  
+
   await sleep(1000);
 }
 
@@ -198,7 +206,7 @@ async function OnInit(): Promise<void> {
 
 /** Получить стандартный тип SLA */
 function getDefaultSlaType(): ObjectItem {
-  return {value: "Скорость обработки", code: "speed_code"}
+  return { value: "Скорость обработки", code: "speed_code" };
 }
 
 /** Обновление буфера SLA */
@@ -228,5 +236,6 @@ export default {
 
   OnInit,
   getDefaultSlaType,
-  updateSlaDataBuffer
+  updateSlaDataBuffer,
+  getParentTaskTypeBySortCode,
 };

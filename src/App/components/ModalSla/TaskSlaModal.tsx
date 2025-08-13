@@ -253,9 +253,10 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
         <ModalLabledField label={"Тип задачи"}>
           <CustomSelect
             value={taskType?.value ?? ""}
-            setValue={(value, code) =>
-              setTaskType({ value: value, code: code ?? "" })
-            }
+            setValue={(value, code) => {
+              setTaskType({ value: value, code: code ?? "" });
+              setTaskSort(null);
+            }}
             getDataHandler={Scripts.getTaskTypes}
             isInvalid={isTaskTypeInvalid}
           />
@@ -264,10 +265,19 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
         <ModalLabledField label={"Вид задачи"}>
           <CustomSelect
             value={taskSort?.value ?? ""}
-            setValue={(value, code) =>
-              setTaskSort({ value: value, code: code ?? "" })
-            }
-            getDataHandler={Scripts.getTaskSort}
+            setValue={async (value, code) => {
+              setTaskSort({ value: value, code: code ?? "" });
+              setTopic(null);
+
+              if (code) {
+                const parentType =
+                  await Scripts.getParentTaskTypeBySortCode(code);
+                if (parentType) {
+                  setTaskType(parentType);
+                }
+              }
+            }}
+            getDataHandler={() => Scripts.getTaskSort(taskType?.code)}
             isInvalid={isTaskSortInvalid}
           />
         </ModalLabledField>
@@ -278,7 +288,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
             setValue={(value, code) =>
               setTopic({ value: value, code: code ?? "" })
             }
-            getDataHandler={Scripts.getTopic}
+            getDataHandler={() => Scripts.getTopic(taskSort?.code)}
             isInvalid={isTopicInvalid}
           />
         </ModalLabledField>
