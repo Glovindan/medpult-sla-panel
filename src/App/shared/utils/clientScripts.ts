@@ -173,7 +173,7 @@ async function addSlaRequest(slaData: AddRequestSlaArgs): Promise<void> {
     channelType,
     channelSort,
   } = slaData;
-
+  console.log("channelType", channelType);
   await sleep(1000);
 }
 

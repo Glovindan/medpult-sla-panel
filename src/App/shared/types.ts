@@ -59,15 +59,15 @@ export interface EditSlaArgs extends AddSlaArgs {
 /** Аргументы для добавления SLA задачи */
 export interface AddTaskSlaArgs extends AddSlaArgs {
   /** Признак важности */
-  signVip?: string;
+  signVip?: string[];
   /** Тип задачи */
-  taskType?: string;
+  taskType?: string[];
   /** Вид задачи */
-  taskSort?: string;
+  taskSort?: string[];
   /** Тематика задачи */
-  topic?: string;
+  topic?: string[];
   /** Срочность задачи */
-  urgency?: string;
+  urgency?: string[];
   /** Продукт */
   product?: string;
   /** Страхователь */
@@ -77,9 +77,9 @@ export interface AddTaskSlaArgs extends AddSlaArgs {
 /** Аргументы для добавления SLA обращения */
 export interface AddRequestSlaArgs extends AddSlaArgs {
   /** Признак важности */
-  signVip?: string;
+  signVip?: string[];
   /** Тип канала */
-  channelType?: string;
+  channelType?: string[];
   /** Вид канала (Линия) */
-  channelSort?: string;
+  channelSort?: string[];
 }

@@ -126,6 +126,9 @@ function CustomListRowColumn(props: ListColumnProps) {
               ? "custom-list-row-column__more"
               : "custom-list-row-column__less"
           }
+          style={{
+            whiteSpace: props.code === "conditions" ? "pre-line" : "nowrap",
+          }}
         >
           {data?.value ?? ""}
         </span>

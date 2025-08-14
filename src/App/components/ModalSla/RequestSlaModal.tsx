@@ -155,9 +155,9 @@ export default function RequestSlaModal({
       endDate: endDate,
       type: type.code,
       //signVip: signVip.map(item => item.code),
-      signVip: signVip?.code ?? "",
-      channelType: channelType?.code ?? "",
-      channelSort: channelSort?.code ?? "",
+      signVip: signVip ? [signVip.code] : [],
+      channelType: channelType ? [channelType.code] : [],
+      channelSort: channelSort ? [channelSort.code] : [],
     });
 
     // Перезагрузить список на фоне
