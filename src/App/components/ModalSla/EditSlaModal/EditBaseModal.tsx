@@ -41,71 +41,65 @@ export default function EditBaseModal({
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
-  const fields: FieldConfig[] = [
-    {
-      type: FieldType.lineDropdown,
-      label: "Показатель",
-      value: rowData.type?.value ?? "",
-      style: { width: "236px" },
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Значение показателя",
-      value: "",
-      style: { width: "74px" },
-      days: duration.days + "д",
-      hours: duration.hours + "ч",
-      minutes: duration.minutes + "м",
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата начала",
-      value: rowData.startDate?.value ?? "",
-      style: { width: "202px" },
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата окончания",
-      value: rowData.endDate?.value ?? "",
-      style: { width: "202px" },
-      disabled: true,
-    },
+  const [currentEndDate, setCurrentEndDate] = useState<string>(
+    rowData.endDate?.value ?? ""
+  );
+  //При установке даты начала у планируемого sla, дата окончания у действующего sla изменяется на -1
+  useEffect(() => {
+    if (startDate) {
+      const [day, month, year] = startDate.split(".");
+      const newStart = new Date(+year, +month - 1, +day);
 
-    {
-      type: FieldType.input,
-      label: "Значение показателя",
-      value: "",
-      setValue: () => {},
-      style: { width: "72px" },
-      days: days,
-      setDays: setDays,
-      hours: hours,
-      setHours: setHours,
-      minutes: minutes,
-      setMinutes: setMinutes,
-      isRequired: true,
-      isInvalid: isTimeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата начала",
-      value: startDate,
-      setValue: (value) => setStartDate(value as string),
-      style: { width: "202px" },
-      isRequired: true,
-      isInvalid: isStartDateInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата окончания",
-      value: endDate,
-      setValue: (value) => setEndDate(value as string),
-      style: { width: "202px" },
-    },
-  ];
+      if (!isNaN(newStart.getTime())) {
+        const previousDay = new Date(newStart);
+        previousDay.setDate(newStart.getDate() - 1);
+
+        const formatted =
+          String(previousDay.getDate()).padStart(2, "0") +
+          "." +
+          String(previousDay.getMonth() + 1).padStart(2, "0") +
+          "." +
+          previousDay.getFullYear();
+
+        setCurrentEndDate(formatted);
+      }
+    }
+  }, [startDate]);
+
+  //Вычисляем минимальную дату, которую можно выставить в поле "дата начала"
+  const getMinPlannedStartDate = () => {
+    if (!rowData.endDate?.value) return "";
+
+    const [day, month, year] = rowData.endDate.value.split(".");
+    const endDate = new Date(+year, +month - 1, +day);
+    endDate.setDate(endDate.getDate() + 1); // +1 день после даты окончания
+
+    const yyyy = endDate.getFullYear();
+    const mm = String(endDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(endDate.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const minPlannedStartDate = getMinPlannedStartDate();
+
+  //Сбрасываем дату окончания, если польхователь изменил дату начала на большую чем дата окончания
+  useEffect(() => {
+    if (!startDate) return;
+    if (!endDate) return;
+
+    const [startDay, startMonth, startYear] = startDate.split(".");
+    const newStart = new Date(+startYear, +startMonth - 1, +startDay);
+
+    const [endDay, endMonth, endYear] = endDate.split(".");
+    const currentEnd = new Date(+endYear, +endMonth - 1, +endDay);
+
+    // Если текущая дата окончания меньше новой даты начала
+    if (currentEnd <= newStart) {
+      // Сбрасываем дату окончания, чтобы пользователь выбрал корректную
+      setEndDate("");
+    }
+  }, [startDate, endDate]);
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
@@ -230,7 +224,8 @@ export default function EditBaseModal({
 
             <ModalInputDate
               label={"Дата окончания"}
-              value={rowData.endDate?.value}
+              // value={rowData.endDate?.value}
+              value={currentEndDate}
               style={{ width: "202px" }}
               disabled={true}
             />
@@ -254,17 +249,6 @@ export default function EditBaseModal({
               />
             </ModalLabledField>
 
-            {/* <ModalTime {...fields[4]} />
-            <ModalInputDate {...fields[5]} />
-            <ModalInputDate
-              {...fields[6]}
-              startDate={startDate}
-              onStartDateNotSet={() => {
-                setIsStartDateInvalid(true);
-                setErrorMessage("Установите дату начала");
-              }}
-            /> */}
-
             <ModalLabledField label={"Значение показателя"} isRequired={true}>
               <ModalTimeInput
                 days={days}
@@ -284,6 +268,7 @@ export default function EditBaseModal({
               setValue={(value) => setStartDate(value as string)}
               isRequired={true}
               isInvalid={isStartDateInvalid}
+              minDate={minPlannedStartDate}
             />
 
             <ModalInputDate

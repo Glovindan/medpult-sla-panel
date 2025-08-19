@@ -23,6 +23,7 @@ interface TaskSlaModalProps {
 /** Модальное окно звонка */
 export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isSlaExists, setIsSlaExists] = useState(false);
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -35,7 +36,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
   const [isUrgencyInvalid, setIsSUrgencyInvalid] = useState(false);
 
   // Показатель
-  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaType());
+  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaTypeTask());
 
   // Значение показателя дни
   const [days, setDays] = useState<string>("");
@@ -163,7 +164,31 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
       return false;
     }
 
+    const isSlaTask = await Scripts.checkSlaTask({
+      days,
+      hours,
+      minutes,
+      startDate,
+      type: type.code,
+      signVip: signVip ? [signVip.code] : [],
+      taskType: taskType ? [taskType.code] : [],
+      taskSort: taskSort ? [taskSort.code] : [],
+      topic: topic ? [topic.code] : [],
+      urgency: urgency ? [urgency.code] : [],
+      product: product?.code,
+      executer: executer?.code,
+    });
+
+    if (isSlaTask) {
+      setErrorMessage(
+        ' SLA с такими параметрами существует. Для редактирования нажмите кнопку "Перейти"'
+      );
+      setIsSlaExists(true);
+      return false;
+    }
+
     setErrorMessage("");
+    setIsSlaExists(false);
 
     await Scripts.addSlaTask({
       days: days,
@@ -187,6 +212,12 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
     return true;
   };
 
+  //Кнопка "Перейти" если такое sla уже существует
+  const handleRedirect = async (): Promise<void> => {
+    await Scripts.redirectSlaTask();
+    onClose();
+  };
+
   return (
     <ModalWrapper>
       <ModalSla
@@ -194,6 +225,8 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
         saveHandler={saveSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
+        isSlaExists={isSlaExists}
+        onRedirect={handleRedirect}
       >
         <ModalLabledField label={"Показатель"} isRequired={true}>
           <CustomSelect
@@ -201,8 +234,9 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
             setValue={(value, code) =>
               setType({ value: value, code: code ?? "" })
             }
-            getDataHandler={Scripts.getSLaTypes}
+            getDataHandler={Scripts.getSLaTypesTask}
             isInvalid={isTypeInvalid}
+            showClearButton={false}
           />
         </ModalLabledField>
 

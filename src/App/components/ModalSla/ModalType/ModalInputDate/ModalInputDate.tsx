@@ -14,7 +14,8 @@ export type ModalInputDateProps = {
   disabled?: boolean;
   startDate?: string;
   onStartDateNotSet?: () => void;
-}
+  minDate?: string;
+};
 
 /** Поле ввода даты в модальном окне */
 export default function ModalInputDate({
@@ -27,6 +28,7 @@ export default function ModalInputDate({
   disabled,
   startDate,
   onStartDateNotSet,
+  minDate,
 }: ModalInputDateProps) {
   return (
     // TODO: Вынести логику с датами из CustomInputDate и затем вынести ModalLabledField
@@ -41,6 +43,7 @@ export default function ModalInputDate({
         startDate={startDate}
         onStartDateNotSet={onStartDateNotSet}
         label={label}
+        minDate={minDate}
       />
     </ModalLabledField>
   );

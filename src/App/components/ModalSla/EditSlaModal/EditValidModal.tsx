@@ -64,6 +64,29 @@ export default function EditValidModal({
     onSwitchToEditBaseModal();
   };
 
+  /** Мин дата окончания - завтра */
+  function getMinEndDate(startDateStr?: string): string {
+    const today = new Date();
+    today.setDate(today.getDate() + 1); // завтра
+    let tomorrowDate = today;
+
+    if (startDateStr) {
+      const [day, month, year] = startDateStr.split(".");
+      const startDate = new Date(`${year}-${month}-${day}`);
+      startDate.setDate(startDate.getDate() + 1);
+
+      if (startDate > tomorrowDate) {
+        tomorrowDate = startDate;
+      }
+    }
+
+    const yyyy = tomorrowDate.getFullYear();
+    const mm = String(tomorrowDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(tomorrowDate.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
   return (
     <ModalWrapper>
       <div className="sla-modal">
@@ -92,27 +115,28 @@ export default function EditValidModal({
 
             <ModalLabledField label={"Значение показателя"}>
               <ModalTimeInput
-                days={duration.days + "д"} 
-                hours={duration.hours + "ч"} 
-                minutes={duration.minutes + "м"} 
-                disabled = {true}
+                days={duration.days + "д"}
+                hours={duration.hours + "ч"}
+                minutes={duration.minutes + "м"}
+                disabled={true}
                 style={{ width: "74px" }}
               />
             </ModalLabledField>
-            
-            <ModalInputDate 
+
+            <ModalInputDate
               label={"Дата начала"}
               value={rowData.startDate?.value ?? ""}
               style={{ width: "202px" }}
               disabled={true}
             />
-            <ModalInputDate 
+            <ModalInputDate
               label={"Дата окончания"}
               value={endDate}
               startDate={rowData.startDate?.value}
               setValue={(value) => setEndDate(value as string)}
               style={{ width: "202px" }}
               isInvalid={isEndDateInvalid}
+              minDate={getMinEndDate(rowData.startDate?.value)}
             />
           </div>
           {/* Кнопки */}

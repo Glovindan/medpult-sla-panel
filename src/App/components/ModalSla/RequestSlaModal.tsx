@@ -27,6 +27,7 @@ export default function RequestSlaModal({
   onReload,
 }: RequestSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isSlaExists, setIsSlaExists] = useState(false);
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -38,7 +39,9 @@ export default function RequestSlaModal({
 
   // const [type, setType] = useState<string>("Скорость обработки");
   // Показатель
-  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaType()); // TODO: Реализовать функцию получения стандартной категории
+  const [type, setType] = useState<ObjectItem>(
+    Scripts.getDefaultSlaTypeRequest()
+  ); // TODO: Реализовать функцию получения стандартной категории
 
   // Значение показателя дни
   const [days, setDays] = useState<string>("");
@@ -145,7 +148,28 @@ export default function RequestSlaModal({
       setErrorMessage("Укажите хотя бы один из критериев");
       return false;
     }
+
+    const isSlaRequest = await Scripts.checkSlaRequest({
+      days,
+      hours,
+      minutes,
+      startDate,
+      type: type.code,
+      signVip: signVip ? [signVip.code] : [],
+      channelType: channelType ? [channelType.code] : [],
+      channelSort: channelSort ? [channelSort.code] : [],
+    });
+
+    if (isSlaRequest) {
+      setErrorMessage(
+        ' SLA с такими параметрами существует. Для редактирования нажмите кнопку "Перейти"'
+      );
+      setIsSlaExists(true);
+      return false;
+    }
+
     setErrorMessage("");
+    setIsSlaExists(false);
 
     await Scripts.addSlaRequest({
       days: days,
@@ -165,6 +189,13 @@ export default function RequestSlaModal({
 
     return true;
   };
+
+  //Кнопка "Перейти" если такое sla уже существует
+  const handleRedirect = async (): Promise<void> => {
+    await Scripts.redirectSlaRequest();
+    onClose();
+  };
+
   return (
     <ModalWrapper>
       <ModalSla
@@ -172,6 +203,8 @@ export default function RequestSlaModal({
         saveHandler={saveSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
+        isSlaExists={isSlaExists}
+        onRedirect={handleRedirect}
       >
         <ModalLabledField label={"Показатель"} isRequired={true}>
           <CustomSelect
@@ -179,8 +212,9 @@ export default function RequestSlaModal({
             setValue={(value, code) =>
               setType({ value: value, code: code ?? "" })
             }
-            getDataHandler={Scripts.getSLaTypes}
+            getDataHandler={Scripts.getSLaTypesRequest}
             isInvalid={isTypeInvalid}
+            showClearButton={false}
           />
         </ModalLabledField>
 

@@ -38,6 +38,26 @@ export default function EditPlanModal({
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
+  //Очищаем дату окончания, если дата начала больше
+  useEffect(() => {
+    if (!startDate) return;
+
+    const [day, month, year] = startDate.split(".");
+    const startDateObj = new Date(`${year}-${month}-${day}`);
+    startDateObj.setDate(startDateObj.getDate() + 1); // день после начала
+
+    const endDateObj = endDate
+      ? (() => {
+          const [d, m, y] = endDate.split(".");
+          return new Date(`${y}-${m}-${d}`);
+        })()
+      : null;
+
+    if (endDateObj && endDateObj < startDateObj) {
+      setEndDate(""); // очищаем дату окончания
+    }
+  }, [startDate, endDate]);
+
   const fields: FieldConfig[] = [
     {
       type: FieldType.lineDropdown,
@@ -157,17 +177,6 @@ export default function EditPlanModal({
           </div>
           {/* Поля ввода */}
           <div className="sla-modal__fields">
-            {/* <CustomSelectWithLabel {...fields[0]} /> */}
-            {/* <ModalTime {...fields[1]} /> */}
-            {/* <ModalInputDate {...fields[2]} />
-            <ModalInputDate
-              {...fields[3]}
-              startDate={startDate}
-              onStartDateNotSet={() => {
-                setIsStartDateInvalid(true);
-                setErrorMessage("Установите дату начала");
-              }}
-            /> */}
             <ModalLabledField label={"Показатель"}>
               <CustomSelect
                 value={rowData.type?.value ?? ""}
