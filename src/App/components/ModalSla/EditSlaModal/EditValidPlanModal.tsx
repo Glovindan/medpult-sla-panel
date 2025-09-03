@@ -16,34 +16,28 @@ import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
 
-interface EditBaseModalProps {
+interface EditValidPlanModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onSave: (slaData: AddSlaArgs) => Promise<void>;
-  showStarIcon?: boolean;
+  onComplete: (endDate: string) => Promise<void>;
+  onSwitchToEditBaseModal: () => void;
 }
 /** Модальное окно звонка */
-export default function EditBaseModal({
+export default function EditValidPlanModal({
   title,
   onClose,
   rowData,
-  onSave,
-  showStarIcon,
-}: EditBaseModalProps) {
+  onComplete,
+  onSwitchToEditBaseModal,
+}: EditValidPlanModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isTimeInvalid, setIsTimeInvalid] = useState(false);
   const [isEndDateActiveInvalid, setIsEndDateActiveInvalid] = useState(false);
-  const [isStartDateInvalid, setIsStartDateInvalid] = useState(false);
 
   const duration = parseDuration(rowData?.value?.value ?? "");
 
-  const [days, setDays] = useState<string>("");
-  const [hours, setHours] = useState<string>("");
-  const [minutes, setMinutes] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDateActive, setEndDateActive] = useState<string>("");
-  const [endDatePlanned, setEndDatePlanned] = useState<string>("");
 
   // Инициализация даты окончания при открытии модалки
   useEffect(() => {
@@ -76,99 +70,26 @@ export default function EditBaseModal({
     }
   }, [endDateActive]);
 
-  /** Сбрасываем дату окончания, если дата начала больше */
-  useEffect(() => {
-    if (!startDate || !endDatePlanned) return;
-
-    const [startDay, startMonth, startYear] = startDate.split(".");
-    const [endDay, endMonth, endYear] = endDatePlanned.split(".");
-
-    const start = new Date(+startYear, +startMonth - 1, +startDay);
-    const end = new Date(+endYear, +endMonth - 1, +endDay);
-
-    if (start >= end) {
-      setEndDatePlanned("");
-    }
-  }, [startDate, endDatePlanned]);
-
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
     let isValid = true;
-    if (!days.trim() && !hours.trim() && !minutes.trim()) {
-      setIsTimeInvalid(true);
-      isValid = false;
-    } else {
-      setIsTimeInvalid(false);
-    }
-
     if (!endDateActive.trim()) {
       setIsEndDateActiveInvalid(true);
       isValid = false;
     } else {
       setIsEndDateActiveInvalid(false);
     }
-
-    if (!startDate) {
-      setIsStartDateInvalid(true);
-      isValid = false;
-    } else {
-      setIsStartDateInvalid(false);
-    }
     return isValid;
   };
 
-  /** Проверка на поле значение показателя */
-  const validateSlaValue = () => {
-    let isValid = true;
-    if (
-      (hours.trim() && hours && parseInt(hours) > 24) ||
-      (minutes.trim() && minutes && parseInt(minutes) > 60)
-    ) {
-      setIsTimeInvalid(true);
-      isValid = false;
-    } else {
-      setIsTimeInvalid(false);
-    }
-    return isValid;
-  };
-
-  /** Проверка что поле значение показателя не равно текущему */
-  function validateDuration() {
-    let isValid = true;
-    if (
-      Number(days) === Number(duration.days) &&
-      Number(hours) === Number(duration.hours) &&
-      Number(minutes) === Number(duration.minutes)
-    ) {
-      setIsTimeInvalid(true);
-      isValid = false;
-    } else {
-      setIsTimeInvalid(false);
-    }
-    return isValid;
-  }
-
-  /** Сохранить sla Задачи */
-  const savelSlaHandler = async (): Promise<boolean> => {
+  /** Завершить sla Задачи */
+  const completelSlaHandler = async (): Promise<boolean> => {
     if (!validateFieldsRequired()) {
       setErrorMessage("Заполните обязательные поля");
       return false;
-    } else if (!validateSlaValue()) {
-      setErrorMessage("Укажите корректно часы и минуты");
-      return false;
-    } else if (!validateDuration()) {
-      setErrorMessage("Данное значение установлено в текущей версии");
-      return false;
     }
     setErrorMessage("");
-    // ... логика сохранения
-    await onSave({
-      days: days,
-      hours: hours,
-      minutes: minutes,
-      startDate: startDate,
-      endDate: endDatePlanned,
-    });
+    await onComplete(endDateActive);
     onClose();
     return true;
   };
@@ -181,7 +102,6 @@ export default function EditBaseModal({
         </div>
         <div className="sla-modal__content" style={{ width: "520px" }}>
           <div className="sla-modal__status">
-            {showStarIcon && icons.Star}
             <span
               className="sla-modal__status__span"
               style={{ backgroundColor: "rgb(129, 229, 146)" }}
@@ -225,9 +145,9 @@ export default function EditBaseModal({
               value={endDateActive}
               setValue={(value) => setEndDateActive(value as string)}
               style={{ width: "202px" }}
+              isRequired={true}
               startDate={rowData.startDate?.value}
               isInvalid={isEndDateActiveInvalid}
-              isRequired={true}
             />
           </div>
           <div className="sla-modal__status">
@@ -251,13 +171,11 @@ export default function EditBaseModal({
 
             <ModalLabledField label={"Значение показателя"} isRequired={true}>
               <ModalTimeInput
-                days={days}
-                setDays={setDays}
-                hours={hours}
-                setHours={setHours}
-                minutes={minutes}
-                setMinutes={setMinutes}
-                isInvalid={isTimeInvalid}
+                days={duration.days + "д"}
+                hours={duration.hours + "ч"}
+                minutes={duration.minutes + "м"}
+                disabled={true}
+                style={{ width: "74px" }}
               />
             </ModalLabledField>
 
@@ -267,26 +185,29 @@ export default function EditBaseModal({
               style={{ width: "202px" }}
               disabled={true}
               isRequired={true}
-              isInvalid={isStartDateInvalid}
             />
 
             <ModalInputDate
               label={"Дата окончания"}
-              value={endDatePlanned}
-              setValue={(value) => setEndDatePlanned(value as string)}
+              value={""}
               style={{ width: "202px" }}
-              startDate={startDate}
-              onStartDateNotSet={() => {
-                setErrorMessage("Установите дату окончания действующего SLA");
-                setIsEndDateActiveInvalid(true);
-              }}
+              disabled={true}
             />
+          </div>
+          {/* Предупреждение */}
+          <div className="sla-modal__warning">
+            При нажатии кнопки “Завершить” планируемое SLA аннулируется
           </div>
           {/* Кнопки */}
           <div className="sla-modal__buttons">
             <Button
-              title={"Применить"}
-              clickHandler={savelSlaHandler}
+              title={"Завершить"}
+              clickHandler={completelSlaHandler}
+              style={{ width: "100%", backgroundColor: "#FF4545" }}
+            />
+            <Button
+              title={"Изменить"}
+              clickHandler={onSwitchToEditBaseModal}
               style={{ width: "100%" }}
             />
             <Button

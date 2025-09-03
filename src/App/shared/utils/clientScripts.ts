@@ -67,7 +67,10 @@ async function getSLaTypesTask(): Promise<ObjectItem[]> {
   await sleep(1000);
   const slaTypes: ObjectItem[] = [
     new ObjectItem({ code: "test", value: "Скорость решения задачи" }),
-    new ObjectItem({ code: "test1", value: "Скорость решения задачи" }),
+    new ObjectItem({
+      code: "test1",
+      value: "Скорость решения задачи смежного подразделения",
+    }),
   ];
 
   return slaTypes;
@@ -123,7 +126,10 @@ async function getParentTaskTypeBySortCode(
 }
 
 /** Получение списка тематики */
-async function getTopic(sortCode?: string): Promise<ObjectItem[]> {
+async function getTopic(
+  typeCode?: string,
+  sortCode?: string
+): Promise<ObjectItem[]> {
   await sleep(1000);
   const topic: ObjectItem[] = [
     new ObjectItem({ code: "incident", value: "Инцидент" }),

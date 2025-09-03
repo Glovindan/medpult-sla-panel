@@ -290,6 +290,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
             setValue={(value, code) => {
               setTaskType({ value: value, code: code ?? "" });
               setTaskSort(null);
+              setTopic(null);
             }}
             getDataHandler={Scripts.getTaskTypes}
             isInvalid={isTaskTypeInvalid}
@@ -322,7 +323,9 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
             setValue={(value, code) =>
               setTopic({ value: value, code: code ?? "" })
             }
-            getDataHandler={() => Scripts.getTopic(taskSort?.code)}
+            getDataHandler={() =>
+              Scripts.getTopic(taskType?.code, taskSort?.code)
+            }
             isInvalid={isTopicInvalid}
           />
         </ModalLabledField>
