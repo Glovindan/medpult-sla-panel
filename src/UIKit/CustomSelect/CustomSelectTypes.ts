@@ -19,4 +19,5 @@ export interface CustomSelectProps extends CustomInputProps {
   isInvalid?: boolean;
   /** Только для чтения */
   disabled?: boolean;
+  showClearButton?: boolean;
 }

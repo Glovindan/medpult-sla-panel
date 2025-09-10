@@ -21,6 +21,7 @@ interface EditBaseModalProps {
   onClose: () => void;
   rowData: SlaRowDataGroup;
   onSave: (slaData: AddSlaArgs) => Promise<void>;
+  showStarIcon?: boolean;
 }
 /** Модальное окно звонка */
 export default function EditBaseModal({
@@ -28,9 +29,11 @@ export default function EditBaseModal({
   onClose,
   rowData,
   onSave,
+  showStarIcon,
 }: EditBaseModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
+  const [isEndDateActiveInvalid, setIsEndDateActiveInvalid] = useState(false);
   const [isStartDateInvalid, setIsStartDateInvalid] = useState(false);
 
   const duration = parseDuration(rowData?.value?.value ?? "");
@@ -39,73 +42,54 @@ export default function EditBaseModal({
   const [hours, setHours] = useState<string>("");
   const [minutes, setMinutes] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+  const [endDateActive, setEndDateActive] = useState<string>("");
+  const [endDatePlanned, setEndDatePlanned] = useState<string>("");
 
-  const fields: FieldConfig[] = [
-    {
-      type: FieldType.lineDropdown,
-      label: "Показатель",
-      value: rowData.type?.value ?? "",
-      style: { width: "236px" },
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Значение показателя",
-      value: "",
-      style: { width: "74px" },
-      days: duration.days + "д",
-      hours: duration.hours + "ч",
-      minutes: duration.minutes + "м",
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата начала",
-      value: rowData.startDate?.value ?? "",
-      style: { width: "202px" },
-      disabled: true,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата окончания",
-      value: rowData.endDate?.value ?? "",
-      style: { width: "202px" },
-      disabled: true,
-    },
+  // Инициализация даты окончания при открытии модалки
+  useEffect(() => {
+    setStartDate(rowData.startDate?.value ?? "");
+    setEndDateActive(rowData.endDate?.value ?? "");
+  }, [rowData]);
 
-    {
-      type: FieldType.input,
-      label: "Значение показателя",
-      value: "",
-      setValue: () => {},
-      style: { width: "72px" },
-      days: days,
-      setDays: setDays,
-      hours: hours,
-      setHours: setHours,
-      minutes: minutes,
-      setMinutes: setMinutes,
-      isRequired: true,
-      isInvalid: isTimeInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата начала",
-      value: startDate,
-      setValue: (value) => setStartDate(value as string),
-      style: { width: "202px" },
-      isRequired: true,
-      isInvalid: isStartDateInvalid,
-    },
-    {
-      type: FieldType.input,
-      label: "Дата окончания",
-      value: endDate,
-      setValue: (value) => setEndDate(value as string),
-      style: { width: "202px" },
-    },
-  ];
+  // Обновляем дату начала при выборе даты окончания
+  useEffect(() => {
+    if (!endDateActive) {
+      setStartDate("");
+      return;
+    }
+
+    const [day, month, year] = endDateActive.split(".");
+    const newEnd = new Date(+year, +month - 1, +day);
+
+    if (!isNaN(newEnd.getTime())) {
+      const nextDay = new Date(newEnd);
+      nextDay.setDate(newEnd.getDate() + 1);
+
+      const formatted =
+        String(nextDay.getDate()).padStart(2, "0") +
+        "." +
+        String(nextDay.getMonth() + 1).padStart(2, "0") +
+        "." +
+        nextDay.getFullYear();
+
+      setStartDate(formatted);
+    }
+  }, [endDateActive]);
+
+  /** Сбрасываем дату окончания, если дата начала больше */
+  useEffect(() => {
+    if (!startDate || !endDatePlanned) return;
+
+    const [startDay, startMonth, startYear] = startDate.split(".");
+    const [endDay, endMonth, endYear] = endDatePlanned.split(".");
+
+    const start = new Date(+startYear, +startMonth - 1, +startDay);
+    const end = new Date(+endYear, +endMonth - 1, +endDay);
+
+    if (start >= end) {
+      setEndDatePlanned("");
+    }
+  }, [startDate, endDatePlanned]);
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
@@ -116,7 +100,15 @@ export default function EditBaseModal({
     } else {
       setIsTimeInvalid(false);
     }
-    if (!startDate.trim()) {
+
+    if (!endDateActive.trim()) {
+      setIsEndDateActiveInvalid(true);
+      isValid = false;
+    } else {
+      setIsEndDateActiveInvalid(false);
+    }
+
+    if (!startDate) {
       setIsStartDateInvalid(true);
       isValid = false;
     } else {
@@ -170,7 +162,13 @@ export default function EditBaseModal({
     }
     setErrorMessage("");
     // ... логика сохранения
-    await onSave({days: days, hours: hours, minutes: minutes, startDate: startDate, endDate: endDate});
+    await onSave({
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      startDate: startDate,
+      endDate: endDatePlanned,
+    });
     onClose();
     return true;
   };
@@ -183,12 +181,12 @@ export default function EditBaseModal({
         </div>
         <div className="sla-modal__content" style={{ width: "520px" }}>
           <div className="sla-modal__status">
-            {icons.Star}
+            {showStarIcon && icons.Star}
             <span
               className="sla-modal__status__span"
               style={{ backgroundColor: "rgb(129, 229, 146)" }}
             >
-              Дейтсвует
+              Действует
             </span>
           </div>
           {/* Поля ввода */}
@@ -204,29 +202,32 @@ export default function EditBaseModal({
                 disabled={true}
               />
             </ModalLabledField>
-            
+
             <ModalLabledField label={"Значение показателя"}>
               <ModalTimeInput
-                days={duration.days + "д"} 
-                hours={duration.hours + "ч"} 
-                minutes={duration.minutes + "м"} 
-                disabled = {true}
+                days={duration.days + "д"}
+                hours={duration.hours + "ч"}
+                minutes={duration.minutes + "м"}
+                disabled={true}
                 style={{ width: "74px" }}
               />
             </ModalLabledField>
-                        
-            <ModalInputDate 
+
+            <ModalInputDate
               label={"Дата начала"}
               value={rowData.startDate?.value ?? ""}
               style={{ width: "202px" }}
               disabled={true}
             />
 
-            <ModalInputDate 
+            <ModalInputDate
               label={"Дата окончания"}
-              value={rowData.endDate?.value}
+              value={endDateActive}
+              setValue={(value) => setEndDateActive(value as string)}
               style={{ width: "202px" }}
-              disabled={true}
+              startDate={rowData.startDate?.value}
+              isInvalid={isEndDateActiveInvalid}
+              isRequired={true}
             />
           </div>
           <div className="sla-modal__status">
@@ -248,17 +249,6 @@ export default function EditBaseModal({
               />
             </ModalLabledField>
 
-            {/* <ModalTime {...fields[4]} />
-            <ModalInputDate {...fields[5]} />
-            <ModalInputDate
-              {...fields[6]}
-              startDate={startDate}
-              onStartDateNotSet={() => {
-                setIsStartDateInvalid(true);
-                setErrorMessage("Установите дату начала");
-              }}
-            /> */}
-            
             <ModalLabledField label={"Значение показателя"} isRequired={true}>
               <ModalTimeInput
                 days={days}
@@ -270,25 +260,25 @@ export default function EditBaseModal({
                 isInvalid={isTimeInvalid}
               />
             </ModalLabledField>
-                        
-            <ModalInputDate 
+
+            <ModalInputDate
               label={"Дата начала"}
               value={startDate}
               style={{ width: "202px" }}
-              setValue={(value) => setStartDate(value as string)}
+              disabled={true}
               isRequired={true}
               isInvalid={isStartDateInvalid}
             />
 
-            <ModalInputDate 
+            <ModalInputDate
               label={"Дата окончания"}
-              value={endDate}
+              value={endDatePlanned}
+              setValue={(value) => setEndDatePlanned(value as string)}
               style={{ width: "202px" }}
-              setValue={(value) => setEndDate(value as string)}
               startDate={startDate}
               onStartDateNotSet={() => {
-                setIsStartDateInvalid(true);
-                setErrorMessage("Установите дату начала");
+                setErrorMessage("Установите дату окончания действующего SLA");
+                setIsEndDateActiveInvalid(true);
               }}
             />
           </div>

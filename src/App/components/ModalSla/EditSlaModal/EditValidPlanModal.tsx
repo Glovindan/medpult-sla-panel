@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FieldConfig, FieldType } from "../../../shared/types.ts";
+import { AddSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
+import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
 import { parseDuration } from "../../../shared/utils/utils.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
@@ -8,40 +9,75 @@ import CustomSelectWithLabel from "../ModalType/ModalLineSelect/ModalLineSelect.
 import ModalWrapper from "../ModalWrapper/ModalWrapper.tsx";
 import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
+import icons from "../../../shared/icons.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
 import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
 import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
 
-interface EditValidModalProps {
+interface EditValidPlanModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onSwitchToEditBaseModal: () => void;
   onComplete: (endDate: string) => Promise<void>;
+  onSwitchToEditBaseModal: () => void;
 }
 /** Модальное окно звонка */
-export default function EditValidModal({
+export default function EditValidPlanModal({
   title,
   onClose,
   rowData,
-  onSwitchToEditBaseModal,
   onComplete,
-}: EditValidModalProps) {
+  onSwitchToEditBaseModal,
+}: EditValidPlanModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isEndDateInvalid, setIsEndDateInvalid] = useState(false);
+  const [isEndDateActiveInvalid, setIsEndDateActiveInvalid] = useState(false);
+
   const duration = parseDuration(rowData?.value?.value ?? "");
-  const [endDate, setEndDate] = useState<string>("");
+
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDateActive, setEndDateActive] = useState<string>("");
+
+  // Инициализация даты окончания при открытии модалки
+  useEffect(() => {
+    setStartDate(rowData.startDate?.value ?? "");
+    setEndDateActive(rowData.endDate?.value ?? "");
+  }, [rowData]);
+
+  // Обновляем дату начала при выборе даты окончания
+  useEffect(() => {
+    if (!endDateActive) {
+      setStartDate("");
+      return;
+    }
+
+    const [day, month, year] = endDateActive.split(".");
+    const newEnd = new Date(+year, +month - 1, +day);
+
+    if (!isNaN(newEnd.getTime())) {
+      const nextDay = new Date(newEnd);
+      nextDay.setDate(newEnd.getDate() + 1);
+
+      const formatted =
+        String(nextDay.getDate()).padStart(2, "0") +
+        "." +
+        String(nextDay.getMonth() + 1).padStart(2, "0") +
+        "." +
+        nextDay.getFullYear();
+
+      setStartDate(formatted);
+    }
+  }, [endDateActive]);
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
     let isValid = true;
-    if (!endDate.trim()) {
-      setIsEndDateInvalid(true);
+    if (!endDateActive.trim()) {
+      setIsEndDateActiveInvalid(true);
       isValid = false;
     } else {
-      setIsEndDateInvalid(false);
+      setIsEndDateActiveInvalid(false);
     }
     return isValid;
   };
@@ -53,39 +89,10 @@ export default function EditValidModal({
       return false;
     }
     setErrorMessage("");
-    // ... логика завершения
-    await onComplete(endDate);
+    await onComplete(endDateActive);
     onClose();
     return true;
   };
-
-  /** Изменить sla Задачи */
-  const savelSlaHandler = async () => {
-    onSwitchToEditBaseModal();
-  };
-
-  /** Мин дата окончания - завтра */
-  function getMinEndDate(startDateStr?: string): string {
-    const today = new Date();
-    today.setDate(today.getDate() + 1); // завтра
-    let tomorrowDate = today;
-
-    if (startDateStr) {
-      const [day, month, year] = startDateStr.split(".");
-      const startDate = new Date(`${year}-${month}-${day}`);
-      startDate.setDate(startDate.getDate() + 1);
-
-      if (startDate > tomorrowDate) {
-        tomorrowDate = startDate;
-      }
-    }
-
-    const yyyy = tomorrowDate.getFullYear();
-    const mm = String(tomorrowDate.getMonth() + 1).padStart(2, "0");
-    const dd = String(tomorrowDate.getDate()).padStart(2, "0");
-
-    return `${yyyy}-${mm}-${dd}`;
-  }
 
   return (
     <ModalWrapper>
@@ -99,11 +106,14 @@ export default function EditValidModal({
               className="sla-modal__status__span"
               style={{ backgroundColor: "rgb(129, 229, 146)" }}
             >
-              Дейcтвует
+              Действует
             </span>
           </div>
           {/* Поля ввода */}
-          <div className="sla-modal__fields">
+          <div
+            className="sla-modal__fields"
+            style={{ borderBottom: "1px solid #D2D3D6" }}
+          >
             <ModalLabledField label={"Показатель"}>
               <CustomSelect
                 value={rowData.type?.value ?? ""}
@@ -129,15 +139,64 @@ export default function EditValidModal({
               style={{ width: "202px" }}
               disabled={true}
             />
+
             <ModalInputDate
               label={"Дата окончания"}
-              value={endDate}
-              startDate={rowData.startDate?.value}
-              setValue={(value) => setEndDate(value as string)}
+              value={endDateActive}
+              setValue={(value) => setEndDateActive(value as string)}
               style={{ width: "202px" }}
-              isInvalid={isEndDateInvalid}
-              minDate={getMinEndDate(rowData.startDate?.value)}
+              isRequired={true}
+              startDate={rowData.startDate?.value}
+              isInvalid={isEndDateActiveInvalid}
             />
+          </div>
+          <div className="sla-modal__status">
+            <span
+              className="sla-modal__status__span"
+              style={{ backgroundColor: "rgb(209, 216, 220)" }}
+            >
+              Планируется
+            </span>
+          </div>
+          {/* Поля ввода */}
+          <div className="sla-modal__fields">
+            <ModalLabledField label={"Показатель"}>
+              <CustomSelect
+                value={rowData.type?.value ?? ""}
+                getDataHandler={Scripts.getSLaTypes}
+                setValue={() => {}}
+                disabled={true}
+              />
+            </ModalLabledField>
+
+            <ModalLabledField label={"Значение показателя"} isRequired={true}>
+              <ModalTimeInput
+                days={duration.days + "д"}
+                hours={duration.hours + "ч"}
+                minutes={duration.minutes + "м"}
+                disabled={true}
+                style={{ width: "74px" }}
+              />
+            </ModalLabledField>
+
+            <ModalInputDate
+              label={"Дата начала"}
+              value={startDate}
+              style={{ width: "202px" }}
+              disabled={true}
+              isRequired={true}
+            />
+
+            <ModalInputDate
+              label={"Дата окончания"}
+              value={""}
+              style={{ width: "202px" }}
+              disabled={true}
+            />
+          </div>
+          {/* Предупреждение */}
+          <div className="sla-modal__warning">
+            При нажатии кнопки “Завершить” планируемое SLA аннулируется
           </div>
           {/* Кнопки */}
           <div className="sla-modal__buttons">
@@ -148,7 +207,7 @@ export default function EditValidModal({
             />
             <Button
               title={"Изменить"}
-              clickHandler={savelSlaHandler}
+              clickHandler={onSwitchToEditBaseModal}
               style={{ width: "100%" }}
             />
             <Button

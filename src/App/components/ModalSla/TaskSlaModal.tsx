@@ -23,6 +23,7 @@ interface TaskSlaModalProps {
 /** Модальное окно звонка */
 export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isSlaExists, setIsSlaExists] = useState(false);
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -35,7 +36,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
   const [isUrgencyInvalid, setIsSUrgencyInvalid] = useState(false);
 
   // Показатель
-  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaType());
+  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaTypeTask());
 
   // Значение показателя дни
   const [days, setDays] = useState<string>("");
@@ -47,18 +48,17 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
   const [startDate, setStartDate] = useState<string>("");
   // Дата окончания действия
   const [endDate, setEndDate] = useState<string>("");
-  
+
   // Признак важности
-  const [signVip, setSignVip] = useState<ObjectItem[]>([]);
+  const [signVip, setSignVip] = useState<ObjectItem | null>(null);
   // Типы задач
-  const [taskType, setTaskType] = useState<ObjectItem[]>([]);
+  const [taskType, setTaskType] = useState<ObjectItem | null>(null);
   // Виды задач
-  const [taskSort, setTaskSort] = useState<ObjectItem[]>([]);
+  const [taskSort, setTaskSort] = useState<ObjectItem | null>(null);
   // Тематики задач
-  const [topic, setTopic] = useState<ObjectItem[]>([]);
+  const [topic, setTopic] = useState<ObjectItem | null>(null);
   // Виды срочности задач
-  const [urgency, setUrgency] = useState<ObjectItem[]>([]);
-  // Продукт
+  const [urgency, setUrgency] = useState<ObjectItem | null>(null);
   const [product, setProduct] = useState<ObjectItem>();
   // Страхователь
   const [executer, setExecuter] = useState<ObjectItem>();
@@ -77,7 +77,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
     } else {
       setIsTypeInvalid(false);
     }
-    
+
     // Валидация Значения показателя
     if (!days.trim() && !hours.trim() && !minutes.trim()) {
       setIsTimeInvalid(true);
@@ -116,12 +116,19 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
   /** Проверка на заполненость хотя бы одного поля */
   const validateFields = () => {
     let isValid = true;
+
+    const isVipEmpty = !signVip || !signVip.code;
+    const isTaskTypeEmpty = !taskType || !taskType.code;
+    const isTaskSortEmpty = !taskSort || !taskSort.code;
+    const isTopicEmpty = !topic || !topic.code;
+    const isUrgencyEmpty = !urgency || !urgency.code;
+
     if (
-      signVip.length === 0 &&
-      taskType.length === 0 &&
-      taskSort.length === 0 &&
-      topic.length === 0 &&
-      urgency.length === 0
+      isVipEmpty &&
+      isTaskTypeEmpty &&
+      isTaskSortEmpty &&
+      isTopicEmpty &&
+      isUrgencyEmpty
     ) {
       setIsSignVipInvalid(true);
       setIsTaskTypeInvalid(true);
@@ -136,6 +143,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
       setIsTopicInvalid(false);
       setIsSUrgencyInvalid(false);
     }
+
     return isValid;
   };
 
@@ -156,7 +164,31 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
       return false;
     }
 
+    const isSlaTask = await Scripts.checkSlaTask({
+      days,
+      hours,
+      minutes,
+      startDate,
+      type: type.code,
+      signVip: signVip ? [signVip.code] : [],
+      taskType: taskType ? [taskType.code] : [],
+      taskSort: taskSort ? [taskSort.code] : [],
+      topic: topic ? [topic.code] : [],
+      urgency: urgency ? [urgency.code] : [],
+      product: product?.code,
+      executer: executer?.code,
+    });
+
+    if (isSlaTask) {
+      setErrorMessage(
+        ' SLA с такими параметрами существует. Для редактирования нажмите кнопку "Перейти"'
+      );
+      setIsSlaExists(true);
+      return false;
+    }
+
     setErrorMessage("");
+    setIsSlaExists(false);
 
     await Scripts.addSlaTask({
       days: days,
@@ -165,19 +197,25 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
       startDate: startDate,
       endDate: endDate,
       type: type.code,
-      signVip: signVip.map(item => item.code),
-      taskType: taskType.map(item => item.code),
-      taskSort: taskSort.map(item => item.code),
-      topic: topic.map(item => item.code),
-      urgency: urgency.map(item => item.code),
+      signVip: signVip ? [signVip.code] : [],
+      taskType: taskType ? [taskType.code] : [],
+      taskSort: taskSort ? [taskSort.code] : [],
+      topic: topic ? [topic.code] : [],
+      urgency: urgency ? [urgency.code] : [],
       product: product?.code,
-      executer: executer?.code
+      executer: executer?.code,
     });
-    
+
     // Перезагрузить список на фоне
-    onReload()
+    onReload();
 
     return true;
+  };
+
+  //Кнопка "Перейти" если такое sla уже существует
+  const handleRedirect = async (): Promise<void> => {
+    await Scripts.redirectSlaTask();
+    onClose();
   };
 
   return (
@@ -187,29 +225,34 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
         saveHandler={saveSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
+        isSlaExists={isSlaExists}
+        onRedirect={handleRedirect}
       >
         <ModalLabledField label={"Показатель"} isRequired={true}>
           <CustomSelect
             value={type.value}
-            setValue={(value, code) => setType({value: value, code: code ?? ""})}
-            getDataHandler={Scripts.getSLaTypes}
+            setValue={(value, code) =>
+              setType({ value: value, code: code ?? "" })
+            }
+            getDataHandler={Scripts.getSLaTypesTask}
             isInvalid={isTypeInvalid}
+            showClearButton={false}
           />
         </ModalLabledField>
 
         <ModalLabledField label={"Значение показателя"} isRequired={true}>
           <ModalTimeInput
-            days={days} 
-            setDays={setDays} 
-            hours={hours} 
-            setHours={setHours} 
-            minutes={minutes} 
-            setMinutes={setMinutes} 
-            isInvalid = {isTimeInvalid}
+            days={days}
+            setDays={setDays}
+            hours={hours}
+            setHours={setHours}
+            minutes={minutes}
+            setMinutes={setMinutes}
+            isInvalid={isTimeInvalid}
           />
         </ModalLabledField>
 
-        <ModalInputDate 
+        <ModalInputDate
           label={"Дата начала"}
           value={startDate}
           setValue={(value) => setStartDate(value)}
@@ -229,52 +272,75 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
             setErrorMessage("Установите дату начала");
           }}
         />
-                
+
         <ModalLabledField label={"Признак ВИП"}>
-          <ModalMultipleCustomSelect
-            values={signVip}
-            setValues={setSignVip}
+          <CustomSelect
+            value={signVip?.value ?? ""}
+            setValue={(value, code) =>
+              setSignVip({ value: value, code: code ?? "" })
+            }
             getDataHandler={Scripts.getVipStatuses}
             isInvalid={isSignVipInvalid}
           />
         </ModalLabledField>
 
         <ModalLabledField label={"Тип задачи"}>
-          <ModalMultipleCustomSelect
-            values={taskType}
-            setValues={setTaskType}
+          <CustomSelect
+            value={taskType?.value ?? ""}
+            setValue={(value, code) => {
+              setTaskType({ value: value, code: code ?? "" });
+              setTaskSort(null);
+              setTopic(null);
+            }}
             getDataHandler={Scripts.getTaskTypes}
             isInvalid={isTaskTypeInvalid}
           />
         </ModalLabledField>
 
         <ModalLabledField label={"Вид задачи"}>
-          <ModalMultipleCustomSelect
-            values={taskSort}
-            setValues={setTaskSort}
-            getDataHandler={Scripts.getTaskSort}
+          <CustomSelect
+            value={taskSort?.value ?? ""}
+            setValue={async (value, code) => {
+              setTaskSort({ value: value, code: code ?? "" });
+              setTopic(null);
+
+              if (code) {
+                const parentType =
+                  await Scripts.getParentTaskTypeBySortCode(code);
+                if (parentType) {
+                  setTaskType(parentType);
+                }
+              }
+            }}
+            getDataHandler={() => Scripts.getTaskSort(taskType?.code)}
             isInvalid={isTaskSortInvalid}
           />
         </ModalLabledField>
 
         <ModalLabledField label={"Тематика"}>
-          <ModalMultipleCustomSelect
-            values={topic}
-            setValues={setTopic}
-            getDataHandler={Scripts.getTopic}
+          <CustomSelect
+            value={topic?.value ?? ""}
+            setValue={(value, code) =>
+              setTopic({ value: value, code: code ?? "" })
+            }
+            getDataHandler={() =>
+              Scripts.getTopic(taskType?.code, taskSort?.code)
+            }
             isInvalid={isTopicInvalid}
           />
         </ModalLabledField>
 
         <ModalLabledField label={"Срочность"}>
-          <ModalMultipleCustomSelect
-            values={urgency}
-            setValues={setUrgency}
+          <CustomSelect
+            value={urgency?.value ?? ""}
+            setValue={(value, code) =>
+              setUrgency({ value: value, code: code ?? "" })
+            }
             getDataHandler={Scripts.getUrgency}
             isInvalid={isUrgencyInvalid}
           />
         </ModalLabledField>
-        
+
         {/* TODO: Доработать при получении постановки */}
         <ModalLabledField label={"Продукт"}>
           <CustomInputAppItem
@@ -282,7 +348,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
             setValue={() => {}}
             href={""}
             saveStateHandler={saveStateHandler}
-            />
+          />
         </ModalLabledField>
 
         {/* TODO: Доработать при получении постановки */}

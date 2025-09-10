@@ -22,8 +22,12 @@ interface RequestSlaModalProps {
 }
 
 /** Модальное окно звонка */
-export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalProps) {
+export default function RequestSlaModal({
+  onClose,
+  onReload,
+}: RequestSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isSlaExists, setIsSlaExists] = useState(false);
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -35,7 +39,9 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
 
   // const [type, setType] = useState<string>("Скорость обработки");
   // Показатель
-  const [type, setType] = useState<ObjectItem>(Scripts.getDefaultSlaType()); // TODO: Реализовать функцию получения стандартной категории
+  const [type, setType] = useState<ObjectItem>(
+    Scripts.getDefaultSlaTypeRequest()
+  ); // TODO: Реализовать функцию получения стандартной категории
 
   // Значение показателя дни
   const [days, setDays] = useState<string>("");
@@ -49,11 +55,12 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
   const [endDate, setEndDate] = useState<string>("");
 
   // Признак важности
-  const [signVip, setSignVip] = useState<ObjectItem[]>([]);
+  //const [signVip, setSignVip] = useState<ObjectItem[]>([]);
+  const [signVip, setSignVip] = useState<ObjectItem | null>(null);
   // Тип канала
-  const [channelType, setChannelType] = useState<ObjectItem[]>([]);
+  const [channelType, setChannelType] = useState<ObjectItem | null>(null);
   // Вид канала (Линии)
-  const [channelSort, setChannelSort] = useState<ObjectItem[]>([]);
+  const [channelSort, setChannelSort] = useState<ObjectItem | null>(null);
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
@@ -66,7 +73,7 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
     } else {
       setIsTypeInvalid(false);
     }
-    
+
     // Валидация Значения показателя
     if (!days.trim() && !hours.trim() && !minutes.trim()) {
       setIsTimeInvalid(true);
@@ -107,11 +114,11 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
   const validateFields = () => {
     let isValid = true;
 
-    if (
-      signVip.length === 0 &&
-      channelType.length === 0 &&
-      channelSort.length === 0
-    ) {
+    const isVipEmpty = !signVip || !signVip.code;
+    const isChannelTypeEmpty = !channelType || !channelType.code;
+    const isChannelSortEmpty = !channelSort || !channelSort.code;
+
+    if (isVipEmpty && isChannelTypeEmpty && isChannelSortEmpty) {
       setIsSignVipInvalid(true);
       setIsChannelTypeInvalid(true);
       setIsChannelSortInvalid(true);
@@ -130,19 +137,40 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
     if (!validateFieldsRequired()) {
       setErrorMessage("Заполните обязательные поля");
       return false;
-    } 
-    
+    }
+
     if (!validateSlaValue()) {
       setErrorMessage("Укажите корректно часы и минуты");
       return false;
-    } 
-    
+    }
+
     if (!validateFields()) {
       setErrorMessage("Укажите хотя бы один из критериев");
       return false;
     }
+
+    const isSlaRequest = await Scripts.checkSlaRequest({
+      days,
+      hours,
+      minutes,
+      startDate,
+      type: type.code,
+      signVip: signVip ? [signVip.code] : [],
+      channelType: channelType ? [channelType.code] : [],
+      channelSort: channelSort ? [channelSort.code] : [],
+    });
+
+    if (isSlaRequest) {
+      setErrorMessage(
+        ' SLA с такими параметрами существует. Для редактирования нажмите кнопку "Перейти"'
+      );
+      setIsSlaExists(true);
+      return false;
+    }
+
     setErrorMessage("");
-    
+    setIsSlaExists(false);
+
     await Scripts.addSlaRequest({
       days: days,
       hours: hours,
@@ -150,16 +178,24 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
       startDate: startDate,
       endDate: endDate,
       type: type.code,
-      signVip: signVip.map(item => item.code),
-      channelType: channelType.map(item => item.code),
-      channelSort: channelSort.map(item => item.code)
+      //signVip: signVip.map(item => item.code),
+      signVip: signVip ? [signVip.code] : [],
+      channelType: channelType ? [channelType.code] : [],
+      channelSort: channelSort ? [channelSort.code] : [],
     });
-    
+
     // Перезагрузить список на фоне
-    onReload()
+    onReload();
 
     return true;
   };
+
+  //Кнопка "Перейти" если такое sla уже существует
+  const handleRedirect = async (): Promise<void> => {
+    await Scripts.redirectSlaRequest();
+    onClose();
+  };
+
   return (
     <ModalWrapper>
       <ModalSla
@@ -167,29 +203,34 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
         saveHandler={saveSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
+        isSlaExists={isSlaExists}
+        onRedirect={handleRedirect}
       >
         <ModalLabledField label={"Показатель"} isRequired={true}>
           <CustomSelect
             value={type.value}
-            setValue={(value, code) => setType({value: value, code: code ?? ""})}
-            getDataHandler={Scripts.getSLaTypes}
+            setValue={(value, code) =>
+              setType({ value: value, code: code ?? "" })
+            }
+            getDataHandler={Scripts.getSLaTypesRequest}
             isInvalid={isTypeInvalid}
+            showClearButton={false}
           />
         </ModalLabledField>
 
         <ModalLabledField label={"Значение показателя"} isRequired={true}>
-          <ModalTimeInput 
-            days={days} 
-            setDays={setDays} 
-            hours={hours} 
-            setHours={setHours} 
-            minutes={minutes} 
-            setMinutes={setMinutes} 
-            isInvalid = {isTimeInvalid}
+          <ModalTimeInput
+            days={days}
+            setDays={setDays}
+            hours={hours}
+            setHours={setHours}
+            minutes={minutes}
+            setMinutes={setMinutes}
+            isInvalid={isTimeInvalid}
           />
         </ModalLabledField>
 
-        <ModalInputDate 
+        <ModalInputDate
           label={"Дата начала"}
           value={startDate}
           setValue={(value) => setStartDate(value)}
@@ -209,29 +250,41 @@ export default function RequestSlaModal({ onClose, onReload }: RequestSlaModalPr
             setErrorMessage("Установите дату начала");
           }}
         />
-        
+
         <ModalLabledField label={"Признак ВИП"}>
-          <ModalMultipleCustomSelect
+          {/* <ModalMultipleCustomSelect
             values={signVip}
             setValues={setSignVip}
+            getDataHandler={Scripts.getVipStatuses}
+            isInvalid={isSignVipInvalid}
+          /> */}
+          <CustomSelect
+            value={signVip?.value ?? ""}
+            setValue={(value, code) =>
+              setSignVip({ value: value, code: code ?? "" })
+            }
             getDataHandler={Scripts.getVipStatuses}
             isInvalid={isSignVipInvalid}
           />
         </ModalLabledField>
 
         <ModalLabledField label={"Тип канала"}>
-          <ModalMultipleCustomSelect
-            values={channelType}
-            setValues={setChannelType}
+          <CustomSelect
+            value={channelType?.value ?? ""}
+            setValue={(value, code) =>
+              setChannelType({ value: value, code: code ?? "" })
+            }
             getDataHandler={Scripts.getTypeChannel}
             isInvalid={isChannelTypeInvalid}
           />
         </ModalLabledField>
-          
+
         <ModalLabledField label={"Вид канала"}>
-          <ModalMultipleCustomSelect
-            values={channelSort}
-            setValues={setChannelSort}
+          <CustomSelect
+            value={channelSort?.value ?? ""}
+            setValue={(value, code) =>
+              setChannelSort({ value: value, code: code ?? "" })
+            }
             getDataHandler={Scripts.getSortChannel}
             isInvalid={isChannelSortInvalid}
           />

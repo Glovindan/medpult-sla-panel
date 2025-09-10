@@ -12,6 +12,7 @@ interface CustomInputDateProps extends CustomInputProps {
   startDate?: string;
   onStartDateNotSet?: () => void;
   label?: string;
+  minDate?: string;
 }
 
 /** Поле ввода даты */
@@ -43,7 +44,8 @@ function CustomInputDate(props: CustomInputDateProps) {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  const minDate = getMinDate();
+  //const minDate = getMinDate();
+  const minDate = props.minDate ?? getMinDate();
 
   // Открыть календарь
   const openPicker = () => {

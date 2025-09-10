@@ -97,9 +97,9 @@ function CustomListRowColumn(props: ListColumnProps) {
           : "custom-list-row-column"
       }
       style={{
-        overflow: "visible",
-        whiteSpace: "normal",
-        wordBreak: "break-word",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
         ...(fixedWidth ? { width: fixedWidth } : { flex: fr }),
         ...(contentPadding && { padding: contentPadding }),
       }}
@@ -126,6 +126,9 @@ function CustomListRowColumn(props: ListColumnProps) {
               ? "custom-list-row-column__more"
               : "custom-list-row-column__less"
           }
+          style={{
+            whiteSpace: props.code === "conditions" ? "pre-line" : "nowrap",
+          }}
         >
           {data?.value ?? ""}
         </span>

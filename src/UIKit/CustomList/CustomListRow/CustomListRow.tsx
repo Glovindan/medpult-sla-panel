@@ -81,7 +81,8 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
   };
 
   const rowStyles: React.CSSProperties = {
-    overflow: "visible",
+    //overflow: "visible",
+    overflow: "hidden",
   };
   // if (!isSelectable) rowStyles.paddingLeft = `20px`;
 

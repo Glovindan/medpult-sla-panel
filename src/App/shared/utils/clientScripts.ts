@@ -52,11 +52,35 @@ async function getSlaRequest(): Promise<FetchData<SlaRowDataGroup>> {
   };
 }
 
+/** Получение списка Показателей обращения */
+async function getSLaTypesRequest(): Promise<ObjectItem[]> {
+  await sleep(1000);
+  const slaTypes: ObjectItem[] = [
+    new ObjectItem({ code: "test", value: "Скорость обработки обращения" }),
+    new ObjectItem({ code: "test1", value: "Скорость обработки обращения" }),
+  ];
+
+  return slaTypes;
+}
+/** Получение списка Показателей задачи */
+async function getSLaTypesTask(): Promise<ObjectItem[]> {
+  await sleep(1000);
+  const slaTypes: ObjectItem[] = [
+    new ObjectItem({ code: "test", value: "Скорость решения задачи" }),
+    new ObjectItem({
+      code: "test1",
+      value: "Скорость решения задачи смежного подразделения",
+    }),
+  ];
+
+  return slaTypes;
+}
+
 /** Получение списка Показателей */
 async function getSLaTypes(): Promise<ObjectItem[]> {
   await sleep(1000);
   const slaTypes: ObjectItem[] = [
-    new ObjectItem({ code: "test", value: "Скорость обработки обращения" }),
+    new ObjectItem({ code: "test", value: "Скорость решения задачи" }),
     new ObjectItem({ code: "test1", value: "Скорость решения задачи" }),
   ];
 
@@ -83,7 +107,7 @@ async function getTaskTypes(): Promise<ObjectItem[]> {
   return taskTypes;
 }
 /** Получение списка вид Задачи */
-async function getTaskSort(): Promise<ObjectItem[]> {
+async function getTaskSort(typeCode?: string): Promise<ObjectItem[]> {
   await sleep(1000);
   const taskSort: ObjectItem[] = [
     new ObjectItem({ code: "smp", value: "СМП" }),
@@ -92,9 +116,20 @@ async function getTaskSort(): Promise<ObjectItem[]> {
   ];
   return taskSort;
 }
+/** Получение типа задачи по коду вида задачи */
+async function getParentTaskTypeBySortCode(
+  sortCode: string
+): Promise<ObjectItem> {
+  const taskSort = new ObjectItem({ code: "smp", value: "СМП" });
+
+  return taskSort;
+}
 
 /** Получение списка тематики */
-async function getTopic(): Promise<ObjectItem[]> {
+async function getTopic(
+  typeCode?: string,
+  sortCode?: string
+): Promise<ObjectItem[]> {
   await sleep(1000);
   const topic: ObjectItem[] = [
     new ObjectItem({ code: "incident", value: "Инцидент" }),
@@ -165,7 +200,6 @@ async function addSlaRequest(slaData: AddRequestSlaArgs): Promise<void> {
     channelType,
     channelSort,
   } = slaData;
-  
   await sleep(1000);
 }
 
@@ -196,13 +230,69 @@ async function OnInit(): Promise<void> {
   await sleep(1000);
 }
 
-/** Получить стандартный тип SLA */
-function getDefaultSlaType(): ObjectItem {
-  return {value: "Скорость обработки", code: "speed_code"}
+/** Получить стандартный тип SLA обращения*/
+function getDefaultSlaTypeRequest(): ObjectItem {
+  return { value: "Скорость обработки", code: "speed_code" };
+}
+/** Получить стандартный тип SLA задачи*/
+function getDefaultSlaTypeTask(): ObjectItem {
+  return { value: "Скорость обработки", code: "speed_code" };
 }
 
 /** Обновление буфера SLA */
 async function updateSlaDataBuffer(): Promise<void> {
+  await sleep(1000);
+}
+
+//Проверка существует ли такой sla обращения
+async function checkSlaRequest(slaData: AddRequestSlaArgs): Promise<boolean> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    signVip,
+    channelType,
+    channelSort,
+  } = slaData;
+  await sleep(1000);
+  return true;
+}
+
+/** Переход к существующему SLA обращения*/
+async function redirectSlaRequest(): Promise<void> {
+  //TODO
+  console.log("Переход к существующему SLA");
+  await sleep(1000);
+}
+
+//Проверка существует ли такой sla задачи
+async function checkSlaTask(slaData: AddTaskSlaArgs): Promise<boolean> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    signVip,
+    taskType,
+    taskSort,
+    topic,
+    urgency,
+    product,
+    executer,
+  } = slaData;
+  await sleep(1000);
+  return true;
+}
+
+/** Переход к существующему SLA задачи*/
+async function redirectSlaTask(): Promise<void> {
+  //TODO
+  console.log("Переход к существующему SLA");
   await sleep(1000);
 }
 
@@ -211,6 +301,8 @@ export default {
   getSlaRequest,
 
   getSLaTypes,
+  getSLaTypesRequest,
+  getSLaTypesTask,
   getVipStatuses,
   getTaskTypes,
   getTaskSort,
@@ -227,6 +319,13 @@ export default {
   cancelSlaRequest,
 
   OnInit,
-  getDefaultSlaType,
-  updateSlaDataBuffer
+  getDefaultSlaTypeRequest,
+  getDefaultSlaTypeTask,
+  updateSlaDataBuffer,
+  getParentTaskTypeBySortCode,
+
+  checkSlaRequest,
+  redirectSlaRequest,
+  checkSlaTask,
+  redirectSlaTask,
 };

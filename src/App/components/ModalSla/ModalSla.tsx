@@ -11,6 +11,9 @@ interface ModalSlaProps extends React.PropsWithChildren {
   closeModal: () => void;
   /** Сообщение об ошибке */
   errorMessage?: string;
+  /** Если Sla уже существует */
+  isSlaExists?: boolean;
+  onRedirect?: () => void;
 }
 
 /** Универсальное модальное окно */
@@ -20,6 +23,8 @@ export default function ModalSla({
   closeModal,
   children,
   errorMessage,
+  isSlaExists = false,
+  onRedirect,
 }: ModalSlaProps) {
   const onClickAdd = async () => {
     if (saveHandler) {
@@ -43,11 +48,20 @@ export default function ModalSla({
         <div className="sla-modal__fields">{children}</div>
         {/* Кнопки */}
         <div className="sla-modal__buttons">
-          <Button
-            title={"Добавить"}
-            clickHandler={onClickAdd}
-            style={{ width: "100%" }}
-          />
+          {!isSlaExists ? (
+            <Button
+              title={"Добавить"}
+              clickHandler={onClickAdd}
+              style={{ width: "100%" }}
+            />
+          ) : (
+            <Button
+              title={"Перейти"}
+              clickHandler={onRedirect}
+              style={{ width: "100%" }}
+            />
+          )}
+
           <Button
             title={"Отменить"}
             buttonType={ButtonType.outline}

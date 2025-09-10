@@ -8,7 +8,14 @@ import CustomSelectList from "./CustomSelectList/CustomSelectList";
 
 /** Выпадающий список */
 function CustomSelect(props: CustomSelectProps) {
-  const { isViewMode, getDataHandler, value, setValue, disabled } = props;
+  const {
+    isViewMode,
+    getDataHandler,
+    value,
+    setValue,
+    disabled,
+    showClearButton = true,
+  } = props;
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [listWidth, setListWidth] = useState<number>(100);
@@ -62,6 +69,22 @@ function CustomSelect(props: CustomSelectProps) {
 
   const buttonSvg = icons.Triangle;
   const displayValue = Array.isArray(value) ? value.join(", ") : value;
+
+  const hasValue = Boolean(displayValue && displayValue.trim());
+  const isEditable = !disabled && !isViewMode;
+  const buttonToShow =
+    hasValue && isEditable && showClearButton ? (
+      <InputButton
+        svg={icons.Wastebasket}
+        clickHandler={(e) => {
+          e.stopPropagation();
+          setValue("", "");
+        }}
+      />
+    ) : (
+      <InputButton svg={buttonSvg} clickHandler={clickHandler} />
+    );
+
   return (
     <div className="custom-select" ref={rootRef}>
       <CustomInput
@@ -71,7 +94,7 @@ function CustomSelect(props: CustomSelectProps) {
         wrapperRef={wrapperRef}
         cursor={isViewMode ? "text" : "pointer"}
         isOpen={isOpen}
-        buttons={[<InputButton svg={buttonSvg} clickHandler={clickHandler} />]}
+        buttons={[buttonToShow]}
         readOnly
         disabled={disabled}
       />

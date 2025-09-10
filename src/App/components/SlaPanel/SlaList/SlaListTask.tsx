@@ -23,6 +23,7 @@ import Loader from "../../../../UIKit/Loader/Loader.tsx";
 import EditBaseModal from "../../ModalSla/EditSlaModal/EditBaseModal.tsx";
 import EditValidModal from "../../ModalSla/EditSlaModal/EditValidModal.tsx";
 import EditPlanModal from "../../ModalSla/EditSlaModal/EditPlanModal.tsx";
+import EditValidPlanModal from "../../ModalSla/EditSlaModal/EditValidPlanModal.tsx";
 import Scripts from "../../../shared/utils/clientScripts";
 
 /** Пропсы списка SLA */
@@ -47,11 +48,15 @@ export default function SlaListTask({
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
   const [isEditPlanModalOpen, setEditPlanModalOpen] = useState(false);
+  const [isEditValidPlanModalOpen, setEditValidPlanModalOpen] = useState(false);
   const [editRowData, setEditRowData] = useState<SlaRowDataGroup | null>(null);
+  const [showStarIcon, setShowStarIcon] = useState(true);
 
   const handleSwitchToEditBaseModal = () => {
     setEditValidModalOpen(false); // Закрываем текущую
+    setEditValidPlanModalOpen(false);
     setEditModalOpen(true); // Открываем новую
+    setShowStarIcon(false);
   };
 
   // Функция для отрисовки колонки с индикатором базового SLA
@@ -69,28 +74,44 @@ export default function SlaListTask({
   }: {
     value: ItemDataString;
     rowData: SlaRowDataGroup;
-  }) => (
-    <SlaEditColumn
-      data={value}
-      onEditClick={() => {
-        if (rowData.isBasic.info === true && rowData.status.info === "valid") {
-          setEditRowData(rowData);
-          setEditModalOpen(true);
-        } else if (
-          rowData.status.info === "valid" ||
-          rowData.status.info === "validPlanned"
-        ) {
-          setEditRowData(rowData);
-          setEditValidModalOpen(true);
-        } else if (rowData.status.info === "planned") {
-          setEditRowData(rowData);
-          setEditPlanModalOpen(true);
-        } else {
-          return;
-        }
-      }}
-    />
-  );
+  }) => {
+    const status = rowData.status?.info;
+
+    const canShow =
+      (rowData.isBasic.info === true && status === "valid") ||
+      status === "valid" ||
+      status === "validPlanned" ||
+      status === "planned";
+
+    if (!canShow) return <></>;
+    return (
+      <SlaEditColumn
+        data={value}
+        onEditClick={() => {
+          if (
+            rowData.isBasic.info === true &&
+            (rowData.status.info === "valid" ||
+              rowData.status.info === "validPlanned")
+          ) {
+            setEditRowData(rowData);
+            setEditModalOpen(true);
+            setShowStarIcon(true);
+          } else if (rowData.status.info === "validPlanned") {
+            setEditRowData(rowData);
+            setEditValidPlanModalOpen(true);
+          } else if (rowData.status.info === "valid") {
+            setEditRowData(rowData);
+            setEditValidModalOpen(true);
+          } else if (rowData.status.info === "planned") {
+            setEditRowData(rowData);
+            setEditPlanModalOpen(true);
+          } else {
+            return;
+          }
+        }}
+      />
+    );
+  };
   // Функция для отрисовки колонки с кнопкой треугольником
   const getOpenColumn: (props: {
     value: ItemDataString;
@@ -157,7 +178,7 @@ export default function SlaListTask({
     new ListColumnData({
       code: "isBasic",
       name: "",
-      fr: 1,
+      fr: 0.5,
       fixedWidth: "40px",
       contentPadding: "17px 11px",
       getCustomColumComponent: getSlaBasicColumn,
@@ -178,13 +199,13 @@ export default function SlaListTask({
     new ListColumnData({
       code: "value",
       name: "Значение показателя",
-      fr: 1,
+      fr: 2,
     }),
     // Статус
     new ListColumnData({
       code: "status",
       name: "Статус",
-      fr: 1,
+      fr: 2,
       fixedWidth: "170px",
       getCustomColumComponent: getSlaStatusColumn,
     }),
@@ -286,6 +307,16 @@ export default function SlaListTask({
           onClose={() => setEditModalOpen(false)}
           rowData={editRowData}
           onSave={Scripts.addSlaTask}
+          showStarIcon={showStarIcon}
+        />
+      )}
+      {isEditValidPlanModalOpen && editRowData && (
+        <EditValidPlanModal
+          title="SLA на задачу"
+          onClose={() => setEditValidPlanModalOpen(false)}
+          rowData={editRowData}
+          onComplete={Scripts.competeSlaTask}
+          onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
         />
       )}
       {isEditValidModalOpen && editRowData && (

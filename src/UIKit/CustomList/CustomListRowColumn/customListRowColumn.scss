@@ -3,10 +3,12 @@
   gap: 8px;
   align-items: center;
   height: 100%;
-  //overflow: hidden;
-  overflow: visible !important;
-  white-space: normal !important;
-  word-break: break-word !important;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  //overflow: visible !important;
+  //white-space: normal !important;
+  //word-break: break-word !important;
   padding: 16px;
 
   & > span {
@@ -16,8 +18,11 @@
     font-size: 14px;
     line-height: 20px;
     letter-spacing: 0.0025em;
-    overflow: visible;
-    white-space: normal;
+    //overflow: visible;
+    //white-space: normal;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     color: #2d2e2f;
   }
 

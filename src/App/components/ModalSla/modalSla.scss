@@ -104,7 +104,7 @@
   &__fields {
     white-space: pre-wrap;
     height: 100%;
-    overflow-y: auto;
+    //overflow-y: auto;
 
     font-family: Inter;
     font-size: 14px;
@@ -152,5 +152,16 @@
   &__error {
     color: #ff4545;
     font-size: 14px;
+  }
+
+  &__warning {
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #ffecd1;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #ff6b00;
   }
 }
