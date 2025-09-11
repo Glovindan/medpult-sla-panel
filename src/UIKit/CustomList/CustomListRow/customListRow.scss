@@ -1,4 +1,7 @@
 .custom-list-row {
+  background-color: initial;
+  transition: background-color 1.5s ease;
+  
   display: flex;
   gap: 8px;
   flex-direction: row;
@@ -19,5 +22,10 @@
   &_open {
     cursor: pointer;
     background-color: #daeffa;
+  }
+  
+  &_highlight {
+    background-color: yellow;
+    transition: background-color 1.5s ease;
   }
 }

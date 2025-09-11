@@ -47,6 +47,9 @@ type ListProps<SearchDataType = any, ItemType = any> = {
   /** Присвоить выбранные строки */
   setSelectedItems?: (ids: string[]) => void;
   hideHeader?: boolean;
+
+  /** Идентификтор подсвечиваемого элемента */
+  highlightedId?: string
 };
 
 /** Список данных в виде таблицы */
@@ -66,6 +69,7 @@ function CustomList<SearchDataType = any, ItemType = any>(
     isSelectable,
     setSelectedItems,
     hideHeader = false,
+    highlightedId
   } = props;
   useEffect(() => {
     console.log(listWidth);
@@ -215,6 +219,21 @@ function CustomList<SearchDataType = any, ItemType = any>(
     }
     setIsAllSelected(!isAllSelected);
   };
+  
+  // Элементы списка сопоставленные с id элемента
+  const highlightRefs = useRef({});
+  useEffect(() => {
+    if(!highlightedId) return;
+
+    scrollToItem(highlightedId)
+  }, [highlightedId])
+
+  const scrollToItem = (id: string) => {
+    const element: HTMLElement | undefined = highlightRefs.current[id];
+    if(element) {
+      element.scrollIntoView({behavior: "smooth", block: "center"})
+    }
+  }
 
   return (
     <div className="custom-list">
@@ -301,6 +320,10 @@ function CustomList<SearchDataType = any, ItemType = any>(
                   checkedRowsIds.find((checkedId) => checkedId === item.id)
                 )}
                 listRef={bodyRef}
+
+                highlightedId={highlightedId}
+                highlightRefs={highlightRefs}
+                rowId={item.id}
               />
             );
           })}

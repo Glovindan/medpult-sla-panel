@@ -19,15 +19,17 @@ interface RequestSlaModalProps {
   onClose: () => void;
   /** Обработчик перезагрузки списка */
   onReload: () => Promise<void>;
+  /** Подсветить элемент списка */
+  updateHighlightedId: (id: string) => void
 }
 
 /** Модальное окно звонка */
 export default function RequestSlaModal({
   onClose,
   onReload,
+  updateHighlightedId,
 }: RequestSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isSlaExists, setIsSlaExists] = useState(false);
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -131,6 +133,9 @@ export default function RequestSlaModal({
 
     return isValid;
   };
+  
+  // Идентификатор дубликата SLA
+  const [slaDuplicateId, setSlaDuplicateId] = useState<string>();
 
   /** Сохранить sla Задачи */
   const saveSlaHandler = async (): Promise<boolean> => {
@@ -149,7 +154,7 @@ export default function RequestSlaModal({
       return false;
     }
 
-    const isSlaRequest = await Scripts.checkSlaRequest({
+    const slaDuplicateIdSearch = await Scripts.checkSlaRequest({
       days,
       hours,
       minutes,
@@ -160,16 +165,17 @@ export default function RequestSlaModal({
       channelSort: channelSort ? [channelSort.code] : [],
     });
 
-    if (isSlaRequest) {
+    if (slaDuplicateIdSearch) {
       setErrorMessage(
         ' SLA с такими параметрами существует. Для редактирования нажмите кнопку "Перейти"'
       );
-      setIsSlaExists(true);
+
+      setSlaDuplicateId(slaDuplicateIdSearch)
       return false;
     }
 
     setErrorMessage("");
-    setIsSlaExists(false);
+    setSlaDuplicateId(undefined)
 
     await Scripts.addSlaRequest({
       days: days,
@@ -192,7 +198,11 @@ export default function RequestSlaModal({
 
   //Кнопка "Перейти" если такое sla уже существует
   const handleRedirect = async (): Promise<void> => {
-    await Scripts.redirectSlaRequest();
+    if(slaDuplicateId) {
+      updateHighlightedId(slaDuplicateId);
+      setSlaDuplicateId(undefined)
+    }
+
     onClose();
   };
 
@@ -203,7 +213,7 @@ export default function RequestSlaModal({
         saveHandler={saveSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
-        isSlaExists={isSlaExists}
+        isSlaExists={Boolean(slaDuplicateId)}
         onRedirect={handleRedirect}
       >
         <ModalLabledField label={"Показатель"} isRequired={true}>
