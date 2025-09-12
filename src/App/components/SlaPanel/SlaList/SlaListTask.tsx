@@ -81,6 +81,7 @@ export default function SlaListTask({
     value: ItemDataString;
     rowData: SlaRowDataGroup;
   }) => {
+    console.log("getEditColumn", rowData);
     const status = rowData.status?.info;
 
     const canShow =

@@ -19,7 +19,7 @@ interface EditValidModalProps {
   onClose: () => void;
   rowData: SlaRowDataGroup;
   onSwitchToEditBaseModal: () => void;
-  onComplete: (endDate: string) => Promise<void>;
+  onComplete: (endDate: string, id: string) => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditValidModal({
@@ -54,7 +54,7 @@ export default function EditValidModal({
     }
     setErrorMessage("");
     // ... логика завершения
-    await onComplete(endDate);
+    await onComplete(endDate, rowData.id.value);
     onClose();
     return true;
   };

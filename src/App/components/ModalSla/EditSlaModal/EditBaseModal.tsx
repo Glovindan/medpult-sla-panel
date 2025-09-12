@@ -15,6 +15,7 @@ import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
 import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
+import moment from "moment";
 
 interface EditBaseModalProps {
   title: string;
@@ -173,12 +174,29 @@ export default function EditBaseModal({
       startDate: startDate,
       endDate: endDatePlanned,
       type: rowData.type.info,
-      id: rowData.id.value ?? ""
+      id: rowData.id.value ?? "",
+      endDateActive: endDateActive,
     });
     onClose();
     onReload();
     return true;
   };
+
+  // Минимальная дата окончания для Действующего SLA
+  const getMinEndDateActive = () => {
+    const startDateStr = rowData.startDate?.value;
+    const currentDate = moment();
+
+    // Если дата начала не указана
+    if(!startDateStr) return currentDate.format("DD.MM.YYYY");
+
+    // Если дата начала раньше текущей даты
+    const startDate = moment(startDateStr, 'DD.MM.YYYY')
+    if(startDate.isBefore(currentDate)) return currentDate.format("DD.MM.YYYY");
+
+    // Иначе
+    return startDateStr;
+  }
 
   return (
     <ModalWrapper>
@@ -232,7 +250,7 @@ export default function EditBaseModal({
               value={endDateActive}
               setValue={(value) => setEndDateActive(value as string)}
               style={{ width: "202px" }}
-              startDate={rowData.startDate?.value}
+              startDate={getMinEndDateActive()}
               isInvalid={isEndDateActiveInvalid}
               isRequired={true}
             />

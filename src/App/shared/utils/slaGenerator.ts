@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
   ItemData,
   ItemDataString,
@@ -17,14 +18,11 @@ function getRandomDateISO(): string {
   const start = new Date(2023, 0, 1).getTime();
   const end = new Date(2025, 11, 31).getTime();
   const date = new Date(start + Math.random() * (end - start));
-  return date.toISOString().split("T")[0];
+  return moment(date).format("DD.MM.YYYY");
 }
 
 function getRandomDateFormatted(): string {
-  const date = new Date(getRandomDateISO());
-  return `${String(date.getDate()).padStart(2, "0")}.${String(
-    date.getMonth() + 1
-  ).padStart(2, "0")}.${date.getFullYear()}`;
+  return getRandomDateISO();
 }
 
 function getRandomName(): string {

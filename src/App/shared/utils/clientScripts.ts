@@ -228,13 +228,13 @@ async function editSla(slaData: EditSlaArgs): Promise<void> {
 }
 
 /** завершить sla Задачи */
-async function competeSlaTask(endDate: string): Promise<void> {
+async function competeSlaTask(endDate: string, id: string): Promise<void> {
   // TODO
   await sleep(1000);
 }
 
 /** завершить sla Обращения */
-async function competeSlaRequest(endDate: string): Promise<void> {
+async function competeSlaRequest(endDate: string, id: string): Promise<void> {
   // TODO
   await sleep(1000);
 }

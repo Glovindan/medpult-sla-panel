@@ -20,7 +20,7 @@ interface EditValidPlanModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onComplete: (endDate: string) => Promise<void>;
+  onComplete: (endDate: string, id: string) => Promise<void>;
   onSwitchToEditBaseModal: () => void;
 }
 /** Модальное окно звонка */
@@ -89,7 +89,7 @@ export default function EditValidPlanModal({
       return false;
     }
     setErrorMessage("");
-    await onComplete(endDateActive);
+    await onComplete(endDateActive, rowData.id.value);
     onClose();
     return true;
   };

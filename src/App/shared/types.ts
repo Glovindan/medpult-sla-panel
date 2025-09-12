@@ -54,6 +54,8 @@ export interface AddSlaArgs {
 export interface EditSlaArgs extends AddSlaArgs {
   /** Идентификатор SLA */
   id: string;
+  /** Дата окончания действующего SLA */
+  endDateActive?: string;
 }
 
 /** Аргументы для добавления SLA задачи */
