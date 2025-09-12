@@ -44,6 +44,13 @@ interface ListRowProps<ItemType = any> {
   toggleChecked: () => void;
   /** Селектор активен */
   isChecked: boolean;
+
+  /** Идентификатор подсвечиваемой строки */
+  highlightedId: string | undefined;
+  /** Массив элементов списка */
+  highlightRefs: React.MutableRefObject<{}>;
+  /** Идентификатор строки */
+  rowId: string;
 }
 
 /** Строка таблицы */
@@ -62,6 +69,9 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
     isMultipleSelect,
     toggleChecked,
     isChecked,
+    highlightedId,
+    highlightRefs,
+    rowId,
   } = props;
 
   /** Получение значения класса строки */
@@ -71,13 +81,24 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
 
   /** Получение значения класса строки */
   const getRowClassname = (): string => {
-    if (((getDetailsLayout && isShowDetails) || isOpen) && hasGroup)
-      return "custom-list-row custom-list-row_open";
+    // Базовое наименование класса
+    const baseClassName = "custom-list-row"
+    let classNamesArr = [baseClassName];
+    
+    if (((getDetailsLayout && isShowDetails) || isOpen) && hasGroup) {
+      // Для раскрытых строк
+      classNamesArr.push("custom-list-row_open")
+    } else if (getDetailsLayout || isClickable) {
+      // Для раскрываемых строк
+      classNamesArr.push("custom-list-row_openable")
+    }
 
-    if (getDetailsLayout || isClickable)
-      return "custom-list-row custom-list-row_openable";
+    // Для подсветки
+    if(highlightedId == rowId) {
+      classNamesArr.push("custom-list-row_highlight")
+    }
 
-    return "custom-list-row";
+    return classNamesArr.join(" ");
   };
 
   const rowStyles: React.CSSProperties = {
@@ -92,6 +113,7 @@ function CustomListRow<ItemType = any>(props: ListRowProps<ItemType>) {
         className={getRowClassname()}
         onClick={setOpenRowIndex}
         style={rowStyles}
+        ref={(el) => (highlightRefs.current[rowId] = el)}
       >
         {/* Селектор */}
         {isSelectable && (

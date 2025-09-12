@@ -10,6 +10,7 @@ import AdditionalPanel from "./AdditionalPanel/AdditionalPanel.tsx";
 import Scripts from "../../shared/utils/clientScripts.ts";
 import TaskSlaModal from "../ModalSla/TaskSlaModal.tsx";
 import RequestSlaModal from "../ModalSla/RequestSlaModal.tsx";
+import { useHighlight } from "../../shared/hooks.ts";
 
 /** Панель администрирования SLA */
 export default function SlaPanel() {
@@ -120,6 +121,10 @@ export default function SlaPanel() {
     };
   }, [slaDataTask, showExpiredSla]);
 
+  const {highlightedId, updateHighlightedId} = useHighlight();
+
+  (window as any).updateHighlightedId = updateHighlightedId
+
   return (
     <slaContext.Provider value={{ data, setValue }}>
       <div className="medpult-sla-panel">
@@ -135,9 +140,10 @@ export default function SlaPanel() {
               key={`request-${showExpiredSla}`}
               getSlaHandler={getSlaRequestHandler}
               isLoading={isLoading}
+              highlightedId={highlightedId}
             />
             {isRequestModalOpen && (
-              <RequestSlaModal onClose={() => setIsRequestModalOpen(false)}  onReload={reloadList}/>
+              <RequestSlaModal onClose={() => setIsRequestModalOpen(false)}  onReload={reloadList} updateHighlightedId={updateHighlightedId} />
             )}
           </TabItem>
           <TabItem code={"tasks"} name={"Задачи"}>
@@ -150,9 +156,10 @@ export default function SlaPanel() {
               key={`task-${showExpiredSla}`}
               getSlaHandler={getSlaTaskHandler}
               isLoading={isLoading}
+              highlightedId={highlightedId}
             />
             {isTaskModalOpen && (
-              <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} onReload={reloadList}/>
+              <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} onReload={reloadList} updateHighlightedId={updateHighlightedId} />
             )}
           </TabItem>
         </TabsWrapper>

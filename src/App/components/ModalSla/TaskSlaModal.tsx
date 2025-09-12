@@ -18,12 +18,13 @@ interface TaskSlaModalProps {
   onClose: () => void;
   /** Обработчик перезагрузки списка */
   onReload: () => Promise<void>;
+  /** Подсветить элемент списка */
+  updateHighlightedId: (id: string) => void
 }
 
 /** Модальное окно звонка */
-export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
+export default function TaskSlaModal({ onClose, onReload, updateHighlightedId }: TaskSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isSlaExists, setIsSlaExists] = useState(false);
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -147,6 +148,9 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
     return isValid;
   };
 
+  // Идентификатор дубликата SLA
+  const [slaDuplicateId, setSlaDuplicateId] = useState<string>();
+
   /** Сохранить sla Задачи */
   const saveSlaHandler = async (): Promise<boolean> => {
     if (!validateFieldsRequired()) {
@@ -164,7 +168,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
       return false;
     }
 
-    const isSlaTask = await Scripts.checkSlaTask({
+    const slaDuplicateIdSearch = await Scripts.checkSlaTask({
       days,
       hours,
       minutes,
@@ -179,16 +183,17 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
       executer: executer?.code,
     });
 
-    if (isSlaTask) {
+    if (slaDuplicateIdSearch) {
       setErrorMessage(
         ' SLA с такими параметрами существует. Для редактирования нажмите кнопку "Перейти"'
       );
-      setIsSlaExists(true);
+
+      setSlaDuplicateId(slaDuplicateIdSearch)
       return false;
     }
 
     setErrorMessage("");
-    setIsSlaExists(false);
+    setSlaDuplicateId(undefined)
 
     await Scripts.addSlaTask({
       days: days,
@@ -214,7 +219,11 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
 
   //Кнопка "Перейти" если такое sla уже существует
   const handleRedirect = async (): Promise<void> => {
-    await Scripts.redirectSlaTask();
+    if(slaDuplicateId) {
+      updateHighlightedId(slaDuplicateId);
+      setSlaDuplicateId(undefined)
+    }
+
     onClose();
   };
 
@@ -225,7 +234,7 @@ export default function TaskSlaModal({ onClose, onReload }: TaskSlaModalProps) {
         saveHandler={saveSlaHandler}
         closeModal={onClose}
         errorMessage={errorMessage}
-        isSlaExists={isSlaExists}
+        isSlaExists={Boolean(slaDuplicateId)}
         onRedirect={handleRedirect}
       >
         <ModalLabledField label={"Показатель"} isRequired={true}>

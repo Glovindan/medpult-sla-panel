@@ -33,6 +33,8 @@ type SlaListProps = {
   /** Флаг загрузки */
   isLoading: boolean;
   hideHeader?: boolean;
+  /** Идентификатор подсвечиваемого элемента */
+  highlightedId?: string;
 };
 
 interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
@@ -44,6 +46,7 @@ export default function SlaListTask({
   getSlaHandler,
   isLoading,
   hideHeader = false,
+  highlightedId
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
@@ -298,6 +301,7 @@ export default function SlaListTask({
           isScrollable={false}
           getDetailsLayout={getCustomListDetailsLayout}
           hideHeader={hideHeader}
+          highlightedId={highlightedId}
         />
       )}
       {isLoading && <Loader />}

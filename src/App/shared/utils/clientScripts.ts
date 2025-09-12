@@ -15,17 +15,22 @@ function sleep(ms: number) {
 /** Получение списка SLA */
 async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
   await sleep(1000);
-  const items = taskMock.map((rowData) => {
+  // const items = taskMock.map((rowData) => {
+  const items = getRandomSlaListTask(20).map((rowData) => {
     //const subData = getRandomSlaListTask(2);
     const shouldAddGroup = Math.random() > 0.5;
     return {
       id: rowData.id.value,
       data: {
         ...rowData,
-        ...(shouldAddGroup && { groupData: getRandomSlaListTask(2) }),
+        ...(shouldAddGroup && { groupData: getRandomSlaListTask(10) }),
       },
     };
   });
+
+  window["itemsBuffer"] = items;
+
+  console.log("itemsBuffer: ", window["itemsBuffer"]);
 
   return {
     hasMore: false,
@@ -45,6 +50,10 @@ async function getSlaRequest(): Promise<FetchData<SlaRowDataGroup>> {
       },
     };
   });
+
+  window["itemsBufferRequest"] = items;
+
+  console.log("itemsBufferRequest: ", window["itemsBufferRequest"]);
 
   return {
     hasMore: false,
@@ -245,7 +254,7 @@ async function updateSlaDataBuffer(): Promise<void> {
 }
 
 //Проверка существует ли такой sla обращения
-async function checkSlaRequest(slaData: AddRequestSlaArgs): Promise<boolean> {
+async function checkSlaRequest(slaData: AddRequestSlaArgs): Promise<string | undefined> {
   const {
     days,
     hours,
@@ -257,8 +266,17 @@ async function checkSlaRequest(slaData: AddRequestSlaArgs): Promise<boolean> {
     channelType,
     channelSort,
   } = slaData;
-  await sleep(1000);
-  return true;
+
+  // const isFound = Math.random() > 0.5;
+  // if(!isFound) return;
+  
+  const itemsBuffer = window["itemsBufferRequest"].filter((ib: any) => ib.data.status.info != "expired");
+  console.log("itemsBufferRequest: ", itemsBuffer)
+  const randomIndex = Math.floor(Math.random() * (itemsBuffer.length - 1));
+  const randomItemId = itemsBuffer[randomIndex].id;
+  console.log("randomItemId", randomItemId);
+  
+  return randomItemId;
 }
 
 /** Переход к существующему SLA обращения*/
@@ -269,7 +287,7 @@ async function redirectSlaRequest(): Promise<void> {
 }
 
 //Проверка существует ли такой sla задачи
-async function checkSlaTask(slaData: AddTaskSlaArgs): Promise<boolean> {
+async function checkSlaTask(slaData: AddTaskSlaArgs): Promise<string | undefined> {
   const {
     days,
     hours,
@@ -285,8 +303,18 @@ async function checkSlaTask(slaData: AddTaskSlaArgs): Promise<boolean> {
     product,
     executer,
   } = slaData;
+
   await sleep(1000);
-  return true;
+
+  // const isFound = Math.random() > 0.5;
+  // if(!isFound) return;
+  
+  const itemsBuffer = window["itemsBuffer"].filter((ib: any) => ib.data.status.info != "expired");
+  console.log("itemsBuffer1: ", itemsBuffer)
+  const randomIndex = Math.floor(Math.random() * (itemsBuffer.length - 1));
+  const randomItemId = itemsBuffer[randomIndex].id;
+
+  return randomItemId;
 }
 
 /** Переход к существующему SLA задачи*/
