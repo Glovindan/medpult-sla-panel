@@ -20,6 +20,8 @@ interface EditValidModalProps {
   rowData: SlaRowDataGroup;
   onSwitchToEditBaseModal: () => void;
   onComplete: (endDate: string, id: string) => Promise<void>;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditValidModal({
@@ -28,6 +30,7 @@ export default function EditValidModal({
   rowData,
   onSwitchToEditBaseModal,
   onComplete,
+  onReload,
 }: EditValidModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isEndDateInvalid, setIsEndDateInvalid] = useState(false);
@@ -55,6 +58,7 @@ export default function EditValidModal({
     setErrorMessage("");
     // ... логика завершения
     await onComplete(endDate, rowData.id.value);
+    onReload();
     onClose();
     return true;
   };

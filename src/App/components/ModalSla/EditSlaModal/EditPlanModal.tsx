@@ -18,7 +18,9 @@ interface EditPlanModalProps {
   onClose: () => void;
   rowData: SlaRowDataGroup;
   onSave: (slaData: AddSlaArgs) => Promise<void>;
-  onCancel: () => Promise<void>;
+  onCancel: (id: string) => Promise<void>;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditPlanModal({
@@ -27,6 +29,7 @@ export default function EditPlanModal({
   rowData,
   onSave,
   onCancel,
+  onReload,
 }: EditPlanModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -156,7 +159,8 @@ export default function EditPlanModal({
   /** Аннулировать sla Задачи */
   const cancelSlaHandler = async () => {
     // ... логика аннулирования
-    await onCancel();
+    await onCancel(rowData.id.value);
+    onReload();
     onClose();
   };
 

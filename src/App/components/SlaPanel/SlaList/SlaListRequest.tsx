@@ -310,6 +310,7 @@ export default function SlaListRequest({
           rowData={editRowData}
           onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
           onComplete={Scripts.competeSlaRequest}
+          onReload={onReload}
         />
       )}
       {isEditPlanModalOpen && editRowData && (
@@ -319,6 +320,7 @@ export default function SlaListRequest({
           rowData={editRowData}
           onSave={Scripts.addSlaRequest}
           onCancel={Scripts.cancelSlaRequest}
+          onReload={onReload}
         />
       )}
     </>

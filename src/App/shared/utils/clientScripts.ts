@@ -240,13 +240,13 @@ async function competeSlaRequest(endDate: string, id: string): Promise<void> {
 }
 
 /** аннулировать sla Задачи */
-async function cancelSlaTask(): Promise<void> {
+async function cancelSlaTask(id: string): Promise<void> {
   // TODO
   await sleep(1000);
 }
 
 /** аннулировать sla Обращения */
-async function cancelSlaRequest(): Promise<void> {
+async function cancelSlaRequest(id: string): Promise<void> {
   // TODO
   await sleep(1000);
 }

@@ -336,6 +336,7 @@ export default function SlaListTask({
           rowData={editRowData}
           onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
           onComplete={Scripts.competeSlaTask}
+          onReload={onReload}
         />
       )}
       {isEditPlanModalOpen && editRowData && (
@@ -345,6 +346,7 @@ export default function SlaListTask({
           rowData={editRowData}
           onSave={Scripts.addSlaTask}
           onCancel={Scripts.cancelSlaTask}
+          onReload={onReload}
         />
       )}
     </>
