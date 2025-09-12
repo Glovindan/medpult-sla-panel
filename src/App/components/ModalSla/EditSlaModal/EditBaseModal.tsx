@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AddSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
+import { AddSlaArgs, EditSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
 import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
 import { parseDuration } from "../../../shared/utils/utils.ts";
@@ -20,8 +20,10 @@ interface EditBaseModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onSave: (slaData: AddSlaArgs) => Promise<void>;
+  onSave: (slaData: EditSlaArgs) => Promise<void>;
   showStarIcon?: boolean;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditBaseModal({
@@ -30,6 +32,7 @@ export default function EditBaseModal({
   rowData,
   onSave,
   showStarIcon,
+  onReload,
 }: EditBaseModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -161,6 +164,7 @@ export default function EditBaseModal({
       return false;
     }
     setErrorMessage("");
+
     // ... логика сохранения
     await onSave({
       days: days,
@@ -168,8 +172,11 @@ export default function EditBaseModal({
       minutes: minutes,
       startDate: startDate,
       endDate: endDatePlanned,
+      type: rowData.type.info,
+      id: rowData.id.value ?? ""
     });
     onClose();
+    onReload();
     return true;
   };
 

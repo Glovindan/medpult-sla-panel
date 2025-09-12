@@ -141,6 +141,7 @@ export default function SlaPanel() {
               getSlaHandler={getSlaRequestHandler}
               isLoading={isLoading}
               highlightedId={highlightedId}
+              onReload={reloadList} 
             />
             {isRequestModalOpen && (
               <RequestSlaModal onClose={() => setIsRequestModalOpen(false)}  onReload={reloadList} updateHighlightedId={updateHighlightedId} />
@@ -157,6 +158,7 @@ export default function SlaPanel() {
               getSlaHandler={getSlaTaskHandler}
               isLoading={isLoading}
               highlightedId={highlightedId}
+              onReload={reloadList} 
             />
             {isTaskModalOpen && (
               <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} onReload={reloadList} updateHighlightedId={updateHighlightedId} />

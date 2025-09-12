@@ -5,7 +5,7 @@ import { CustomSelectOption } from "../../../UIKit/CustomSelect/CustomSelectType
 import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
 import { requestMock } from "./requestMock";
 import { taskMock } from "./taskMock";
-import { AddRequestSlaArgs, AddTaskSlaArgs } from "../types";
+import { AddRequestSlaArgs, AddTaskSlaArgs, EditSlaArgs } from "../types";
 
 /** Ожидание */
 function sleep(ms: number) {
@@ -212,6 +212,21 @@ async function addSlaRequest(slaData: AddRequestSlaArgs): Promise<void> {
   await sleep(1000);
 }
 
+/** Изменить sla */
+async function editSla(slaData: EditSlaArgs): Promise<void> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    id
+  } = slaData;
+
+  await sleep(1000);
+}
+
 /** завершить sla Задачи */
 async function competeSlaTask(endDate: string): Promise<void> {
   // TODO
@@ -356,4 +371,6 @@ export default {
   redirectSlaRequest,
   checkSlaTask,
   redirectSlaTask,
+
+  editSla
 };

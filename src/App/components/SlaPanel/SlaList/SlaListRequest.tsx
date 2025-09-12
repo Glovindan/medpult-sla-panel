@@ -35,6 +35,8 @@ type SlaListProps = {
   hideHeader?: boolean;
   /** Идентификатор подсвечиваемого элемента */
   highlightedId?: string;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 };
 
 interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
@@ -46,7 +48,8 @@ export default function SlaListRequest({
   getSlaHandler,
   isLoading,
   hideHeader = false,
-  highlightedId
+  highlightedId,
+  onReload
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
@@ -169,6 +172,7 @@ export default function SlaListRequest({
           getSlaHandler={() => getSubSla(rowData.id.value)}
           isLoading={false}
           hideHeader={true}
+          onReload={onReload}
         />
       </div>
     );
@@ -285,8 +289,9 @@ export default function SlaListRequest({
           title="SLA на обращение"
           onClose={() => setEditModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaRequest}
+          onSave={Scripts.editSla}
           showStarIcon={showStarIcon}
+          onReload={onReload}
         />
       )}
       {isEditValidPlanModalOpen && editRowData && (
