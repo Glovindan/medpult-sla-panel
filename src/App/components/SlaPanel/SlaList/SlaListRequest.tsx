@@ -301,6 +301,7 @@ export default function SlaListRequest({
           rowData={editRowData}
           onComplete={Scripts.competeSlaRequest}
           onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
+          onReload={onReload}
         />
       )}
       {isEditValidModalOpen && editRowData && (

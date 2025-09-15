@@ -11,7 +11,7 @@ import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import icons from "../../../shared/icons.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
-import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
+import { SlaRowDataGroup, SlaStatus } from "../../SlaPanel/SlaList/slaListTypes.ts";
 import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
@@ -20,8 +20,10 @@ interface EditValidPlanModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onComplete: (endDate: string, id: string) => Promise<void>;
+  onComplete: (endDate: string, id: string, plannedIds?:  string[]) => Promise<void>;
   onSwitchToEditBaseModal: () => void;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditValidPlanModal({
@@ -30,6 +32,7 @@ export default function EditValidPlanModal({
   rowData,
   onComplete,
   onSwitchToEditBaseModal,
+  onReload
 }: EditValidPlanModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isEndDateActiveInvalid, setIsEndDateActiveInvalid] = useState(false);
@@ -89,8 +92,14 @@ export default function EditValidPlanModal({
       return false;
     }
     setErrorMessage("");
-    await onComplete(endDateActive, rowData.id.value);
+    
+    // Список SLA в статусе планируется
+    const plannedSubSlaList = rowData.groupData?.filter(sla => sla.status.info == SlaStatus.planned);
+    const plannedIds = plannedSubSlaList?.map(sla => sla.id.value);
+
+    await onComplete(endDateActive, rowData.id.value, plannedIds);
     onClose();
+    onReload();
     return true;
   };
 
