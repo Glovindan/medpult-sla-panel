@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { localStorageDraftKey } from "./constants";
 import { JsonDataType } from "../types";
+import { SlaRowDataGroup, SlaStatus } from "../../components/SlaPanel/SlaList/slaListTypes";
 
 /** Маршрутизация по SPA */
 export const redirectSPA = (href: string) => {
@@ -274,6 +275,17 @@ export function parseDuration(value: string): {
     hours: hourMatch ? hourMatch[1] : "00",
     minutes: minuteMatch ? minuteMatch[1] : "00",
   };
+}
+
+
+
+// Получение планируемого SLA
+export const getPlannedSla = (rowData: SlaRowDataGroup) => {
+  if(!rowData.groupData?.length) return;
+
+  const plannedSla = rowData.groupData.find(sla => sla.status.info == SlaStatus.planned);
+
+  return plannedSla;
 }
 
 export default {

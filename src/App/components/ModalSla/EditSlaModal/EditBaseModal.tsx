@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AddSlaArgs, EditSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
 import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
-import { parseDuration } from "../../../shared/utils/utils.ts";
+import { getPlannedSla, parseDuration } from "../../../shared/utils/utils.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
 import ModalInputDate from "../ModalType/ModalInputDate/ModalInputDate.tsx";
 import CustomSelectWithLabel from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
@@ -49,15 +49,6 @@ export default function EditBaseModal({
   const [endDateActive, setEndDateActive] = useState<string>("");
   const [endDatePlanned, setEndDatePlanned] = useState<string>("");
 
-  // Получение планируемого SLA
-  const getPlannedSla = (rowData: SlaRowDataGroup) => {
-    if(!rowData.groupData?.length) return;
-
-    const plannedSla = rowData.groupData.find(sla => sla.status.info == SlaStatus.planned);
-
-    return plannedSla;
-  }
-
   // Инициализация даты окончания при открытии модалки
   useEffect(() => {
     setEndDateActive(rowData.endDate?.value ?? "");
@@ -79,11 +70,6 @@ export default function EditBaseModal({
 
   // Обновляем дату начала при выборе даты окончания
   useEffect(() => {
-    if (!endDateActive) {
-      setStartDate("");
-      return;
-    }
-
     const [day, month, year] = endDateActive.split(".");
     const newEnd = new Date(+year, +month - 1, +day);
 

@@ -29,9 +29,9 @@ async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
     };
   })];
 
-  // window["itemsBuffer"] = items;
+  window["itemsBuffer"] = items;
 
-  // console.log("itemsBuffer: ", window["itemsBuffer"]);
+  console.log("itemsBuffer: ", window["itemsBuffer"]);
 
   return {
     hasMore: false,
@@ -52,9 +52,9 @@ async function getSlaRequest(): Promise<FetchData<SlaRowDataGroup>> {
     };
   });
 
-  // window["itemsBufferRequest"] = items;
+  window["itemsBufferRequest"] = items;
 
-  // console.log("itemsBufferRequest: ", window["itemsBufferRequest"]);
+  console.log("itemsBufferRequest: ", window["itemsBufferRequest"]);
 
   return {
     hasMore: false,

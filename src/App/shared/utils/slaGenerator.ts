@@ -17,7 +17,7 @@ export const myItem = {
     },
     isBasic: {
       value: "false",
-      info: true,
+      info: false,
     },
     type: {
       value: "Время реакции",
@@ -37,7 +37,8 @@ export const myItem = {
       value: "14.11.2025",
     },
     endDate: {
-      value: "17.11.2025",
+      // value: "17.11.2025",
+      value: "",
     },
     taskType: {
       value: "Медицинское",

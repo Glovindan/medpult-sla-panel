@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AddSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
 import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
-import { parseDuration } from "../../../shared/utils/utils.ts";
+import { getPlannedSla, parseDuration } from "../../../shared/utils/utils.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
 import ModalInputDate from "../ModalType/ModalInputDate/ModalInputDate.tsx";
 import CustomSelectWithLabel from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
@@ -37,41 +37,35 @@ export default function EditValidPlanModal({
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isEndDateActiveInvalid, setIsEndDateActiveInvalid] = useState(false);
 
+  const getDuration = () => {
+    const plannedSla = getPlannedSla(rowData);
+
+    if(plannedSla) return parseDuration(plannedSla?.value?.value ?? "");
+
+    return parseDuration(rowData?.value?.value ?? "")
+  }
+
   const duration = parseDuration(rowData?.value?.value ?? "");
+  const plannedDuration = getDuration();
 
   const [startDate, setStartDate] = useState<string>("");
   const [endDateActive, setEndDateActive] = useState<string>("");
+  const [endDatePlanned, setEndDatePlanned] = useState<string>("");
 
   // Инициализация даты окончания при открытии модалки
   useEffect(() => {
     setStartDate(rowData.startDate?.value ?? "");
-    setEndDateActive(rowData.endDate?.value ?? "");
+    setEndDateActive(rowData.endDate?.value ?? "")
+        
+    const plannedSla = getPlannedSla(rowData);
+    if(plannedSla) {
+      console.log("plannedSla.startDate?.value", plannedSla.startDate?.value)
+      setStartDate(plannedSla.startDate?.value ?? "") 
+      setEndDatePlanned(plannedSla.endDate?.value ?? "")
+    } else {
+      setStartDate(rowData.startDate?.value ?? "");
+    }
   }, [rowData]);
-
-  // Обновляем дату начала при выборе даты окончания
-  useEffect(() => {
-    if (!endDateActive) {
-      setStartDate("");
-      return;
-    }
-
-    const [day, month, year] = endDateActive.split(".");
-    const newEnd = new Date(+year, +month - 1, +day);
-
-    if (!isNaN(newEnd.getTime())) {
-      const nextDay = new Date(newEnd);
-      nextDay.setDate(newEnd.getDate() + 1);
-
-      const formatted =
-        String(nextDay.getDate()).padStart(2, "0") +
-        "." +
-        String(nextDay.getMonth() + 1).padStart(2, "0") +
-        "." +
-        nextDay.getFullYear();
-
-      setStartDate(formatted);
-    }
-  }, [endDateActive]);
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
@@ -180,9 +174,9 @@ export default function EditValidPlanModal({
 
             <ModalLabledField label={"Значение показателя"} isRequired={true}>
               <ModalTimeInput
-                days={duration.days + "д"}
-                hours={duration.hours + "ч"}
-                minutes={duration.minutes + "м"}
+                days={plannedDuration.days + "д"}
+                hours={plannedDuration.hours + "ч"}
+                minutes={plannedDuration.minutes + "м"}
                 disabled={true}
                 style={{ width: "74px" }}
               />
@@ -198,7 +192,7 @@ export default function EditValidPlanModal({
 
             <ModalInputDate
               label={"Дата окончания"}
-              value={""}
+              value={endDatePlanned}
               style={{ width: "202px" }}
               disabled={true}
             />
