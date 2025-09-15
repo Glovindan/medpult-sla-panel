@@ -345,7 +345,7 @@ export default function SlaListTask({
           title="SLA на задачу"
           onClose={() => setEditPlanModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaTask}
+          onSave={Scripts.editPlannedSla}
           onCancel={Scripts.cancelSlaTask}
           onReload={onReload}
         />

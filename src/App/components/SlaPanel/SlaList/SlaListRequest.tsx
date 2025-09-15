@@ -325,7 +325,7 @@ export default function SlaListRequest({
           title="SLA на обращение"
           onClose={() => setEditPlanModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaRequest}
+          onSave={Scripts.editPlannedSla}
           onCancel={Scripts.cancelSlaRequest}
           onReload={onReload}
         />

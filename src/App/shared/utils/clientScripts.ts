@@ -230,6 +230,23 @@ async function editSla(slaData: EditSlaArgs): Promise<void> {
   await sleep(1000);
 }
 
+/** Изменить планируемый sla */
+async function editPlannedSla(slaData: EditSlaArgs): Promise<void> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    id
+  } = slaData;
+
+  console.log("editPlannedSla", slaData);
+
+  await sleep(1000);
+}
+
 /** завершить sla Задачи */
 async function competeSlaTask(endDate: string, id: string, plannedIds?:  string[]): Promise<void> {
   // TODO
@@ -375,5 +392,6 @@ export default {
   checkSlaTask,
   redirectSlaTask,
 
-  editSla
+  editSla,
+  editPlannedSla
 };
