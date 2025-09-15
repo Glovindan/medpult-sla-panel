@@ -1,6 +1,6 @@
 import { FetchData } from "../../../UIKit/CustomList/CustomListTypes";
-import { SlaRowDataGroup } from "../../components/SlaPanel/SlaList/slaListTypes";
-import { getRandomSlaListTask, getRandomSlaListRequest } from "./slaGenerator";
+import { SlaRowDataGroup, SlaStatus } from "../../components/SlaPanel/SlaList/slaListTypes";
+import { getRandomSlaListTask, getRandomSlaListRequest, myItem } from "./slaGenerator";
 import { CustomSelectOption } from "../../../UIKit/CustomSelect/CustomSelectTypes";
 import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
 import { requestMock } from "./requestMock";
@@ -16,7 +16,8 @@ function sleep(ms: number) {
 async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
   await sleep(1000);
   // const items = taskMock.map((rowData) => {
-  const items = getRandomSlaListTask(20).map((rowData) => {
+
+  const items = [myItem, ...getRandomSlaListTask(20).map((rowData) => {
     //const subData = getRandomSlaListTask(2);
     const shouldAddGroup = Math.random() > 0.5;
     return {
@@ -26,11 +27,11 @@ async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
         ...(shouldAddGroup && { groupData: getRandomSlaListTask(10) }),
       },
     };
-  });
+  })];
 
-  window["itemsBuffer"] = items;
+  // window["itemsBuffer"] = items;
 
-  console.log("itemsBuffer: ", window["itemsBuffer"]);
+  // console.log("itemsBuffer: ", window["itemsBuffer"]);
 
   return {
     hasMore: false,
@@ -51,9 +52,9 @@ async function getSlaRequest(): Promise<FetchData<SlaRowDataGroup>> {
     };
   });
 
-  window["itemsBufferRequest"] = items;
+  // window["itemsBufferRequest"] = items;
 
-  console.log("itemsBufferRequest: ", window["itemsBufferRequest"]);
+  // console.log("itemsBufferRequest: ", window["itemsBufferRequest"]);
 
   return {
     hasMore: false,
@@ -223,6 +224,8 @@ async function editSla(slaData: EditSlaArgs): Promise<void> {
     endDate,
     id
   } = slaData;
+
+  console.log("slaData", slaData);
 
   await sleep(1000);
 }

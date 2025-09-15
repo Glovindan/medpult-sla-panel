@@ -12,6 +12,7 @@ import {
 import SlaBasicColumn from "./SlaListColumn/SlaBasicColumn/SlaBasicColumn.tsx";
 import {
   CreatorEditorData,
+  SlaRowData,
   SlaRowDataGroup,
   SlaStatus,
 } from "./slaListTypes.ts";
@@ -58,7 +59,12 @@ export default function SlaListRequest({
   const [editRowData, setEditRowData] = useState<SlaRowDataGroup | null>(null);
   const [showStarIcon, setShowStarIcon] = useState(true);
 
-  const handleSwitchToEditBaseModal = () => {
+  // Текущий планируемый SLA
+  const [currentPlannedSla, setCurrentPlannedSla] = useState<SlaRowData | null>(null);
+
+  const handleSwitchToEditBaseModal = (plannedSla?: SlaRowData) => {
+    setCurrentPlannedSla(plannedSla ?? null);
+
     setEditValidModalOpen(false); // Закрываем текущую
     setEditValidPlanModalOpen(false);
     setEditModalOpen(true); // Открываем новую

@@ -9,6 +9,129 @@ import {
   SlaStatus,
 } from "../../components/SlaPanel/SlaList/slaListTypes";
 
+export const myItem = {
+  id: "sla-6741",
+  data: {
+    id: {
+      value: "sla-6741",
+    },
+    isBasic: {
+      value: "false",
+      info: true,
+    },
+    type: {
+      value: "Время реакции",
+      info: "RESPONSE_TIME",
+    },
+    conditions: {
+      value: "Негативное",
+    },
+    value: {
+      value: "01д 15ч 59м",
+    },
+    status: {
+      value: "",
+      info: SlaStatus.validPlanned,
+    },
+    startDate: {
+      value: "14.11.2025",
+    },
+    endDate: {
+      value: "17.11.2025",
+    },
+    taskType: {
+      value: "Медицинское",
+    },
+    taskSort: {
+      value: "Согласование услуг",
+    },
+    topic: {
+      value: "Software",
+    },
+    urgency: {
+      value: "Планово",
+    },
+    signVip: {
+      value: "Gold",
+    },
+    product: {
+      value: "Critical",
+    },
+    executer: {
+      value: "Сидоров Иван",
+    },
+    creatorEditorData: {
+      value: "",
+      info: {
+        createdAt: "20.10.2025",
+        createdBy: "Eve",
+        updatedAt: "18.08.2024",
+        updatedBy: "Eve",
+      },
+    },
+    groupData: [
+      {
+        id: {
+          value: "sla-6840",
+        },
+        isBasic: {
+          value: "true",
+        },
+        type: {
+          value: "Доступность",
+          info: "AVAILABILITY",
+        },
+        conditions: {
+          value: "Медицинское",
+        },
+        value: {
+          value: "02д 23ч 34м",
+        },
+        status: {
+          value: "",
+          info: SlaStatus.planned,
+        },
+        startDate: {
+          value: "18.11.2025",
+        },
+        endDate: {
+          value: "20.11.2025",
+        },
+        taskType: {
+          value: "Медицинское",
+        },
+        taskSort: {
+          value: "Согласование услуг",
+        },
+        topic: {
+          value: "Network",
+        },
+        urgency: {
+          value: "Экстренно",
+        },
+        signVip: {
+          value: "Silver",
+        },
+        product: {
+          value: "Medium",
+        },
+        executer: {
+          value: "Петров Петр",
+        },
+        creatorEditorData: {
+          value: "",
+          info: {
+            createdAt: "20.10.2023",
+            createdBy: "Dana",
+            updatedAt: "23.07.2024",
+            updatedBy: "Eve",
+          },
+        },
+      },
+    ],
+  },
+};
+
 // Вспомогательные утилиты
 function getRandomElement<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];

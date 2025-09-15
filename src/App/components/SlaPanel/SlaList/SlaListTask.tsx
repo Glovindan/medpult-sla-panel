@@ -315,7 +315,7 @@ export default function SlaListTask({
           title="SLA на задачу"
           onClose={() => setEditModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaTask}
+          onSave={Scripts.editSla}
           showStarIcon={showStarIcon}
           onReload={onReload}
         />

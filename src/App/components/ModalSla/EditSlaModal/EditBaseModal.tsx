@@ -11,7 +11,7 @@ import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import icons from "../../../shared/icons.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
-import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
+import { SlaRowDataGroup, SlaStatus } from "../../SlaPanel/SlaList/slaListTypes.ts";
 import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
@@ -49,10 +49,32 @@ export default function EditBaseModal({
   const [endDateActive, setEndDateActive] = useState<string>("");
   const [endDatePlanned, setEndDatePlanned] = useState<string>("");
 
+  // Получение планируемого SLA
+  const getPlannedSla = (rowData: SlaRowDataGroup) => {
+    if(!rowData.groupData?.length) return;
+
+    const plannedSla = rowData.groupData.find(sla => sla.status.info == SlaStatus.planned);
+
+    return plannedSla;
+  }
+
   // Инициализация даты окончания при открытии модалки
   useEffect(() => {
-    setStartDate(rowData.startDate?.value ?? "");
     setEndDateActive(rowData.endDate?.value ?? "");
+    
+    const plannedSla = getPlannedSla(rowData);
+    if(plannedSla) {
+      const duration = parseDuration(plannedSla?.value?.value ?? "");
+      setDays(duration.days);
+      setHours(duration.hours);
+      setMinutes(duration.minutes);
+      
+      console.log("plannedSla.startDate?.value", plannedSla.startDate?.value)
+      setStartDate(plannedSla.startDate?.value ?? "")
+      setEndDatePlanned(plannedSla.endDate?.value ?? "")
+    } else {
+      setStartDate(rowData.startDate?.value ?? "");
+    }
   }, [rowData]);
 
   // Обновляем дату начала при выборе даты окончания
@@ -166,6 +188,8 @@ export default function EditBaseModal({
     }
     setErrorMessage("");
 
+    const plannedSla = getPlannedSla(rowData);
+
     // ... логика сохранения
     await onSave({
       days: days,
@@ -175,6 +199,7 @@ export default function EditBaseModal({
       endDate: endDatePlanned,
       type: rowData.type.info,
       id: rowData.id.value ?? "",
+      plannedSlaId: plannedSla?.id.value,
       endDateActive: endDateActive,
     });
     onClose();
