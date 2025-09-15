@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { AddSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
+import { AddSlaArgs, EditSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
 import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
-import { parseDuration } from "../../../shared/utils/utils.ts";
+import { getPlannedSla, parseDuration } from "../../../shared/utils/utils.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
 import ModalInputDate from "../ModalType/ModalInputDate/ModalInputDate.tsx";
 import CustomSelectWithLabel from "../ModalType/ModalLineSelect/ModalLineSelect.tsx";
@@ -11,17 +11,20 @@ import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import icons from "../../../shared/icons.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
-import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
+import { SlaRowDataGroup, SlaStatus } from "../../SlaPanel/SlaList/slaListTypes.ts";
 import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
+import moment from "moment";
 
 interface EditBaseModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onSave: (slaData: AddSlaArgs) => Promise<void>;
+  onSave: (slaData: EditSlaArgs) => Promise<void>;
   showStarIcon?: boolean;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditBaseModal({
@@ -30,6 +33,7 @@ export default function EditBaseModal({
   rowData,
   onSave,
   showStarIcon,
+  onReload,
 }: EditBaseModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -47,17 +51,25 @@ export default function EditBaseModal({
 
   // Инициализация даты окончания при открытии модалки
   useEffect(() => {
-    setStartDate(rowData.startDate?.value ?? "");
     setEndDateActive(rowData.endDate?.value ?? "");
+    
+    const plannedSla = getPlannedSla(rowData);
+    if(plannedSla) {
+      const duration = parseDuration(plannedSla?.value?.value ?? "");
+      setDays(duration.days);
+      setHours(duration.hours);
+      setMinutes(duration.minutes);
+      
+      console.log("plannedSla.startDate?.value", plannedSla.startDate?.value)
+      setStartDate(plannedSla.startDate?.value ?? "")
+      setEndDatePlanned(plannedSla.endDate?.value ?? "")
+    } else {
+      setStartDate(rowData.startDate?.value ?? "");
+    }
   }, [rowData]);
 
   // Обновляем дату начала при выборе даты окончания
   useEffect(() => {
-    if (!endDateActive) {
-      setStartDate("");
-      return;
-    }
-
     const [day, month, year] = endDateActive.split(".");
     const newEnd = new Date(+year, +month - 1, +day);
 
@@ -161,6 +173,9 @@ export default function EditBaseModal({
       return false;
     }
     setErrorMessage("");
+
+    const plannedSla = getPlannedSla(rowData);
+
     // ... логика сохранения
     await onSave({
       days: days,
@@ -168,10 +183,31 @@ export default function EditBaseModal({
       minutes: minutes,
       startDate: startDate,
       endDate: endDatePlanned,
+      type: rowData.type.info,
+      id: rowData.id.value ?? "",
+      plannedSlaId: plannedSla?.id.value,
+      endDateActive: endDateActive,
     });
     onClose();
+    onReload();
     return true;
   };
+
+  // Минимальная дата окончания для Действующего SLA
+  const getMinEndDateActive = () => {
+    const startDateStr = rowData.startDate?.value;
+    const currentDate = moment();
+
+    // Если дата начала не указана
+    if(!startDateStr) return currentDate.format("DD.MM.YYYY");
+
+    // Если дата начала раньше текущей даты
+    const startDate = moment(startDateStr, 'DD.MM.YYYY')
+    if(startDate.isBefore(currentDate)) return currentDate.format("DD.MM.YYYY");
+
+    // Иначе
+    return startDateStr;
+  }
 
   return (
     <ModalWrapper>
@@ -225,7 +261,7 @@ export default function EditBaseModal({
               value={endDateActive}
               setValue={(value) => setEndDateActive(value as string)}
               style={{ width: "202px" }}
-              startDate={rowData.startDate?.value}
+              startDate={getMinEndDateActive()}
               isInvalid={isEndDateActiveInvalid}
               isRequired={true}
             />

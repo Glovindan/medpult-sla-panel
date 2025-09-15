@@ -19,7 +19,9 @@ interface EditValidModalProps {
   onClose: () => void;
   rowData: SlaRowDataGroup;
   onSwitchToEditBaseModal: () => void;
-  onComplete: (endDate: string) => Promise<void>;
+  onComplete: (endDate: string, id: string) => Promise<void>;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditValidModal({
@@ -28,11 +30,16 @@ export default function EditValidModal({
   rowData,
   onSwitchToEditBaseModal,
   onComplete,
+  onReload,
 }: EditValidModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isEndDateInvalid, setIsEndDateInvalid] = useState(false);
   const duration = parseDuration(rowData?.value?.value ?? "");
   const [endDate, setEndDate] = useState<string>("");
+
+  useEffect(() => {
+    if(rowData.endDate.value) setEndDate(rowData.endDate.value)
+  }, [])
 
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
@@ -54,7 +61,8 @@ export default function EditValidModal({
     }
     setErrorMessage("");
     // ... логика завершения
-    await onComplete(endDate);
+    await onComplete(endDate, rowData.id.value);
+    onReload();
     onClose();
     return true;
   };

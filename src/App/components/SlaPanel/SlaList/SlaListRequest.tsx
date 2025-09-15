@@ -12,6 +12,7 @@ import {
 import SlaBasicColumn from "./SlaListColumn/SlaBasicColumn/SlaBasicColumn.tsx";
 import {
   CreatorEditorData,
+  SlaRowData,
   SlaRowDataGroup,
   SlaStatus,
 } from "./slaListTypes.ts";
@@ -35,6 +36,8 @@ type SlaListProps = {
   hideHeader?: boolean;
   /** Идентификатор подсвечиваемого элемента */
   highlightedId?: string;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 };
 
 interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
@@ -46,7 +49,8 @@ export default function SlaListRequest({
   getSlaHandler,
   isLoading,
   hideHeader = false,
-  highlightedId
+  highlightedId,
+  onReload
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
@@ -55,7 +59,12 @@ export default function SlaListRequest({
   const [editRowData, setEditRowData] = useState<SlaRowDataGroup | null>(null);
   const [showStarIcon, setShowStarIcon] = useState(true);
 
-  const handleSwitchToEditBaseModal = () => {
+  // Текущий планируемый SLA
+  const [currentPlannedSla, setCurrentPlannedSla] = useState<SlaRowData | null>(null);
+
+  const handleSwitchToEditBaseModal = (plannedSla?: SlaRowData) => {
+    setCurrentPlannedSla(plannedSla ?? null);
+
     setEditValidModalOpen(false); // Закрываем текущую
     setEditValidPlanModalOpen(false);
     setEditModalOpen(true); // Открываем новую
@@ -169,6 +178,7 @@ export default function SlaListRequest({
           getSlaHandler={() => getSubSla(rowData.id.value)}
           isLoading={false}
           hideHeader={true}
+          onReload={onReload}
         />
       </div>
     );
@@ -285,8 +295,9 @@ export default function SlaListRequest({
           title="SLA на обращение"
           onClose={() => setEditModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaRequest}
+          onSave={Scripts.editSla}
           showStarIcon={showStarIcon}
+          onReload={onReload}
         />
       )}
       {isEditValidPlanModalOpen && editRowData && (
@@ -296,6 +307,7 @@ export default function SlaListRequest({
           rowData={editRowData}
           onComplete={Scripts.competeSlaRequest}
           onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
+          onReload={onReload}
         />
       )}
       {isEditValidModalOpen && editRowData && (
@@ -305,6 +317,7 @@ export default function SlaListRequest({
           rowData={editRowData}
           onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
           onComplete={Scripts.competeSlaRequest}
+          onReload={onReload}
         />
       )}
       {isEditPlanModalOpen && editRowData && (
@@ -312,8 +325,9 @@ export default function SlaListRequest({
           title="SLA на обращение"
           onClose={() => setEditPlanModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaRequest}
+          onSave={Scripts.editPlannedSla}
           onCancel={Scripts.cancelSlaRequest}
+          onReload={onReload}
         />
       )}
     </>

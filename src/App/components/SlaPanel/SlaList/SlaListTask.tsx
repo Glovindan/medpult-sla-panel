@@ -35,6 +35,8 @@ type SlaListProps = {
   hideHeader?: boolean;
   /** Идентификатор подсвечиваемого элемента */
   highlightedId?: string;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 };
 
 interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
@@ -46,7 +48,8 @@ export default function SlaListTask({
   getSlaHandler,
   isLoading,
   hideHeader = false,
-  highlightedId
+  highlightedId,
+  onReload
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
@@ -78,6 +81,7 @@ export default function SlaListTask({
     value: ItemDataString;
     rowData: SlaRowDataGroup;
   }) => {
+    console.log("getEditColumn", rowData);
     const status = rowData.status?.info;
 
     const canShow =
@@ -170,6 +174,7 @@ export default function SlaListTask({
           getSlaHandler={() => getSubSla(rowData.id.value)}
           isLoading={false}
           hideHeader={true}
+          onReload={onReload}
         />
       </div>
     );
@@ -310,8 +315,9 @@ export default function SlaListTask({
           title="SLA на задачу"
           onClose={() => setEditModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaTask}
+          onSave={Scripts.editSla}
           showStarIcon={showStarIcon}
+          onReload={onReload}
         />
       )}
       {isEditValidPlanModalOpen && editRowData && (
@@ -321,6 +327,7 @@ export default function SlaListTask({
           rowData={editRowData}
           onComplete={Scripts.competeSlaTask}
           onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
+          onReload={onReload}
         />
       )}
       {isEditValidModalOpen && editRowData && (
@@ -330,6 +337,7 @@ export default function SlaListTask({
           rowData={editRowData}
           onSwitchToEditBaseModal={handleSwitchToEditBaseModal}
           onComplete={Scripts.competeSlaTask}
+          onReload={onReload}
         />
       )}
       {isEditPlanModalOpen && editRowData && (
@@ -337,8 +345,9 @@ export default function SlaListTask({
           title="SLA на задачу"
           onClose={() => setEditPlanModalOpen(false)}
           rowData={editRowData}
-          onSave={Scripts.addSlaTask}
+          onSave={Scripts.editPlannedSla}
           onCancel={Scripts.cancelSlaTask}
+          onReload={onReload}
         />
       )}
     </>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AddSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
+import { AddSlaArgs, EditSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
 import Scripts from "../../../shared/utils/clientScripts.ts";
 import ModalTime from "../ModalType/ModalTime/ModalTime.tsx";
 import ModalInputDate from "../ModalType/ModalInputDate/ModalInputDate.tsx";
@@ -12,13 +12,16 @@ import { SlaRowDataGroup } from "../../SlaPanel/SlaList/slaListTypes.ts";
 import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
+import { parseDuration } from "../../../shared/utils/utils.ts";
 
 interface EditPlanModalProps {
   title: string;
   onClose: () => void;
   rowData: SlaRowDataGroup;
-  onSave: (slaData: AddSlaArgs) => Promise<void>;
-  onCancel: () => Promise<void>;
+  onSave: (slaData: EditSlaArgs) => Promise<void>;
+  onCancel: (id: string) => Promise<void>;
+  /** Обработчик перезагрузки списка */
+  onReload: () => Promise<void>;
 }
 /** Модальное окно звонка */
 export default function EditPlanModal({
@@ -27,6 +30,7 @@ export default function EditPlanModal({
   rowData,
   onSave,
   onCancel,
+  onReload,
 }: EditPlanModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isTimeInvalid, setIsTimeInvalid] = useState(false);
@@ -37,6 +41,16 @@ export default function EditPlanModal({
   const [minutes, setMinutes] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  
+  useEffect(() => {
+    const duration = parseDuration(rowData.value.value);
+    setDays(duration.days);
+    setHours(duration.hours);
+    setMinutes(duration.minutes);
+
+    if(rowData.startDate.value) setStartDate(rowData.startDate.value)
+    if(rowData.endDate.value) setEndDate(rowData.endDate.value)
+  }, [])
 
   //Очищаем дату окончания, если дата начала больше
   useEffect(() => {
@@ -132,7 +146,7 @@ export default function EditPlanModal({
   };
 
   /** Изменить sla Задачи */
-  const savelSlaHandler = async (): Promise<boolean> => {
+  const saveSlaHandler = async (): Promise<boolean> => {
     if (!validateFieldsRequired()) {
       setErrorMessage("Заполните обязательные поля");
       return false;
@@ -148,7 +162,9 @@ export default function EditPlanModal({
       minutes: minutes,
       startDate: startDate,
       endDate: endDate,
+      id: rowData.id.value
     });
+    onReload();
     onClose();
     return true;
   };
@@ -156,7 +172,8 @@ export default function EditPlanModal({
   /** Аннулировать sla Задачи */
   const cancelSlaHandler = async () => {
     // ... логика аннулирования
-    await onCancel();
+    await onCancel(rowData.id.value);
+    onReload();
     onClose();
   };
 
@@ -226,7 +243,7 @@ export default function EditPlanModal({
             />
             <Button
               title={"Изменить"}
-              clickHandler={savelSlaHandler}
+              clickHandler={saveSlaHandler}
               style={{ width: "100%" }}
             />
             <Button

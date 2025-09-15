@@ -1,11 +1,11 @@
 import { FetchData } from "../../../UIKit/CustomList/CustomListTypes";
-import { SlaRowDataGroup } from "../../components/SlaPanel/SlaList/slaListTypes";
-import { getRandomSlaListTask, getRandomSlaListRequest } from "./slaGenerator";
+import { SlaRowDataGroup, SlaStatus } from "../../components/SlaPanel/SlaList/slaListTypes";
+import { getRandomSlaListTask, getRandomSlaListRequest, myItem } from "./slaGenerator";
 import { CustomSelectOption } from "../../../UIKit/CustomSelect/CustomSelectTypes";
 import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
 import { requestMock } from "./requestMock";
 import { taskMock } from "./taskMock";
-import { AddRequestSlaArgs, AddTaskSlaArgs } from "../types";
+import { AddRequestSlaArgs, AddTaskSlaArgs, EditSlaArgs } from "../types";
 
 /** Ожидание */
 function sleep(ms: number) {
@@ -16,7 +16,8 @@ function sleep(ms: number) {
 async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
   await sleep(1000);
   // const items = taskMock.map((rowData) => {
-  const items = getRandomSlaListTask(20).map((rowData) => {
+
+  const items = [myItem, ...getRandomSlaListTask(20).map((rowData) => {
     //const subData = getRandomSlaListTask(2);
     const shouldAddGroup = Math.random() > 0.5;
     return {
@@ -26,7 +27,7 @@ async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
         ...(shouldAddGroup && { groupData: getRandomSlaListTask(10) }),
       },
     };
-  });
+  })];
 
   window["itemsBuffer"] = items;
 
@@ -212,26 +213,60 @@ async function addSlaRequest(slaData: AddRequestSlaArgs): Promise<void> {
   await sleep(1000);
 }
 
+/** Изменить sla */
+async function editSla(slaData: EditSlaArgs): Promise<void> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    id
+  } = slaData;
+
+  console.log("slaData", slaData);
+
+  await sleep(1000);
+}
+
+/** Изменить планируемый sla */
+async function editPlannedSla(slaData: EditSlaArgs): Promise<void> {
+  const {
+    days,
+    hours,
+    minutes,
+    startDate,
+    type,
+    endDate,
+    id
+  } = slaData;
+
+  console.log("editPlannedSla", slaData);
+
+  await sleep(1000);
+}
+
 /** завершить sla Задачи */
-async function competeSlaTask(endDate: string): Promise<void> {
+async function competeSlaTask(endDate: string, id: string, plannedIds?:  string[]): Promise<void> {
   // TODO
   await sleep(1000);
 }
 
 /** завершить sla Обращения */
-async function competeSlaRequest(endDate: string): Promise<void> {
+async function competeSlaRequest(endDate: string, id: string, plannedIds?:  string[]): Promise<void> {
   // TODO
   await sleep(1000);
 }
 
 /** аннулировать sla Задачи */
-async function cancelSlaTask(): Promise<void> {
+async function cancelSlaTask(id: string): Promise<void> {
   // TODO
   await sleep(1000);
 }
 
 /** аннулировать sla Обращения */
-async function cancelSlaRequest(): Promise<void> {
+async function cancelSlaRequest(id: string): Promise<void> {
   // TODO
   await sleep(1000);
 }
@@ -356,4 +391,7 @@ export default {
   redirectSlaRequest,
   checkSlaTask,
   redirectSlaTask,
+
+  editSla,
+  editPlannedSla
 };
