@@ -49,8 +49,8 @@ export default function ModalTimeInput({
     const numberParse = parseInt(value);
     if (Number.isNaN(numberParse)) return "";
 
-    if (numberParse < 0) return `0`;
-    if (numberParse > 23) return `23`;
+    //if (numberParse < 0) return `0`;
+    //if (numberParse > 23) return `23`;
 
     return `${numberParse}`;
   }
@@ -60,8 +60,8 @@ export default function ModalTimeInput({
     const numberParse = parseInt(value);
     if (Number.isNaN(numberParse)) return "";
 
-    if (numberParse < 0) return `0`;
-    if (numberParse > 59) return `59`;
+    //if (numberParse < 0) return `0`;
+    //if (numberParse > 59) return `59`;
 
     return `${numberParse}`;
   }
@@ -80,7 +80,7 @@ export default function ModalTimeInput({
         disabled={disabled}
       />
       <CustomInput
-        //maskFunction={applyHoursMask}
+        maskFunction={applyHoursMask}
         value={hours}
         setValue={setHours ?? defaultHandler}
         placeholder="00ч"
@@ -89,7 +89,7 @@ export default function ModalTimeInput({
         disabled={disabled}
       />
       <CustomInput
-        // maskFunction={applyMinutesMask}
+        maskFunction={applyMinutesMask}
         value={minutes}
         setValue={setMinutes ?? defaultHandler}
         placeholder="00м"
