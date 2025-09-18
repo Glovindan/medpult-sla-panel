@@ -17,19 +17,29 @@ interface ModalTimeInputProps {
   /** Изменить Количество минут */
   setMinutes?: (value: string) => void;
   /** Является невалидным */
-  isInvalid?: boolean,
+  isInvalid?: boolean;
   /** Только для чтения */
-  disabled?: boolean,
+  disabled?: boolean;
   /** Стили окон ввода */
   style?: React.CSSProperties;
 }
 
 /** Поле ввода в модальном окне */
-export default function ModalTimeInput({ days, style, setDays, hours, setHours, minutes, setMinutes, isInvalid, disabled}: ModalTimeInputProps) {
+export default function ModalTimeInput({
+  days,
+  style,
+  setDays,
+  hours,
+  setHours,
+  minutes,
+  setMinutes,
+  isInvalid,
+  disabled,
+}: ModalTimeInputProps) {
   /** Применить маску ввода часов */
   function applyDaysMask(value: string) {
     const numberParse = parseInt(value);
-    if(Number.isNaN(numberParse)) return ""
+    if (Number.isNaN(numberParse)) return "";
 
     return `${numberParse}`;
   }
@@ -37,10 +47,10 @@ export default function ModalTimeInput({ days, style, setDays, hours, setHours, 
   /** Применить маску ввода часов */
   function applyHoursMask(value: string) {
     const numberParse = parseInt(value);
-    if(Number.isNaN(numberParse)) return ""
+    if (Number.isNaN(numberParse)) return "";
 
-    if(numberParse < 0) return `0`
-    if(numberParse > 23) return `23`
+    if (numberParse < 0) return `0`;
+    if (numberParse > 23) return `23`;
 
     return `${numberParse}`;
   }
@@ -48,10 +58,10 @@ export default function ModalTimeInput({ days, style, setDays, hours, setHours, 
   /** Применить маску ввода минут */
   function applyMinutesMask(value: string) {
     const numberParse = parseInt(value);
-    if(Number.isNaN(numberParse)) return ""
+    if (Number.isNaN(numberParse)) return "";
 
-    if(numberParse < 0) return `0`
-    if(numberParse > 59) return `59`
+    if (numberParse < 0) return `0`;
+    if (numberParse > 59) return `59`;
 
     return `${numberParse}`;
   }
@@ -65,25 +75,25 @@ export default function ModalTimeInput({ days, style, setDays, hours, setHours, 
         value={days}
         setValue={setDays ?? defaultHandler}
         placeholder="00д"
-        style={style ?? {width: "72px"}}
+        style={style ?? { width: "72px" }}
         isInvalid={isInvalid}
         disabled={disabled}
       />
       <CustomInput
-        maskFunction={applyHoursMask}
+        //maskFunction={applyHoursMask}
         value={hours}
         setValue={setHours ?? defaultHandler}
         placeholder="00ч"
-        style={style ?? {width: "72px"}}
+        style={style ?? { width: "72px" }}
         isInvalid={isInvalid}
         disabled={disabled}
       />
       <CustomInput
-        maskFunction={applyMinutesMask}
+        // maskFunction={applyMinutesMask}
         value={minutes}
         setValue={setMinutes ?? defaultHandler}
         placeholder="00м"
-        style={style ?? {width: "72px"}}
+        style={style ?? { width: "72px" }}
         isInvalid={isInvalid}
         disabled={disabled}
       />

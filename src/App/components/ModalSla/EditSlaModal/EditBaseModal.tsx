@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { AddSlaArgs, EditSlaArgs, FieldConfig, FieldType } from "../../../shared/types.ts";
+import {
+  AddSlaArgs,
+  EditSlaArgs,
+  FieldConfig,
+  FieldType,
+} from "../../../shared/types.ts";
 import ModalSla from "../ModalSla.tsx";
 import Scripts from "../../../shared/utils/clientScripts.ts";
 import { getPlannedSla, parseDuration } from "../../../shared/utils/utils.ts";
@@ -11,7 +16,10 @@ import { ButtonType } from "../../../../UIKit/Button/ButtonTypes.ts";
 import Button from "../../../../UIKit/Button/Button.tsx";
 import icons from "../../../shared/icons.tsx";
 import { ItemData } from "../../../../UIKit/CustomList/CustomListTypes.ts";
-import { SlaRowDataGroup, SlaStatus } from "../../SlaPanel/SlaList/slaListTypes.ts";
+import {
+  SlaRowDataGroup,
+  SlaStatus,
+} from "../../SlaPanel/SlaList/slaListTypes.ts";
 import ModalLabledField from "../ModalType/ModalLabledField/modalLabledField.tsx";
 import CustomSelect from "../../../../UIKit/CustomSelect/CustomSelect.tsx";
 import ModalTimeInput from "../ModalType/ModalTimeInput/ModalTimeInput.tsx";
@@ -52,17 +60,17 @@ export default function EditBaseModal({
   // Инициализация даты окончания при открытии модалки
   useEffect(() => {
     setEndDateActive(rowData.endDate?.value ?? "");
-    
+
     const plannedSla = getPlannedSla(rowData);
-    if(plannedSla) {
+    if (plannedSla) {
       const duration = parseDuration(plannedSla?.value?.value ?? "");
       setDays(duration.days);
       setHours(duration.hours);
       setMinutes(duration.minutes);
-      
-      console.log("plannedSla.startDate?.value", plannedSla.startDate?.value)
-      setStartDate(plannedSla.startDate?.value ?? "")
-      setEndDatePlanned(plannedSla.endDate?.value ?? "")
+
+      console.log("plannedSla.startDate?.value", plannedSla.startDate?.value);
+      setStartDate(plannedSla.startDate?.value ?? "");
+      setEndDatePlanned(plannedSla.endDate?.value ?? "");
     } else {
       setStartDate(rowData.startDate?.value ?? "");
     }
@@ -70,6 +78,10 @@ export default function EditBaseModal({
 
   // Обновляем дату начала при выборе даты окончания
   useEffect(() => {
+    if (!endDateActive) {
+      setStartDate("");
+      return;
+    }
     const [day, month, year] = endDateActive.split(".");
     const newEnd = new Date(+year, +month - 1, +day);
 
@@ -199,15 +211,16 @@ export default function EditBaseModal({
     const currentDate = moment();
 
     // Если дата начала не указана
-    if(!startDateStr) return currentDate.format("DD.MM.YYYY");
+    if (!startDateStr) return currentDate.format("DD.MM.YYYY");
 
     // Если дата начала раньше текущей даты
-    const startDate = moment(startDateStr, 'DD.MM.YYYY')
-    if(startDate.isBefore(currentDate)) return currentDate.format("DD.MM.YYYY");
+    const startDate = moment(startDateStr, "DD.MM.YYYY");
+    if (startDate.isBefore(currentDate))
+      return currentDate.format("DD.MM.YYYY");
 
     // Иначе
     return startDateStr;
-  }
+  };
 
   return (
     <ModalWrapper>

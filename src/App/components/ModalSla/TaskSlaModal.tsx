@@ -19,11 +19,15 @@ interface TaskSlaModalProps {
   /** Обработчик перезагрузки списка */
   onReload: () => Promise<void>;
   /** Подсветить элемент списка */
-  updateHighlightedId: (id: string) => void
+  updateHighlightedId: (id: string) => void;
 }
 
 /** Модальное окно звонка */
-export default function TaskSlaModal({ onClose, onReload, updateHighlightedId }: TaskSlaModalProps) {
+export default function TaskSlaModal({
+  onClose,
+  onReload,
+  updateHighlightedId,
+}: TaskSlaModalProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [isTypeInvalid, setIsTypeInvalid] = useState(false);
@@ -67,6 +71,20 @@ export default function TaskSlaModal({ onClose, onReload, updateHighlightedId }:
   /** Сохранение состояния формы */
   const saveStateHandler = () => {};
 
+  /** Сбрасываем дату окончания, если дата начала больше */
+  useEffect(() => {
+    if (!startDate || !endDate) return;
+
+    const [startDay, startMonth, startYear] = startDate.split(".");
+    const [endDay, endMonth, endYear] = endDate.split(".");
+
+    const start = new Date(+startYear, +startMonth - 1, +startDay);
+    const end = new Date(+endYear, +endMonth - 1, +endDay);
+
+    if (start >= end) {
+      setEndDate("");
+    }
+  }, [startDate, endDate]);
   /** Проверка на заполненость обязательных полей */
   const validateFieldsRequired = () => {
     let isValid = true;
@@ -188,12 +206,12 @@ export default function TaskSlaModal({ onClose, onReload, updateHighlightedId }:
         ' SLA с такими параметрами существует. Для редактирования нажмите кнопку "Перейти"'
       );
 
-      setSlaDuplicateId(slaDuplicateIdSearch)
+      setSlaDuplicateId(slaDuplicateIdSearch);
       return false;
     }
 
     setErrorMessage("");
-    setSlaDuplicateId(undefined)
+    setSlaDuplicateId(undefined);
 
     await Scripts.addSlaTask({
       days: days,
@@ -219,9 +237,9 @@ export default function TaskSlaModal({ onClose, onReload, updateHighlightedId }:
 
   //Кнопка "Перейти" если такое sla уже существует
   const handleRedirect = async (): Promise<void> => {
-    if(slaDuplicateId) {
+    if (slaDuplicateId) {
       updateHighlightedId(slaDuplicateId);
-      setSlaDuplicateId(undefined)
+      setSlaDuplicateId(undefined);
     }
 
     onClose();
