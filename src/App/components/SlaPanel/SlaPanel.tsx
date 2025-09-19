@@ -32,7 +32,6 @@ export default function SlaPanel() {
   useEffect(() => {
     setIsLoading(true);
     Scripts.OnInit().then(() => {
-
       Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()])
         .then(([slaDataTask, slaDataRequest]) => {
           setSlaDataTask(slaDataTask); // Сохраняем данные для задач
@@ -48,14 +47,17 @@ export default function SlaPanel() {
   /** Обновить список SLA задач и обращений */
   async function reloadList() {
     setIsLoading(true);
-    
+
     // Обновить значения SLA с сервера
-    await Scripts.updateSlaDataBuffer()
-    
+    await Scripts.updateSlaDataBuffer();
+
     // Получить значения списков
-    const [slaDataTask, slaDataRequest] = await Promise.all([Scripts.getSlaTask(), Scripts.getSlaRequest()]);
-    setSlaDataTask(slaDataTask)
-    setSlaDataRequest(slaDataRequest)
+    const [slaDataTask, slaDataRequest] = await Promise.all([
+      Scripts.getSlaTask(),
+      Scripts.getSlaRequest(),
+    ]);
+    setSlaDataTask(slaDataTask);
+    setSlaDataRequest(slaDataRequest);
 
     setIsLoading(false);
   }
@@ -66,8 +68,8 @@ export default function SlaPanel() {
       "valid",
       "validPlanned",
       "planned",
-      "expired",
       "canceled",
+      "expired",
     ];
 
     return [...items].sort((a, b) => {
@@ -121,9 +123,9 @@ export default function SlaPanel() {
     };
   }, [slaDataTask, showExpiredSla]);
 
-  const {highlightedId, updateHighlightedId} = useHighlight();
+  const { highlightedId, updateHighlightedId } = useHighlight();
 
-  (window as any).updateHighlightedId = updateHighlightedId
+  (window as any).updateHighlightedId = updateHighlightedId;
 
   return (
     <slaContext.Provider value={{ data, setValue }}>
@@ -141,10 +143,16 @@ export default function SlaPanel() {
               getSlaHandler={getSlaRequestHandler}
               isLoading={isLoading}
               highlightedId={highlightedId}
-              onReload={reloadList} 
+              onReload={reloadList}
+              showExpiredSla={showExpiredSla}
+              sortSlaItems={sortSlaItems}
             />
             {isRequestModalOpen && (
-              <RequestSlaModal onClose={() => setIsRequestModalOpen(false)}  onReload={reloadList} updateHighlightedId={updateHighlightedId} />
+              <RequestSlaModal
+                onClose={() => setIsRequestModalOpen(false)}
+                onReload={reloadList}
+                updateHighlightedId={updateHighlightedId}
+              />
             )}
           </TabItem>
           <TabItem code={"tasks"} name={"Задачи"}>
@@ -158,10 +166,16 @@ export default function SlaPanel() {
               getSlaHandler={getSlaTaskHandler}
               isLoading={isLoading}
               highlightedId={highlightedId}
-              onReload={reloadList} 
+              onReload={reloadList}
+              showExpiredSla={showExpiredSla}
+              sortSlaItems={sortSlaItems}
             />
             {isTaskModalOpen && (
-              <TaskSlaModal onClose={() => setIsTaskModalOpen(false)} onReload={reloadList} updateHighlightedId={updateHighlightedId} />
+              <TaskSlaModal
+                onClose={() => setIsTaskModalOpen(false)}
+                onReload={reloadList}
+                updateHighlightedId={updateHighlightedId}
+              />
             )}
           </TabItem>
         </TabsWrapper>

@@ -37,6 +37,10 @@ type SlaListProps = {
   highlightedId?: string;
   /** Обработчик перезагрузки списка */
   onReload: () => Promise<void>;
+  /** Переключатель истекших SLA */
+  showExpiredSla: boolean;
+  /** Сортировка по статусу SLA */
+  sortSlaItems: <T extends { data: any }>(items: T[]) => T[];
 };
 
 interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
@@ -49,7 +53,9 @@ export default function SlaListTask({
   isLoading,
   hideHeader = false,
   highlightedId,
-  onReload
+  onReload,
+  showExpiredSla,
+  sortSlaItems,
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
@@ -143,18 +149,21 @@ export default function SlaListTask({
     const sla = await getSlaHandler();
     // Искомый SLA
     const findSla = sla.items.find((item) => item.id == id);
+    let subItems =
+      findSla?.data.groupData?.map((item) => ({
+        id: item.id.value,
+        data: {
+          ...item,
+          groupData: [],
+        },
+      })) ?? [];
+    // Фильтруем expired
+    if (!showExpiredSla) {
+      subItems = subItems.filter((sub) => sub.data.status?.info !== "expired");
+    }
     return {
       hasMore: false,
-      items:
-        findSla?.data.groupData?.map((item) => {
-          return {
-            id: item.id.value,
-            data: {
-              ...item,
-              groupData: [],
-            },
-          };
-        }) ?? [],
+      items: sortSlaItems(subItems),
     };
   }
 
@@ -175,6 +184,8 @@ export default function SlaListTask({
           isLoading={false}
           hideHeader={true}
           onReload={onReload}
+          showExpiredSla={showExpiredSla}
+          sortSlaItems={sortSlaItems}
         />
       </div>
     );
