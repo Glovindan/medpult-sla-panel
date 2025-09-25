@@ -21,7 +21,7 @@ export default function SlaOpenColumn({
   return (
     <button
       className={`sla-open-button ${isOpen ? "sla-open-button__open" : ""}`}
-      title="Развернуть"
+      title={isOpen ? "Свернуть" : "Развернуть"}
     >
       {icons.Triangle}
     </button>
