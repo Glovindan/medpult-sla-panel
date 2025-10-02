@@ -42,6 +42,8 @@ type SlaListProps = {
   showExpiredSla: boolean;
   /** Сортировка по статусу SLA */
   sortSlaItems: <T extends { data: any }>(items: T[]) => T[];
+  /** Вложенный SLA? */
+  isNested?: boolean;
 };
 
 interface getSlaListDetailsLayoutAttributes extends getDetailsLayoutAttributes {
@@ -57,6 +59,7 @@ export default function SlaListRequest({
   onReload,
   showExpiredSla,
   sortSlaItems,
+  isNested,
 }: SlaListProps) {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditValidModalOpen, setEditValidModalOpen] = useState(false);
@@ -95,6 +98,9 @@ export default function SlaListRequest({
     value: ItemDataString;
     rowData: SlaRowDataGroup;
   }) => {
+    if (isNested) {
+      return <></>;
+    }
     const status = rowData.status?.info;
 
     const canShow =
@@ -192,6 +198,7 @@ export default function SlaListRequest({
           onReload={onReload}
           showExpiredSla={showExpiredSla}
           sortSlaItems={sortSlaItems}
+          isNested={true}
         />
       </div>
     );
@@ -280,6 +287,7 @@ export default function SlaListRequest({
       fixedWidth: "52px",
       getCustomColumComponent: getEditColumn,
     }),
+
     // Кнопка разворачивания
     new ListColumnData({
       code: "id",
