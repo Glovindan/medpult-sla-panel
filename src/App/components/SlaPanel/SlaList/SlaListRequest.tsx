@@ -226,32 +226,36 @@ export default function SlaListRequest({
       code: "conditions",
       name: "Условия",
       fr: 1,
+      maxWidth: "320px",
     }),
     // Значение показателя
     new ListColumnData({
       code: "value",
       name: "Значение показателя",
       fr: 1,
+      maxWidth: "110px",
     }),
     // Статус
     new ListColumnData({
       code: "status",
       name: "Статус",
       fr: 1,
-      fixedWidth: "170px",
+      fixedWidth: "143px",
       getCustomColumComponent: getSlaStatusColumn,
     }),
     // Дата начала
     new ListColumnData({
       code: "startDate",
-      name: "Дата начала действия",
+      name: "Начало действия",
       fr: 1,
+      maxWidth: "100px",
     }),
     // Дата окончания
     new ListColumnData({
       code: "endDate",
-      name: "Дата окончания действия",
+      name: "Окончание действия",
       fr: 1,
+      maxWidth: "105px",
     }),
     // Тип канала
     new ListColumnData({
@@ -268,7 +272,7 @@ export default function SlaListRequest({
     // Признак ВИП
     new ListColumnData({
       code: "signVip",
-      name: "Признак ВИП",
+      name: "ВИП",
       fr: 1,
     }),
 
@@ -284,7 +288,7 @@ export default function SlaListRequest({
       code: "id",
       name: "",
       fr: 1,
-      fixedWidth: "52px",
+      fixedWidth: "40px",
       getCustomColumComponent: getEditColumn,
     }),
 
@@ -293,7 +297,7 @@ export default function SlaListRequest({
       code: "id",
       name: "",
       fr: 1,
-      fixedWidth: "56px",
+      fixedWidth: "40px",
       getCustomColumComponent: getOpenColumn,
     }),
   ];

@@ -18,6 +18,7 @@ function CustomListRowColumn(props: ListColumnProps) {
     fr,
     data,
     fixedWidth,
+    maxWidth,
     contentPadding,
     isLink,
     onClick,
@@ -102,6 +103,7 @@ function CustomListRowColumn(props: ListColumnProps) {
         textOverflow: "ellipsis",
         ...(fixedWidth ? { width: fixedWidth } : { flex: fr }),
         ...(contentPadding && { padding: contentPadding }),
+        ...(maxWidth && { maxWidth: maxWidth }),
       }}
       ref={wrapperRef}
       // title={data.value}

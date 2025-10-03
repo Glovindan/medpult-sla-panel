@@ -1,15 +1,16 @@
-.custom-input__wrapper_link {
-	& > input {
-		font-style: 'normal';
-		font-weight: 600;
-		font-size: 14px;
-		line-height: 130%;
-		letter-spacing: 0.0025em;
-		color: #4588e5;
-		cursor: pointer;
+.custom-input__wrapper__link {
+  & > input {
+    font-style: "normal";
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 130%;
+    letter-spacing: 0.0025em;
+    color: #4588e5;
+    cursor: pointer;
+    width: 236px;
 
-		&:hover {
-			text-decoration: underline;
-		}
-	}
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

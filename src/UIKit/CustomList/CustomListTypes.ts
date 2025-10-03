@@ -27,9 +27,11 @@ export class ListColumnData {
   /** Коэффициент соотношения ширины столбца */
   fr: number;
   /** Фиксированная ширина столбца */
-  fixedWidth: string;
+  fixedWidth?: string;
+  /**Максимальная ширина столбца */
+  maxWidth?: string;
   /** Кастомные настройки отступа вокруг содержания ячейки таблицы */
-  contentPadding: string;
+  contentPadding?: string;
   /** Можно ли по этому столбцу сортировать */
   isSortable: boolean;
   /** Хранит ли по столбец ссылки */
@@ -56,6 +58,7 @@ export class ListColumnData {
     getCustomColumComponent,
     fixedWidth,
     contentPadding,
+    maxWidth,
   }: {
     name: string;
     code: string;
@@ -67,6 +70,7 @@ export class ListColumnData {
     getCustomColumComponent?: (props: any) => JSX.Element;
     fixedWidth?: string;
     contentPadding?: string;
+    maxWidth?: string;
   }) {
     this.fr = fr ?? 1;
     this.isSortable = isSortable ?? false;
@@ -81,6 +85,7 @@ export class ListColumnData {
     this.isRollable = isRollable ?? false;
     if (fixedWidth) this.fixedWidth = fixedWidth;
     if (contentPadding) this.contentPadding = contentPadding;
+    if (maxWidth) this.maxWidth = maxWidth;
   }
 }
 

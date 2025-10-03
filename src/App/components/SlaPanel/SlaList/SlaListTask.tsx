@@ -219,32 +219,36 @@ export default function SlaListTask({
       code: "conditions",
       name: "Условия",
       fr: 1,
+      maxWidth: "120px",
     }),
     // Значение показателя
     new ListColumnData({
       code: "value",
       name: "Значение показателя",
       fr: 2,
+      maxWidth: "110px",
     }),
     // Статус
     new ListColumnData({
       code: "status",
       name: "Статус",
       fr: 2,
-      fixedWidth: "170px",
       getCustomColumComponent: getSlaStatusColumn,
+      maxWidth: "170px",
     }),
     // Дата начала
     new ListColumnData({
       code: "startDate",
-      name: "Дата начала действия",
+      name: "Начало действия",
       fr: 1,
+      maxWidth: "100px",
     }),
     // Дата окончания
     new ListColumnData({
       code: "endDate",
-      name: "Дата окончания действия",
+      name: "Окончание действия",
       fr: 1,
+      maxWidth: "105px",
     }),
     // TODO: Признак ВИП
     // Тип задачи
@@ -252,12 +256,14 @@ export default function SlaListTask({
       code: "taskType",
       name: "Тип задачи",
       fr: 1,
+      maxWidth: "100px",
     }),
     // Вид задачи
     new ListColumnData({
       code: "taskSort",
       name: "Вид задачи",
       fr: 1,
+      maxWidth: "100px",
     }),
     // Тематика
     new ListColumnData({
@@ -270,12 +276,14 @@ export default function SlaListTask({
       code: "urgency",
       name: "Срочность",
       fr: 1,
+      maxWidth: "105px",
     }),
     // Признак ВИП
     new ListColumnData({
       code: "signVip",
-      name: "Признак ВИП",
+      name: "ВИП",
       fr: 1,
+      maxWidth: "80px",
     }),
     // Продукт
     new ListColumnData({
@@ -301,7 +309,7 @@ export default function SlaListTask({
       code: "id",
       name: "",
       fr: 1,
-      fixedWidth: "52px",
+      fixedWidth: "40px",
       getCustomColumComponent: getEditColumn,
     }),
     // Кнопка разворачивания
@@ -309,7 +317,7 @@ export default function SlaListTask({
       code: "id",
       name: "",
       fr: 1,
-      fixedWidth: "56px",
+      fixedWidth: "40px",
       getCustomColumComponent: getOpenColumn,
     }),
   ];

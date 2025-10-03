@@ -111,16 +111,16 @@ const Star = (
 
 const Clock = (
   <svg
-    width="25"
+    width="24"
     height="24"
-    viewBox="0 0 25 24"
+    viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <g clip-path="url(#clip0_12183_125938)">
-      <circle cx="12.0762" cy="12" r="9" stroke="#B7C290" stroke-width="2" />
+      <circle cx="12" cy="12" r="9" stroke="#B7C290" stroke-width="2" />
       <path
-        d="M12.0762 7V12L15.0762 15"
+        d="M12 7V12L15 15"
         stroke="#B7C290"
         stroke-width="2"
         stroke-linecap="round"
@@ -128,12 +128,7 @@ const Clock = (
     </g>
     <defs>
       <clipPath id="clip0_12183_125938">
-        <rect
-          width="24"
-          height="24"
-          fill="white"
-          transform="translate(0.0761719)"
-        />
+        <rect width="24" height="24" fill="white" />
       </clipPath>
     </defs>
   </svg>
