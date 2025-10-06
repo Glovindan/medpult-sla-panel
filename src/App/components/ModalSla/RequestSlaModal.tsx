@@ -296,9 +296,10 @@ export default function RequestSlaModal({
         <ModalLabledField label={"Тип канала"}>
           <CustomSelect
             value={channelType?.value ?? ""}
-            setValue={(value, code) =>
-              setChannelType({ value: value, code: code ?? "" })
-            }
+            setValue={(value, code) => {
+              setChannelType({ value: value, code: code ?? "" });
+              setChannelSort(null);
+            }}
             getDataHandler={Scripts.getTypeChannel}
             isInvalid={isChannelTypeInvalid}
           />
@@ -307,10 +308,18 @@ export default function RequestSlaModal({
         <ModalLabledField label={"Вид канала"}>
           <CustomSelect
             value={channelSort?.value ?? ""}
-            setValue={(value, code) =>
-              setChannelSort({ value: value, code: code ?? "" })
-            }
-            getDataHandler={Scripts.getSortChannel}
+            setValue={async (value, code) => {
+              setChannelSort({ value: value, code: code ?? "" });
+
+              if (code) {
+                const parentType =
+                  await Scripts.getParentChannelTypeBySortCode(code);
+                if (parentType) {
+                  setChannelType(parentType);
+                }
+              }
+            }}
+            getDataHandler={() => Scripts.getSortChannel(channelType?.code)}
             isInvalid={isChannelSortInvalid}
           />
         </ModalLabledField>

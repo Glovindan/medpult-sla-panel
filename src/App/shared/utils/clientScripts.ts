@@ -1,6 +1,13 @@
 import { FetchData } from "../../../UIKit/CustomList/CustomListTypes";
-import { SlaRowDataGroup, SlaStatus } from "../../components/SlaPanel/SlaList/slaListTypes";
-import { getRandomSlaListTask, getRandomSlaListRequest, myItem } from "./slaGenerator";
+import {
+  SlaRowDataGroup,
+  SlaStatus,
+} from "../../components/SlaPanel/SlaList/slaListTypes";
+import {
+  getRandomSlaListTask,
+  getRandomSlaListRequest,
+  myItem,
+} from "./slaGenerator";
 import { CustomSelectOption } from "../../../UIKit/CustomSelect/CustomSelectTypes";
 import { ObjectItem } from "../../../UIKit/Filters/FiltersTypes";
 import { requestMock } from "./requestMock";
@@ -17,17 +24,20 @@ async function getSlaTask(): Promise<FetchData<SlaRowDataGroup>> {
   await sleep(1000);
   // const items = taskMock.map((rowData) => {
 
-  const items = [myItem, ...getRandomSlaListTask(20).map((rowData) => {
-    //const subData = getRandomSlaListTask(2);
-    const shouldAddGroup = Math.random() > 0.5;
-    return {
-      id: rowData.id.value,
-      data: {
-        ...rowData,
-        ...(shouldAddGroup && { groupData: getRandomSlaListTask(10) }),
-      },
-    };
-  })];
+  const items = [
+    myItem,
+    ...getRandomSlaListTask(20).map((rowData) => {
+      //const subData = getRandomSlaListTask(2);
+      const shouldAddGroup = Math.random() > 0.5;
+      return {
+        id: rowData.id.value,
+        data: {
+          ...rowData,
+          ...(shouldAddGroup && { groupData: getRandomSlaListTask(10) }),
+        },
+      };
+    }),
+  ];
 
   window["itemsBuffer"] = items;
 
@@ -135,6 +145,14 @@ async function getParentTaskTypeBySortCode(
   return taskSort;
 }
 
+/** Получение типа канала по коду вида канала */
+async function getParentChannelTypeBySortCode(
+  sortCode: string
+): Promise<ObjectItem> {
+  const channelSort = new ObjectItem({ code: "smp", value: "СМП" });
+
+  return channelSort;
+}
 /** Получение списка тематики */
 async function getTopic(
   typeCode?: string,
@@ -167,7 +185,7 @@ async function getTypeChannel(): Promise<ObjectItem[]> {
   return typeChannel;
 }
 /** Получение списка вид Канала */
-async function getSortChannel(): Promise<ObjectItem[]> {
+async function getSortChannel(typeCode?: string): Promise<ObjectItem[]> {
   await sleep(1000);
   const sortChannel: ObjectItem[] = [
     new ObjectItem({ code: "dog", value: "dog@pesik.com" }),
@@ -215,15 +233,7 @@ async function addSlaRequest(slaData: AddRequestSlaArgs): Promise<void> {
 
 /** Изменить sla */
 async function editSla(slaData: EditSlaArgs): Promise<void> {
-  const {
-    days,
-    hours,
-    minutes,
-    startDate,
-    type,
-    endDate,
-    id
-  } = slaData;
+  const { days, hours, minutes, startDate, type, endDate, id } = slaData;
 
   console.log("slaData", slaData);
 
@@ -232,15 +242,7 @@ async function editSla(slaData: EditSlaArgs): Promise<void> {
 
 /** Изменить планируемый sla */
 async function editPlannedSla(slaData: EditSlaArgs): Promise<void> {
-  const {
-    days,
-    hours,
-    minutes,
-    startDate,
-    type,
-    endDate,
-    id
-  } = slaData;
+  const { days, hours, minutes, startDate, type, endDate, id } = slaData;
 
   console.log("editPlannedSla", slaData);
 
@@ -248,13 +250,21 @@ async function editPlannedSla(slaData: EditSlaArgs): Promise<void> {
 }
 
 /** завершить sla Задачи */
-async function competeSlaTask(endDate: string, id: string, plannedIds?:  string[]): Promise<void> {
+async function competeSlaTask(
+  endDate: string,
+  id: string,
+  plannedIds?: string[]
+): Promise<void> {
   // TODO
   await sleep(1000);
 }
 
 /** завершить sla Обращения */
-async function competeSlaRequest(endDate: string, id: string, plannedIds?:  string[]): Promise<void> {
+async function competeSlaRequest(
+  endDate: string,
+  id: string,
+  plannedIds?: string[]
+): Promise<void> {
   // TODO
   await sleep(1000);
 }
@@ -289,7 +299,9 @@ async function updateSlaDataBuffer(): Promise<void> {
 }
 
 //Проверка существует ли такой sla обращения
-async function checkSlaRequest(slaData: AddRequestSlaArgs): Promise<string | undefined> {
+async function checkSlaRequest(
+  slaData: AddRequestSlaArgs
+): Promise<string | undefined> {
   const {
     days,
     hours,
@@ -304,13 +316,15 @@ async function checkSlaRequest(slaData: AddRequestSlaArgs): Promise<string | und
 
   // const isFound = Math.random() > 0.5;
   // if(!isFound) return;
-  
-  const itemsBuffer = window["itemsBufferRequest"].filter((ib: any) => ib.data.status.info != "expired");
-  console.log("itemsBufferRequest: ", itemsBuffer)
+
+  const itemsBuffer = window["itemsBufferRequest"].filter(
+    (ib: any) => ib.data.status.info != "expired"
+  );
+  console.log("itemsBufferRequest: ", itemsBuffer);
   const randomIndex = Math.floor(Math.random() * (itemsBuffer.length - 1));
   const randomItemId = itemsBuffer[randomIndex].id;
   console.log("randomItemId", randomItemId);
-  
+
   return randomItemId;
 }
 
@@ -322,7 +336,9 @@ async function redirectSlaRequest(): Promise<void> {
 }
 
 //Проверка существует ли такой sla задачи
-async function checkSlaTask(slaData: AddTaskSlaArgs): Promise<string | undefined> {
+async function checkSlaTask(
+  slaData: AddTaskSlaArgs
+): Promise<string | undefined> {
   const {
     days,
     hours,
@@ -343,9 +359,11 @@ async function checkSlaTask(slaData: AddTaskSlaArgs): Promise<string | undefined
 
   // const isFound = Math.random() > 0.5;
   // if(!isFound) return;
-  
-  const itemsBuffer = window["itemsBuffer"].filter((ib: any) => ib.data.status.info != "expired");
-  console.log("itemsBuffer1: ", itemsBuffer)
+
+  const itemsBuffer = window["itemsBuffer"].filter(
+    (ib: any) => ib.data.status.info != "expired"
+  );
+  console.log("itemsBuffer1: ", itemsBuffer);
   const randomIndex = Math.floor(Math.random() * (itemsBuffer.length - 1));
   const randomItemId = itemsBuffer[randomIndex].id;
 
@@ -386,6 +404,7 @@ export default {
   getDefaultSlaTypeTask,
   updateSlaDataBuffer,
   getParentTaskTypeBySortCode,
+  getParentChannelTypeBySortCode,
 
   checkSlaRequest,
   redirectSlaRequest,
@@ -393,5 +412,5 @@ export default {
   redirectSlaTask,
 
   editSla,
-  editPlannedSla
+  editPlannedSla,
 };
